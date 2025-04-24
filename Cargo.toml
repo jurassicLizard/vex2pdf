@@ -1,6 +1,6 @@
 [package]
 name = "vex2pdf"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 authors = ["Salem Bouraoui <jurassic.lizard@protonmail.com>"]
 license = "MIT"
@@ -17,8 +17,7 @@ exclude = [
 ]
 
 [dependencies]
+cyclonedx-bom = "0.8.0"
 genpdf = "0.2.0"
-serde = "1.0.219"
-serde_derive = "1.0.219"
 serde_json = "1.0.140"
 

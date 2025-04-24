@@ -1,14 +1,14 @@
-//! PDF generation functionality for VEX reports.
+//! PDF generation functionality for CycloneDX (VEX) reports.
 //!
-//! This module handles the conversion from CycloneDX VEX data structures to
+//! This module handles the conversion from CycloneDX (VEX) data structures to
 //! formatted PDF documents using the genpdf library.
 //!
 //! The generator supports various VEX elements including vulnerabilities,
-//! components, and document metadata.
+//! components, and document metadata. 
 //!
 
-use crate::model::cyclonedx::non_root::tool::Tools;
-use crate::model::cyclonedx::root::cyclone_vex::CycloneDxVex;
+use cyclonedx_bom::models::tool::Tools;
+use cyclonedx_bom::prelude::Bom;
 use genpdf::elements::Paragraph;
 use genpdf::style::{Color, Style};
 use genpdf::{Alignment, Document, Element};
@@ -58,17 +58,13 @@ impl PdfGenerator {
     /// # Returns
     ///
     /// Result indicating success or an error with details
-    pub fn generate_pdf<P: AsRef<Path>>(
-        &self,
-        vex: &CycloneDxVex,
-        output_path: P,
-    ) -> Result<(), io::Error> {
+    pub fn generate_pdf<P: AsRef<Path>>(&self, vex: &Bom, output_path: P) -> Result<(), io::Error> {
         // Set up the document with default fonts
-        let mut fonts_dir = std::path::Path::new("/usr/share/fonts/liberation-sfonts");
+        let mut fonts_dir = Path::new("/usr/share/fonts/liberation-sfonts");
         if !fonts_dir.exists() {
-            fonts_dir = std::path::Path::new("./fonts/liberation-fonts");
+            fonts_dir = Path::new("./fonts/liberation-fonts");
         }
-        let font_family = genpdf::fonts::from_files(&fonts_dir, "LiberationSans", None)
+        let font_family = genpdf::fonts::from_files(fonts_dir, "LiberationSans", None)
             .expect("Failed to load font family if you are on windows make sure a fonts directory is on the same level as the application and put Liberation fonts there");
         let document_title = "Vulnerability Report Document";
         let pdf_title = "VEX Vulnerability Report";
@@ -97,21 +93,14 @@ impl PdfGenerator {
         doc.set_page_decorator(decorator);
 
         // Add title and basic information
-        doc.push(Paragraph::default().styled_string(document_title, self.title_style.clone()));
+        doc.push(Paragraph::default().styled_string(document_title, self.title_style));
         doc.push(genpdf::elements::Break::new(1.0));
 
         // Add metadata if available
         if let Some(metadata) = &vex.metadata {
-            if let Some(doc_metadata) = &metadata.document {
-                if let Some(title) = &doc_metadata.title {
-                    doc.push(Paragraph::default().styled_string(title, self.title_style.clone()));
-                    doc.push(genpdf::elements::Break::new(1.0));
-                }
-            }
-
             doc.push(
                 Paragraph::default()
-                    .styled_string("Document Information", self.header_style.clone()),
+                    .styled_string("Document Information", self.header_style),
             );
             doc.push(genpdf::elements::Break::new(1));
 
@@ -119,7 +108,7 @@ impl PdfGenerator {
             if let Some(timestamp) = &metadata.timestamp {
                 doc.push(
                     Paragraph::default()
-                        .styled_string(format!("Date: {}", timestamp), self.normal_style.clone()),
+                        .styled_string(format!("Date: {}", timestamp), self.normal_style),
                 );
             }
 
@@ -127,52 +116,55 @@ impl PdfGenerator {
 
             // Add tools information if available
             if let Some(tools) = &metadata.tools {
-                doc.push(Paragraph::default().styled_string("Tools:", self.normal_style.clone()));
+                doc.push(Paragraph::default().styled_string("Tools:", self.normal_style));
 
                 let mut ul_tools = genpdf::elements::UnorderedList::new();
 
                 match tools {
-                    Tools::Legacy(legacy_tools) => {
-                        for tool in legacy_tools {
+                    Tools::List(tools_list) => {
+                        for tool in tools_list {
                             if let Some(tool_name) = &tool.name {
-                                ul_tools.push(
-                                    Paragraph::default()
-                                        .styled_string(tool_name, self.indent_style.clone()),
-                                );
+                                ul_tools.push(Paragraph::default().styled_string(
+                                    tool_name.to_string(),
+                                    self.indent_style,
+                                ));
                             }
                         }
                     }
-                    Tools::Modern(modern_tools) => {
+                    Tools::Object {
+                        services: services_obj,
+                        components: components_obj,
+                    } => {
                         // Handle components used as tools
-                        if let Some(components) = &modern_tools.components {
-                            for component in components {
+                        if let Some(components) = &components_obj {
+                            for component in &components.0 {
                                 let component_name = &component.name;
                                 let display_name = if let Some(version) = &component.version {
                                     format!("{} (v{})", component_name, version)
                                 } else {
-                                    component_name.clone()
+                                    component_name.clone().to_string()
                                 };
 
                                 ul_tools.push(
                                     Paragraph::default()
-                                        .styled_string(&display_name, self.indent_style.clone()),
+                                        .styled_string(&display_name, self.indent_style),
                                 );
                             }
                         }
 
                         // Handle services used as tools
-                        if let Some(services) = &modern_tools.services {
-                            for service in services {
+                        if let Some(services) = &services_obj {
+                            for service in &services.0 {
                                 let service_name = &service.name;
                                 let display_name = if let Some(version) = &service.version {
                                     format!("{} (v{})", service_name, version)
                                 } else {
-                                    service_name.clone()
+                                    service_name.clone().to_string()
                                 };
 
                                 ul_tools.push(
                                     Paragraph::default()
-                                        .styled_string(&display_name, self.indent_style.clone()),
+                                        .styled_string(&display_name, self.indent_style),
                                 );
                             }
                         }
@@ -186,8 +178,8 @@ impl PdfGenerator {
             if let Some(component) = &metadata.component {
                 doc.push(
                     Paragraph::default()
-                        .styled_string("Component name : ", self.normal_style.clone())
-                        .styled_string(&component.name, self.indent_style.clone()),
+                        .styled_string("Component name : ", self.normal_style)
+                        .styled_string(component.name.to_string(), self.indent_style),
                 );
             }
 
@@ -195,23 +187,22 @@ impl PdfGenerator {
         }
 
         // Add basic BOM information
-        doc.push(Paragraph::default().styled_string(
-            format!("BOM Format: {}", vex.bom_format),
-            self.normal_style.clone(),
-        ));
+        doc.push(
+            Paragraph::default().styled_string("BOM Format: CycloneDX", self.normal_style),
+        );
         doc.push(Paragraph::default().styled_string(
             format!("Specification Version: {}", vex.spec_version),
-            self.normal_style.clone(),
+            self.normal_style,
         ));
         doc.push(Paragraph::default().styled_string(
             format!("Version: {}", vex.version),
-            self.normal_style.clone(),
+            self.normal_style,
         ));
 
         if let Some(serial) = &vex.serial_number {
             doc.push(Paragraph::default().styled_string(
                 format!("Serial Number: {}", serial),
-                self.normal_style.clone(),
+                self.normal_style,
             ));
         }
 
@@ -220,39 +211,54 @@ impl PdfGenerator {
         // Add Vulnerabilities section if available
         if let Some(vulnerabilities) = &vex.vulnerabilities {
             doc.push(
-                Paragraph::default().styled_string("Vulnerabilities", self.header_style.clone()),
+                Paragraph::default().styled_string("Vulnerabilities", self.header_style),
             );
             doc.push(genpdf::elements::Break::new(1.0));
 
             let mut ordered_list = genpdf::elements::OrderedList::new();
 
             // Add each vulnerability
-            for vuln in vulnerabilities {
-                let mut vuln_layout = genpdf::elements::LinearLayout::vertical()
-                    .element(
-                        Paragraph::default()
-                            .styled_string("ID: ", self.normal_style.clone())
-                            .styled_string(format!("{}", vuln.id), self.normal_style.clone()),
-                    )
-                    .element(genpdf::elements::Break::new(0.5));
+            for vuln in &vulnerabilities.0 {
+                let mut vuln_layout = genpdf::elements::LinearLayout::vertical();
 
-                if let Some(desc) = &vuln.description {
-                    vuln_layout.push(
-                        Paragraph::default()
-                            .styled_string("Description: ", self.indent_style.clone().bold())
-                            .styled_string(format!("{}", desc), self.indent_style),
-                    );
-                    vuln_layout.push(genpdf::elements::Break::new(0.5));
-                }
+                let id_paragraph = if let Some(vuln_id) = &vuln.id {
+                    Paragraph::default()
+                        .styled_string("ID: ", self.normal_style)
+                        .styled_string(format!("{}", vuln_id), self.normal_style)
+                } else {
+                    Paragraph::default().styled_string("ID: N/A", self.normal_style)
+                };
+
+                vuln_layout.push(id_paragraph);
+
+                let desc_paragraph = if let Some(desc) = &vuln.description {
+                    Paragraph::default()
+                        .styled_string("Description: ", self.indent_style.bold())
+                        .styled_string(desc, self.indent_style)
+                } else {
+                    Paragraph::default()
+                        .styled_string("Description: ", self.indent_style.bold())
+                        .styled_string("N/A", self.indent_style)
+                };
+
+                vuln_layout.push(desc_paragraph);
+                vuln_layout.push(genpdf::elements::Break::new(0.5));
 
                 let mut ratings_list = genpdf::elements::UnorderedList::new();
 
-                if let Some(ratings) = &vuln.ratings {
-                    for rating in ratings {
-                        ratings_list.push(Paragraph::default().styled_string(
-                            format!("Severity: {} ({})", rating.severity, rating.method),
-                            self.indent_style.clone(),
-                        ));
+                if let Some(ratings) = &vuln.vulnerability_ratings {
+                    for rating in &ratings.0 {
+                        let rating_method = if let Some(method) = &rating.score_method {
+                            method.to_string()
+                        } else {
+                            "N/A".to_string()
+                        };
+                        if let Some(severity) = &rating.severity {
+                            ratings_list.push(Paragraph::default().styled_string(
+                                format!("Severity: {} ({})", severity, rating_method),
+                                self.indent_style,
+                            ));
+                        }
                     }
                 }
                 vuln_layout.push(ratings_list);
@@ -267,20 +273,20 @@ impl PdfGenerator {
 
         // Add Components section if available
         if let Some(components) = &vex.components {
-            doc.push(Paragraph::default().styled_string("Components", self.header_style.clone()));
+            doc.push(Paragraph::default().styled_string("Components", self.header_style));
             doc.push(genpdf::elements::Break::new(0.5));
 
-            for component in components {
+            for component in &components.0 {
                 doc.push(Paragraph::default().styled_string(
                     format!("Name: {}", component.name),
-                    self.normal_style.clone(),
+                    self.normal_style,
                 ));
 
                 if let Some(version) = &component.version {
                     doc.push(
                         Paragraph::default().styled_string(
                             format!("Version: {}", version),
-                            self.indent_style.clone(),
+                            self.indent_style,
                         ),
                     );
                 }
@@ -294,5 +300,11 @@ impl PdfGenerator {
             .expect("failed to write file");
 
         Ok(())
+    }
+}
+
+impl Default for PdfGenerator {
+    fn default() -> Self {
+        PdfGenerator::new()
     }
 }

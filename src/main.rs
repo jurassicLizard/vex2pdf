@@ -2,6 +2,12 @@
 //!
 //! A command-line tool that converts CycloneDX VEX JSON documents to PDF reports.
 //!
+//! ## CycloneDX Compatibility
+//!
+//! This tool fully supports CycloneDX schema version 1.5 and provides compatibility
+//! for version 1.6 documents that only use 1.5 fields. Documents using 1.6-specific
+//! fields may not process correctly.
+//!
 //! ## Usage
 //!
 //! Run the tool in a directory containing VEX JSON files:
@@ -18,11 +24,11 @@
 //! This tool requires Liberation Sans fonts to render PDFs correctly.
 //! See the README for details on setting up fonts.
 
+use cyclonedx_bom::errors::{BomError, JsonReadError};
+use cyclonedx_bom::models::bom::Bom;
 use std::error::Error;
-use std::fs::{self, File};
-use std::io::BufReader;
+use std::fs::{self};
 use std::path::{Path, PathBuf};
-use vex2pdf::model::cyclonedx::root::cyclone_vex::CycloneDxVex;
 use vex2pdf::pdf::generator::PdfGenerator;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -47,7 +53,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     for json_path in json_files {
         println!("Processing: {}", json_path.display());
 
-        // Try to parse the JSON file as a CycloneDxVex
+        // Try to parse the JSON file as a CycloneDX Bom
         match parse_vex_json(&json_path) {
             Ok(vex) => {
                 // Generate output PDF path with same base name
@@ -88,12 +94,38 @@ fn find_json_files(dir: &Path) -> Result<Vec<PathBuf>, Box<dyn Error>> {
     Ok(json_files)
 }
 
-// Parse a JSON file as CycloneDxVex
-fn parse_vex_json(path: &Path) -> Result<CycloneDxVex, Box<dyn Error>> {
-    let file = File::open(path)?;
-    let reader = BufReader::new(file);
-    let vex: CycloneDxVex = serde_json::from_reader(reader)?;
-    Ok(vex)
+fn parse_vex_json(path: &Path) -> Result<Bom, Box<dyn Error>> {
+    // First, read the entire file content
+    let content = std::fs::read(path)?;
+
+    // Try to parse normally first
+    match Bom::parse_from_json(&content[..]) {
+        Ok(bom) => Ok(bom),
+        Err(err) => match err {
+            JsonReadError::BomError { error } => {
+                match error {
+                    BomError::UnsupportedSpecVersion(version) if version == "1.6" => {
+                        // Parse to JSON Value
+                        let mut json_value: serde_json::Value = serde_json::from_slice(&content)?;
+
+                        println!();
+                        println!("NOTE: Downgrading CycloneDX BOM from spec version 1.6 to 1.5");
+                        println!("Reason: Current implementation does not yet support spec version 1.6");
+                        println!("Warning: This compatibility mode only works for BOMs that don't utilize 1.6-specific fields");
+                        println!("         Processing will fail if 1.6-specific fields are encountered");   // Downgrade spec version
+                        println!();
+                        
+                        json_value["specVersion"] = serde_json::Value::String("1.5".to_string());
+
+                        // Try parsing with modified JSON
+                        Ok(Bom::parse_json_value(json_value)?)
+                    },
+                    _ =>  Err(JsonReadError::BomError { error }.into())
+                }
+            },
+            _ => Err(err.into())
+        }
+    }
 }
 
 // Get the output PDF path with the same base name as the JSON file

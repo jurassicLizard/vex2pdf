@@ -1,17 +1,28 @@
 # CycloneDX (VEX) to PDF Converter
 
+[![Rust](https://img.shields.io/badge/rust-stable-brightgreen.svg)](https://www.rust-lang.org/)
+[![Documentation](https://docs.rs/vex2pdf/badge.svg)](https://docs.rs/vex2pdf)
+[![Crates.io](https://img.shields.io/crates/v/vex2pdf.svg)](https://crates.io/crates/vex2pdf)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
+[![CI](https://github.com/jurassicLizard/vex2pdf/actions/workflows/rust.yml/badge.svg)](https://github.com/jurassicLizard/vex2pdf/actions/workflows/rust.yml)
+[![GitHub Release](https://img.shields.io/github/v/release/jurassicLizard/vex2pdf)](https://github.com/jurassicLizard/vex2pdf/releases/latest)
+
 A command-line tool to convert CycloneDX VEX (Vulnerability Exploitability eXchange) documents in JSON format to PDF reports.
 
 ## ⚠️ Font Requirement
-This application requires Liberation Sans fonts to properly render PDF documents. The fonts are NOT included in this repository due to licensing considerations.
-**Before using the application, you must:**
+
+This application requires Liberation Sans fonts to properly render PDF documents.
+
+The Liberation Sans fonts are NOT included in this repository due to licensing considerations. To set up the required fonts:
+
 1. Download the Liberation Sans TTF fonts from the [official repository](https://github.com/liberationfonts/liberation-fonts/releases)
-2. Create a directory in the project root `fonts/liberation-fonts`
+2. Create a directory in the project root: `fonts/liberation-fonts`
 3. Place the following TTF files in that directory:
   - LiberationSans-Regular.ttf
   - LiberationSans-Bold.ttf
   - LiberationSans-Italic.ttf
   - LiberationSans-BoldItalic.ttf
+
 
 **Alternative options:**
 - On Linux systems, if the fonts are installed system-wide (typically in `/usr/share/fonts/liberation-sans`), the application will attempt to use them.
@@ -22,7 +33,7 @@ This application requires Liberation Sans fonts to properly render PDF documents
 >
 
 ## Overview
-VEX-to-PDF is a Rust application that scans the current directory for CycloneDX VEX JSON files and converts them to human-readable PDF reports. It supports the CycloneDX VEX schema version 1.5 and handles various elements of the VEX documentation format including vulnerabilities, components, metadata, and more.
+VEX-to-PDF is a Rust application that scans the current directory for CycloneDX VEX JSON files and converts them to human-readable PDF reports. It fully supports the CycloneDX VEX schema version 1.5 and provides compatibility for version 1.6 documents that only use 1.5 fields. Documents using 1.6-specific fields may not process correctly. The tool handles various elements of the VEX documentation format including vulnerabilities, components, metadata, and more.
 ## Features
 - Automatically scans directories for JSON files with VEX data
 - Converts VEX documents to structured PDF reports
@@ -71,7 +82,7 @@ Successfully generated PDF: UTF-8VEX.pdf
 ```
 ## Configuration
 No configuration is currently required. The application will:
-- Look for Liberation Sans fonts in `/usr/share/fonts/liberation-sfonts`
+- Look for Liberation Sans fonts in `/usr/share/fonts/liberation-fonts`
 - Fall back to the included directory `./fonts/liberation-fonts`
 
 ## Documentation
@@ -83,10 +94,29 @@ To generate documentation:
 ``` 
 cargo doc --open
 ```
+
 ## CycloneDX VEX Format
-This tool complies with the CycloneDX VEX schema version 1.5. For more information about the CycloneDX VEX format, see:
+This tool fully supports CycloneDX VEX schema version 1.5 and provides compatibility for version 1.6 documents that only use 1.5 fields. Documents using 1.6-specific fields may not process correctly. For more information about the CycloneDX VEX format, see:
 - [CycloneDX VEX Specification](https://cyclonedx.org/capabilities/vex/)
 - [CycloneDX VEX Schema](https://cyclonedx.org/docs/1.5/json/)
+
+### Version 1.6 Compatibility Mode
+
+This tool implements a special compatibility mode for CycloneDX 1.6 documents:
+
+- When the tool encounters a document with `specVersion: "1.6"`, it will:
+  1. Display a notification about downgrading to 1.5
+  2. Automatically modify the document's spec version to "1.5"
+  3. Attempt to process it using the 1.5 schema parser
+
+This compatibility approach works well for documents that don't use 1.6-specific fields but allows the tool to process newer documents without requiring users to manually modify them.
+
+**Limitations:**
+- Documents that use 1.6-specific fields or structures may fail during processing
+- No validation is performed for 1.6-specific features
+- This is a temporary solution until full 1.6 support is implemented in the underlying cyclonedx-bom library
+
+When processing 1.6 documents, you'll see console messages indicating the compatibility mode is active.
 
 ## Security Considerations
 - The application reads and processes files from the current directory
@@ -97,15 +127,11 @@ This tool complies with the CycloneDX VEX schema version 1.5. For more informati
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 The Liberation Fonts used by this application are licensed under the SIL Open Font License and must be obtained separately.
-## Contributing
-Contributions are welcome! Please feel free to submit a Pull Request.
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+
 
 ## Acknowledgments
 - [CycloneDX](https://cyclonedx.org/) for the VEX specification
+- [cyclonedx-bom](https://crates.io/crates/cyclonedx-bom) for CycloneDX parsing
 - [genpdf](https://crates.io/crates/genpdf) for PDF generation
+- [serde_json](https://crates.io/crates/serde_json) for JSON processing
 - [Liberation Fonts](https://github.com/liberationfonts/liberation-fonts) for the PDF rendering fonts
