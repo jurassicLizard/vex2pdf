@@ -12,8 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Fixed
 - Fixed Readme.md Section chapter hierarchy for the Changelog chapter
+
 ## Changed
 - Updated Readme.md with `VEX2PDF_SHOW_COMPONENTS` environment variable information
+- Migrated repository to new GitLab space
+- Changed Readme.md with new notice on Binary releases
 
 
 ## [0.7.1] - 2025-06-11

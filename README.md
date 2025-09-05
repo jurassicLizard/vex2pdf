@@ -3,7 +3,8 @@
 [![Rust](https://img.shields.io/badge/rust-stable-brightgreen.svg)](https://www.rust-lang.org/)
 [![Documentation](https://docs.rs/vex2pdf/badge.svg)](https://docs.rs/vex2pdf)
 [![Crates.io](https://img.shields.io/crates/v/vex2pdf.svg)](https://crates.io/crates/vex2pdf)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE-MIT)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache%20License%202.0-blue)](LICENSE-APACHE)
 [![CI](https://github.com/jurassicLizard/vex2pdf/actions/workflows/rust.yml/badge.svg)](https://github.com/jurassicLizard/vex2pdf/actions/workflows/rust.yml)
 [![GitHub Release](https://img.shields.io/github/v/release/jurassicLizard/vex2pdf)](https://github.com/jurassicLizard/vex2pdf/releases/latest)
 
@@ -91,7 +92,13 @@ Clone the repository, then build the application with `cargo build --release`. T
 Windows users can either:
 1. Install via Cargo as described above
 2. Build using Rust for Windows from source
-3. Use a pre-built binary (GitHub Releases Section)
+3. ~~Use a pre-built binary (GitHub Releases Section)~~ **PENDING ALTERNATIVE AFTER MIGRATION TO GITLAB**
+
+> :information: After the migration to GitLab, Binary artifacts have been removed from the releases section
+> for all versions prior to and including v0.7.1. This will be fixed soon. For now please rely on direct builds
+> through [Cargo](#via-cargo) for your platform
+
+
 
 
 ## Usage
