@@ -94,7 +94,7 @@ pub(crate) fn parse_files(
                     println!("Generating PDF: {}", output_path.display());
 
                     // Generate the PDF
-                    match pdf_generator.generate_pdf(&vex,&output_path) {
+                    match pdf_generator.generate_pdf(&vex, &output_path) {
                         Ok(_) => println!("Successfully generated PDF: {}", output_path.display()),
                         Err(e) => {
                             println!("Failed to generate PDF for {}: {}", file_path.display(), e)

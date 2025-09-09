@@ -125,7 +125,7 @@ pub fn run(config: &Config) -> Result<(), Box<dyn Error>> {
         let main_license_text = r#"VEX2PDF is licensed under either MIT or Apache License, Version 2.0 at your option.
 license text can be found under: https://github.com/jurassicLizard/vex2pdf/blob/master/README.md#license"#;
 
-        println!("{}", main_license_text);
+        println!("{main_license_text}");
         println!();
         println!("-----------------------------------------------------------------------------\n");
         println!("This software makes use of Liberation Fonts licensed under SIL as follows : ");

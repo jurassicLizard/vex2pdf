@@ -95,10 +95,7 @@ impl EnvVarNames {
 
     /// Helper method to get the value of the variable
     pub fn get_value(&self) -> Option<String> {
-        match std::env::var(self.as_str()) {
-            Ok(value) => Some(value),
-            Err(_) => None,
-        }
+        std::env::var(self.as_str()).ok()
     }
 }
 
