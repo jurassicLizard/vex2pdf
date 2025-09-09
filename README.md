@@ -5,7 +5,6 @@
 [![Crates.io](https://img.shields.io/crates/v/vex2pdf.svg)](https://crates.io/crates/vex2pdf)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE-MIT)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache%20License%202.0-blue)](LICENSE-APACHE)
-[![CI](https://github.com/jurassicLizard/vex2pdf/actions/workflows/rust.yml/badge.svg)](https://github.com/jurassicLizard/vex2pdf/actions/workflows/rust.yml)
 [![GitHub Release](https://img.shields.io/github/v/release/jurassicLizard/vex2pdf)](https://github.com/jurassicLizard/vex2pdf/releases/latest)
 
 A command-line tool to convert CycloneDX VEX (Vulnerability Exploitability eXchange) documents in JSON or XML format to PDF reports.
@@ -30,7 +29,7 @@ A command-line tool to convert CycloneDX VEX (Vulnerability Exploitability eXcha
       * [VEX2PDF_VERSION_INFO](#vex2pdf_version_info)
       * [VEX2PDF_REPORT_TITLE](#vex2pdf_report_title)
       * [VEX2PDF_PDF_META_NAME](#vex2pdf_pdf_meta_name)
-      * [VEX2PDF_SHOW_COMPONENTS](#vex2pdf_show_components)
+      * [VEX2PDF_PURE_BOM_NOVULNS](#vex2pdf_pure_bom_novulns)
   * [Documentation](#documentation)
   * [CycloneDX VEX Format](#cyclonedx-vex-format)
     * [Version 1.6 Compatibility Mode](#version-16-compatibility-mode)
@@ -65,7 +64,8 @@ The font license file is also available at [Liberation fonts License file](exter
 - Preserves all key VEX information including:
   - Document metadata and timestamps
   - Vulnerability details with severity ratings and sources
-  - Component information
+  - **_New_** - Affected Components correlation in CycloneDX-VEX Mode (default)
+  - A list of components only when desired
   - Tools used to generate the VEX document
 - Cross-platform support (Linux, Windows)
 
@@ -165,14 +165,14 @@ No configuration files are required. However the application has some customizat
 The following environment variables can be used to customize behavior:
 
 
-| Variable                  | Purpose                                                    | Default                               |
-|---------------------------|------------------------------------------------------------|---------------------------------------|
-| VEX2PDF_NOVULNS_MSG       | Controls the "No Vulnerabilities reported" message display | true                                  |
-| VEX2PDF_SHOW_OSS_LICENSES | Shows all relevant licenses and exits                      | off                                   |
-| VEX2PDF_VERSION_INFO      | Shows version information before executing normally        | off                                   |
-| VEX2PDF_REPORT_TITLE      | Overrides the default report title                         | Not set (uses default title)          |
-| VEX2PDF_PDF_META_NAME     | Overrides the PDF metadata title                           | Not set (uses default metadata title) |
-| VEX2PDF_SHOW_COMPONENTS   | Whether to show the components section                     | true                                  |
+| Variable                  | Purpose                                                                        | Default                               |
+|---------------------------|--------------------------------------------------------------------------------|---------------------------------------|
+| VEX2PDF_NOVULNS_MSG       | Controls the "No Vulnerabilities reported" message display                     | true                                  |
+| VEX2PDF_SHOW_OSS_LICENSES | Shows all relevant licenses and exits                                          | off                                   |
+| VEX2PDF_VERSION_INFO      | Shows version information before executing normally                            | off                                   |
+| VEX2PDF_REPORT_TITLE      | Overrides the default report title                                             | Not set (uses default title)          |
+| VEX2PDF_PDF_META_NAME     | Overrides the PDF metadata title                                               | Not set (uses default metadata title) |
+| VEX2PDF_PURE_BOM_NOVULNS  | Whether to treat the file as a component list instead of a vulnerability list  | true                                  |
 
 #### VEX2PDF_NOVULNS_MSG
 
@@ -209,11 +209,11 @@ Overrides the PDF metadata title with custom text
 Example 1 : `VEX2PDF_PDF_META_NAME="VEX Report - Company XYZ" vex2pdf`
 Example 2 : `VEX2PDF_PDF_META_NAME="VEX Report - Company XYZ" VEX2PDF_REPORT_TITLE="My Custom VEX Report" vex2pdf`
 
-#### VEX2PDF_SHOW_COMPONENTS
+#### VEX2PDF_PURE_BOM_NOVULNS
 
-Whether to show the components section after the vulnerabilities
+Whether to treat the file as a pure CycloneDX Bill of Materials only listing the components and ignoring the vulnerability list 
 
-Example : `VEX2PDF_SHOW_COMPONENTS=false vex2pdf`
+Example : `VEX2PDF_PURE_BOM_NOVULNS=true vex2pdf`
 
 ## Documentation
 

@@ -11,7 +11,7 @@ pub struct Config {
     pub show_novulns_msg: bool, //FIXME still unused
     pub file_types_to_process: HashMap<InputFileType, bool>, //FIXME still unused
     pub show_oss_licenses: bool,
-    pub show_components: bool,
+    pub pure_bom_novulns: bool,
     pub report_title: Option<String>,
     pub pdf_meta_name: Option<String>,
 }
@@ -23,7 +23,7 @@ impl Config {
         let mut process_json = EnvVarNames::ProcessJson.is_on_or_unset();
         let process_xml = EnvVarNames::ProcessXml.is_on_or_unset();
         let show_oss_licenses = EnvVarNames::ShowOssLicenses.is_on();
-        let show_components = EnvVarNames::ShowComponents.is_on_or_unset();
+        let show_pure_bom_novulns = EnvVarNames::PureBomNoVulns.is_on();
 
         // print version info if requested
         if EnvVarNames::VersionInfo.is_on() {
@@ -53,7 +53,7 @@ impl Config {
             show_novulns_msg,
             file_types_to_process,
             show_oss_licenses,
-            show_components,
+            pure_bom_novulns: show_pure_bom_novulns,
             report_title: EnvVarNames::ReportTitle.get_value(),
             pdf_meta_name: EnvVarNames::PdfName.get_value(),
         };
@@ -111,7 +111,7 @@ impl Default for Config {
     /// let config = Config::default();
     ///
     /// // All processing options are enabled by default
-    /// assert!(config.show_components);
+    /// assert!(config.pure_bom_novulns);
     /// assert!(config.show_novulns_msg);
     /// ```
     ///
@@ -130,7 +130,7 @@ impl Default for Config {
             show_novulns_msg: true,
             file_types_to_process,
             show_oss_licenses: true,
-            show_components: true,
+            pure_bom_novulns: true,
             report_title: Some(Self::get_default_report_title().to_string()),
             pdf_meta_name: Some(Self::get_default_pdf_meta_name().to_string()),
         }

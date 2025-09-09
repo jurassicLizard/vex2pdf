@@ -5,19 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.8.0] - 2025-09-09
 
-## Added
-- Added `VEX2PDF_SHOW_COMPONENTS` environment variable to control whether the components section is shown
+### Added
+- Added `VEX2PDF_PURE_BOM_NOVULNS` environment variable to control whether we show only the components (CycloneDX BoM) instead of the full vulnerability list (CycloneDX-VEX)
+- Changed Behaviour of the VUlnerability section renderer to also show affected components
 
-## Fixed
+### Fixed
 - Fixed Readme.md Section chapter hierarchy for the Changelog chapter
 
-## Changed
-- Updated Readme.md with `VEX2PDF_SHOW_COMPONENTS` environment variable information
+### Changed
+- Updated Readme.md with `VEX2PDF_PURE_BOM_NOVULNS` environment variable information
 - Migrated repository to new GitLab space
 - Changed Readme.md with new notice on Binary releases
-
+- Changed Vulnerability section handling to deal with the new component handling
+- Updated styles of some sections of the PDF to enhance visibility
 
 ## [0.7.1] - 2025-06-11
 

@@ -20,8 +20,9 @@ pub enum EnvVarNames {
     ReportTitle,
     /// Controls the metadata name which is usually displayed in window headers of readers
     PdfName,
-    /// Whether the components section is displayed in the generated result or only vulnerabilities
-    ShowComponents,
+    /// When set, treats the document as a pure CycloneDX BoM without the vulnerabilities section
+    /// Which would entail only listing the components and their versions
+    PureBomNoVulns,
 }
 
 impl EnvVarNames {
@@ -35,7 +36,7 @@ impl EnvVarNames {
             EnvVarNames::VersionInfo => "VEX2PDF_VERSION_INFO",
             EnvVarNames::ReportTitle => "VEX2PDF_REPORT_TITLE",
             EnvVarNames::PdfName => "VEX2PDF_PDF_META_NAME",
-            EnvVarNames::ShowComponents => "VEX2PDF_SHOW_COMPONENTS",
+            EnvVarNames::PureBomNoVulns => "VEX2PDF_PURE_BOM_NOVULNS",
         }
     }
     /// this is useful for environment variables which should be on by default

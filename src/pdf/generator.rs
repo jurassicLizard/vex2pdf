@@ -7,20 +7,26 @@
 //! components, and document metadata.
 //!
 
+use std::collections::HashMap;
+use std::fmt::format;
 use crate::pdf::font_config::FontsDir;
 use cyclonedx_bom::models::tool::Tools;
-use cyclonedx_bom::prelude::Bom;
-use genpdf::elements::Paragraph;
-use genpdf::style::{Color, Style};
+use cyclonedx_bom::prelude::{Bom, NormalizedString};
+use genpdf::elements::{Paragraph, StyledElement};
+use genpdf::style::{Color, Style, StyledString};
 use genpdf::{Alignment, Document, Element};
 use std::io;
 use std::path::Path;
 
+type ComponentTuple<'b> = (&'b str,&'b str);
 pub struct PdfGenerator<'a> {
     title_style: Style,
     header_style: Style,
     normal_style: Style,
     indent_style: Style,
+    comp_name_style: Style,
+    version_style: Style,
+    cve_id_style: Style,
     /// This is the title of the report; which is the first heading
     /// in the first page if no value is given a default title is used.
     report_title: Option<&'a str>,
@@ -30,8 +36,10 @@ pub struct PdfGenerator<'a> {
     pdf_meta_name: Option<&'a str>,
     /// Controls whether a `No Vulnerabilities` message is shown if there are no vulnerabilities
     show_novulns_msg: bool,
-    /// Controls whether the components section is shown
-    show_components: bool,
+    /// Controls whether to treat the BoM as a CycloneDX or a CycloneDX-VEX
+    /// when set to `true` only a list of components is shown ignoring
+    /// the vulnerabilities section completely
+    pure_bom_novulns: bool,
 }
 
 impl Default for PdfGenerator<'_> {
@@ -69,7 +77,7 @@ impl Default for PdfGenerator<'_> {
     }
 }
 
-impl<'a> PdfGenerator<'a> {
+impl<'a,'b> PdfGenerator<'a> {
     /// Creates a new PDF generator with custom report and PDF titles.
     ///
     /// # Arguments
@@ -113,15 +121,31 @@ impl<'a> PdfGenerator<'a> {
             .with_font_size(10)
             .with_color(Color::Rgb(40, 40, 40));
 
+        let comp_name_style = Style::new()
+            .with_font_size(10)
+            .with_color(Color::Rgb(0,51,102))
+            .italic();
+
+        let version_style = Style::new()
+            .with_font_size(10)
+            .with_color(Color::Rgb(128,128,128));
+
+        let cve_id_style = Style::new()
+            .with_font_size(11)
+            .with_color(Color::Rgb(139,0,0)).bold();
+
         Self {
             title_style,
             header_style,
             normal_style,
             indent_style,
+            comp_name_style,
+            version_style,
+            cve_id_style,
             report_title,
             pdf_meta_name,
             show_novulns_msg,
-            show_components,
+            pure_bom_novulns: show_components,
         }
     }
 
@@ -145,7 +169,27 @@ impl<'a> PdfGenerator<'a> {
     /// # Returns
     ///
     /// Result indicating success or an error with details
-    pub fn generate_pdf<P: AsRef<Path>>(&self, vex: &Bom, output_path: P) -> Result<(), io::Error> {
+    pub fn generate_pdf<P: AsRef<Path>>(&self, vex: &'b Bom, output_path: P) -> Result<(), io::Error> {
+        // Extract component list if available this will later be used to extract affected components
+
+        let mut comp_ref_map =  HashMap::<&'b str,ComponentTuple>::new();
+
+        if let Some(components) = &vex.components {
+            // preallocate our primary container
+            comp_ref_map = HashMap::with_capacity(components.0.len());
+
+            for component in &components.0 {
+                // extract component name and version
+                let component_version = if let Some(version) = &component.version { &version } else { "undefined" };
+                let component_detail : ComponentTuple = (&component.name,component_version);
+
+                if let Some(ref_id) = &component.bom_ref {
+                    comp_ref_map.insert(&ref_id,component_detail);
+                }
+
+            }
+        }
+        let mut doc = Document::new(FontsDir::build().font_family);
         // Set up the document with default fonts
 
         let document_title = self
@@ -155,7 +199,6 @@ impl<'a> PdfGenerator<'a> {
             .pdf_meta_name
             .unwrap_or(Self::get_default_pdf_meta_name());
 
-        let mut doc = Document::new(FontsDir::build().font_family);
 
         doc.set_title(pdf_title);
         let mut decorator = genpdf::SimplePageDecorator::new();
@@ -191,7 +234,7 @@ impl<'a> PdfGenerator<'a> {
             if let Some(timestamp) = &metadata.timestamp {
                 doc.push(
                     Paragraph::default()
-                        .styled_string(format!("Date: {}", timestamp), self.normal_style),
+                        .styled_string(format!("Date: {}", timestamp), self.normal_style.italic()),
                 );
             }
 
@@ -199,7 +242,7 @@ impl<'a> PdfGenerator<'a> {
 
             // Add tools information if available
             if let Some(tools) = &metadata.tools {
-                doc.push(Paragraph::default().styled_string("Tools:", self.normal_style));
+                doc.push(Paragraph::default().styled_string("Tools:", self.normal_style.bold()));
 
                 let mut ul_tools = genpdf::elements::UnorderedList::new();
 
@@ -261,7 +304,7 @@ impl<'a> PdfGenerator<'a> {
             if let Some(component) = &metadata.component {
                 doc.push(
                     Paragraph::default()
-                        .styled_string("Component name : ", self.normal_style)
+                        .styled_string("Component name : ", self.normal_style.bold())
                         .styled_string(component.name.to_string(), self.indent_style),
                 );
             }
@@ -270,24 +313,51 @@ impl<'a> PdfGenerator<'a> {
         }
 
         // Add basic BOM information
-        doc.push(Paragraph::default().styled_string("BOM Format: CycloneDX", self.normal_style));
+        doc.push(Paragraph::default().styled_string("BOM Format: ", self.normal_style.bold())
+            .styled_string("CycloneDX",self.normal_style));
         doc.push(Paragraph::default().styled_string(
-            format!("Specification Version: {}", vex.spec_version),
-            self.normal_style,
-        ));
+            "Specification Version: ",
+            self.normal_style.bold(),
+        ).styled_string(format!("{}",vex.spec_version),self.normal_style));
+
         doc.push(
             Paragraph::default()
-                .styled_string(format!("Version: {}", vex.version), self.normal_style),
+                .styled_string("Version: ", self.normal_style.bold())
+                .styled_string(format!("{}", vex.version), self.normal_style)
         );
 
         if let Some(serial) = &vex.serial_number {
             doc.push(
                 Paragraph::default()
-                    .styled_string(format!("Serial Number: {}", serial), self.normal_style),
+                    .styled_string("Serial Number: ", self.normal_style.bold())
+                    .styled_string(format!("{}", serial), self.normal_style)
             );
         }
 
         doc.push(genpdf::elements::Break::new(2.0));
+
+
+        // Add a Vulnerabilities section or a components list depending on user options
+
+        if self.pure_bom_novulns {
+            doc = self.render_components(doc,&vex);
+        }else {
+            doc = self.render_vulns(doc,&vex,&comp_ref_map);
+        }
+
+
+
+        // Render the document
+        doc.render_to_file(output_path)
+            .expect("failed to write file");
+
+        Ok(())
+    }
+
+
+
+    fn render_vulns(&self, mut doc: Document, vex: &Bom, comp_ref_map : &HashMap<&'b str, ComponentTuple>) -> Document {
+
 
         // First determine if vulnerabilities exist
         let mut vulns_available = false;
@@ -313,7 +383,7 @@ impl<'a> PdfGenerator<'a> {
                 let id_paragraph = if let Some(vuln_id) = &vuln.id {
                     Paragraph::default()
                         .styled_string("ID: ", self.normal_style)
-                        .styled_string(format!("{}", vuln_id), self.normal_style)
+                        .styled_string(format!("{}", vuln_id), self.cve_id_style)
                 } else {
                     Paragraph::default().styled_string("ID: N/A", self.normal_style)
                 };
@@ -372,7 +442,44 @@ impl<'a> PdfGenerator<'a> {
                         }
                     }
                 }
+
+                // add our ratings list to the vuln layout
                 vuln_layout.push(ratings_list);
+
+                // add affected components to vulnerability
+                if ! comp_ref_map.is_empty() {
+                    // get list of affected references
+                    if let Some(affected_comps) = &vuln.vulnerability_targets {
+                        let mut affected_comps_detailed : Vec<&crate::pdf::generator::ComponentTuple>  = Vec::with_capacity(affected_comps.0.len());
+
+                        for comp in &affected_comps.0 {
+                            if let Some(map_val) = comp_ref_map.get(comp.bom_ref.as_str()) {
+                                affected_comps_detailed.push(map_val);
+                            }
+
+                        }
+
+                        // Create our affected components paragraph
+                        let mut affected_comp_para = Paragraph::default()
+                            .styled_string("Affected Document Components : [ ", self.indent_style.bold());
+
+                        for (i, affected_comp) in affected_comps_detailed.iter().enumerate() {
+                            if i > 0 {
+                                affected_comp_para.push(", ");
+                            }
+
+                            affected_comp_para.push_styled(affected_comp.0, self.comp_name_style);
+                            affected_comp_para.push_styled(format!(": {}", affected_comp.1), self.version_style);
+                        }
+                        affected_comp_para.push_styled(" ]", self.indent_style.bold());
+
+                        // add our affected components to the vulnerability layout
+                        vuln_layout.push(genpdf::elements::Break::new(0.5));
+                        vuln_layout.push(affected_comp_para);
+
+                    }
+
+                }
                 vuln_layout.push(genpdf::elements::Break::new(1));
                 ordered_list.push(vuln_layout);
             }
@@ -399,34 +506,35 @@ impl<'a> PdfGenerator<'a> {
             doc.push(genpdf::elements::Break::new(1.0));
         }
 
-        // Add Components section if available
-        if self.show_components {
-            if let Some(components) = &vex.components {
-                doc.push(Paragraph::default().styled_string("Components", self.header_style));
-                doc.push(genpdf::elements::Break::new(0.5));
 
-                for component in &components.0 {
+        doc
+    }
+
+    fn render_components(&self,mut doc: Document, vex: &Bom) -> Document {
+
+        if let Some(components) = &vex.components {
+            doc.push(Paragraph::default().styled_string("Components", self.header_style));
+            doc.push(genpdf::elements::Break::new(0.5));
+
+            for component in &components.0 {
+                doc.push(
+                    Paragraph::default()
+                        .styled_string("Name: ",self.indent_style)
+                        .styled_string(format!("{}", component.name), self.comp_name_style),
+                );
+
+                if let Some(version) = &component.version {
                     doc.push(
                         Paragraph::default()
-                            .styled_string(format!("Name: {}", component.name), self.normal_style),
+                            .styled_string("Version: ",self.indent_style)
+                            .styled_string(format!("{}", version), self.version_style),
                     );
-
-                    if let Some(version) = &component.version {
-                        doc.push(
-                            Paragraph::default()
-                                .styled_string(format!("Version: {}", version), self.indent_style),
-                        );
-                    }
-
-                    doc.push(genpdf::elements::Break::new(0.5));
                 }
+
+                doc.push(genpdf::elements::Break::new(0.5));
             }
         }
 
-        // Render the document
-        doc.render_to_file(output_path)
-            .expect("failed to write file");
-
-        Ok(())
+        doc
     }
 }
