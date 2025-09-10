@@ -1,0 +1,110 @@
+stages:
+  - test
+  - build
+  - release
+
+variables:
+  CARGO_HOME: $CI_PROJECT_DIR/.cargo
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .cargo/
+    - target/
+
+# Quick tests on every push (but not master to avoid duplicates with MR)
+test:
+  stage: test
+  image: rust:latest
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != "master"
+  script:
+    - cargo test
+    - cargo fmt -- --check
+    - cargo clippy -- -D warnings
+
+# Build binaries ONLY on tag pushes
+linux-build:
+  stage: build
+  image: rust:latest
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/
+  script:
+    - cargo build --release
+    - cargo test
+    - mv target/release/vex2pdf vex2pdf-linux-x86_64
+    - chmod +x vex2pdf-linux-x86_64
+  artifacts:
+    paths:
+      - vex2pdf-linux-x86_64
+    expire_in: 1 hour
+
+windows-build:
+  stage: build
+  # Use Windows runner if available, otherwise cross-compile
+  image: rust:latest
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/
+  before_script:
+    - apt-get update && apt-get install -y gcc-mingw-w64-x86-64
+    - rustup target add x86_64-pc-windows-gnu
+  script:
+    - cargo build --release --target x86_64-pc-windows-gnu
+    - mv target/x86_64-pc-windows-gnu/release/vex2pdf.exe vex2pdf-windows-x86_64.exe
+  artifacts:
+    paths:
+      - vex2pdf-windows-x86_64.exe
+    expire_in: 1 hour
+
+# Create release with binaries ONLY on tag pushes
+create-release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/
+  needs:
+    - linux-build
+    - windows-build
+  before_script:
+    - apk add --no-cache curl
+  script:
+    # Extract version from tag (remove 'v' prefix)
+    - VERSION=${CI_COMMIT_TAG#v}
+    
+    # Upload binaries to package registry
+    - |
+      curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file vex2pdf-linux-x86_64 \
+        "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/vex2pdf/${CI_COMMIT_TAG}/vex2pdf-linux-x86_64"
+    - |
+      curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file vex2pdf-windows-x86_64.exe \
+        "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/vex2pdf/${CI_COMMIT_TAG}/vex2pdf-windows-x86_64.exe"
+    
+    # Create release with asset links
+    - |
+      release-cli create \
+        --name "Release Binaries ${CI_COMMIT_TAG}" \
+        --description "# vex2pdf ${CI_COMMIT_TAG}
+
+      This release provides pre-built binaries for Linux and Windows.
+
+      ## Included Binaries
+
+      - **Linux (x86_64)**: \`vex2pdf-linux-x86_64\`
+      - **Windows (x86_64)**: \`vex2pdf-windows-x86_64.exe\`
+
+      ## Installation
+
+      - Download the appropriate binary for your platform
+      - Make it executable (Linux: \`chmod +x vex2pdf-linux-x86_64\`)
+      - Run the tool in a directory with CycloneDX documents
+
+      ## Font Handling
+
+      Liberation sans fonts are embedded in the binaries and no further configuration is necessary.
+      See the [README's Fonts handling section](${CI_PROJECT_URL}/-/blob/master/README.md#fonts-handling) for details.
+
+      For full documentation, see the [README](${CI_PROJECT_URL}/-/blob/master/README.md)." \
+        --tag-name "${CI_COMMIT_TAG}" \
+        --assets-link "{\"name\":\"Linux Binary (x86_64)\",\"url\":\"${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/vex2pdf/${CI_COMMIT_TAG}/vex2pdf-linux-x86_64\",\"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"Windows Binary (x86_64)\",\"url\":\"${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/vex2pdf/${CI_COMMIT_TAG}/vex2pdf-windows-x86_64.exe\",\"link_type\":\"package\"}"

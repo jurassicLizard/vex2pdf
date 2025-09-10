@@ -13,7 +13,9 @@ categories = ["command-line-utilities", "parsing"]
 
 exclude = [
     ".github/",
+    ".gitlab/",
     ".gitignore",
+    ".gitlab-ci.yml"
 ]
 
 [dependencies]
