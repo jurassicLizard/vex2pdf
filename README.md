@@ -22,7 +22,8 @@ A command-line tool to convert CycloneDX (VEX/VDR/(S)BoM) Documents in JSON or X
     * [Prerequisites](#prerequisites)
     * [Via Cargo](#via-cargo)
     * [From Source](#from-source)
-    * [Windows Users](#windows-users)
+    * [Linux and Windows Users](#linux-and-windows-users)
+    * [Mac Users](#mac-users)
   * [Usage](#usage)
   * [Example](#example)
   * [Configuration](#configuration)
@@ -47,7 +48,7 @@ A command-line tool to convert CycloneDX (VEX/VDR/(S)BoM) Documents in JSON or X
 
 ## Overview
 
-VEX2PDF is a Rust application that scans the current directory for CycloneDX (VEX/VDR/(S)BoM files (JSON and XML) and converts them to human-readable PDF reports. It fully supports the CycloneDX schema version 1.5 and provides compatibility for version 1.6 documents that only use 1.5 fields. Documents using 1.6-specific fields may not process correctly. The tool handles various elements of the VEX documentation format including vulnerabilities, components, metadata, and more.
+VEX2PDF is a Rust application that scans the current directory for CycloneDX (VEX/VDR/(S)BoM files (JSON and XML) and converts them to human-readable PDF reports. It fully supports the CycloneDX schema version 1.5 and provides compatibility for version 1.6 documents that only use 1.5 fields. Documents using 1.6-specific fields may not process correctly. The tool handles various elements of the CycloneDX document format including vulnerabilities, components, metadata, and more.
 
 ## Supported Document Types
 
@@ -108,16 +109,16 @@ After installation, the `vex2pdf` binary will be available in your Cargo bin dir
 ### From Source
 Clone the repository, then build the application with `cargo build --release`. The binary will be available at target/release/vex2pdf.
 
-### Windows Users
+### Linux and Windows Users
 Windows users can either:
 1. Install via Cargo as described above
-2. Build using Rust for Windows from source
-3. ~~Use a pre-built binary (GitHub Releases Section)~~ **PENDING ALTERNATIVE AFTER MIGRATION TO GITLAB**
+2. Build from the source using for the respective platform and operating-system. Please check the [From Source Section](#from-source)
+3. Use a pre-built binary under the [Release Binaries section](https://gitlab.com/jurassicLizard/vex2pdf/-/releases) 
 
-> :information: After the migration to GitLab, Binary artifacts have been removed from the releases section
-> for all versions prior to and including v0.7.1. This will be fixed soon. For now please rely on direct builds
-> through [Cargo](#via-cargo) for your platform
+### Mac Users
+Currently, No Mac Binaries are provided however Mac Users can build and install with cargo. Please check the [From Source Section](#from-source) 
 
+> :note: If Mac release binaries are needed please [create an issue](https://gitlab.com/jurassicLizard/vex2pdf/-/issues)
 
 
 
@@ -240,7 +241,7 @@ Example : `VEX2PDF_PURE_BOM_NOVULNS=true vex2pdf`
 
 Whether to show the complete list of components after the vulnerabilities section. The default behaviour is `true` but this can be overridden
 
-Example: `VEX2PDF_SHOW_COMPONENTS=false vex2PDF`
+Example: `VEX2PDF_SHOW_COMPONENTS=false vex2pdf`
 ## Documentation
 
 
