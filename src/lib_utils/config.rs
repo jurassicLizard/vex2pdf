@@ -12,6 +12,7 @@ pub struct Config {
     pub file_types_to_process: HashMap<InputFileType, bool>, //FIXME still unused
     pub show_oss_licenses: bool,
     pub pure_bom_novulns: bool,
+    pub show_components: bool,
     pub report_title: Option<String>,
     pub pdf_meta_name: Option<String>,
 }
@@ -24,7 +25,7 @@ impl Config {
         let process_xml = EnvVarNames::ProcessXml.is_on_or_unset();
         let show_oss_licenses = EnvVarNames::ShowOssLicenses.is_on();
         let show_pure_bom_novulns = EnvVarNames::PureBomNoVulns.is_on();
-
+        let show_comps = EnvVarNames::ShowComponentList.is_on_or_unset();
         // print version info if requested
         if EnvVarNames::VersionInfo.is_on() {
             print_copyright();
@@ -54,6 +55,7 @@ impl Config {
             file_types_to_process,
             show_oss_licenses,
             pure_bom_novulns: show_pure_bom_novulns,
+            show_components: show_comps,
             report_title: EnvVarNames::ReportTitle.get_value(),
             pdf_meta_name: EnvVarNames::PdfName.get_value(),
         };
@@ -110,9 +112,11 @@ impl Default for Config {
     /// // Create config with all default values
     /// let config = Config::default();
     ///
-    /// // All processing options are enabled by default
-    /// assert!(config.pure_bom_novulns);
-    /// assert!(config.show_novulns_msg);
+    /// // All processing options are set to defaults according to the most common, perceived, use
+    /// // This can be overridden using the respective environment variables check
+    /// assert_eq!(config.pure_bom_novulns,false);
+    /// assert_eq!(config.show_novulns_msg,true);
+    /// assert_eq!(config.show_components,true);
     /// ```
     ///
     /// # See Also
@@ -130,7 +134,8 @@ impl Default for Config {
             show_novulns_msg: true,
             file_types_to_process,
             show_oss_licenses: true,
-            pure_bom_novulns: true,
+            pure_bom_novulns: false,
+            show_components: true,
             report_title: Some(Self::get_default_report_title().to_string()),
             pdf_meta_name: Some(Self::get_default_pdf_meta_name().to_string()),
         }

@@ -8,9 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Added `VEX2PDF_SHOW_COMPONENT` environment variable to restore possibility to show a flat components list as well as the vulnerabilities and associated affected components 
+
 ### Fixed
 - Updated [Readme](README.md) to make it more obvious that the tool also handles vdr as well as vex and bom
 - Fixed wrong default value in [Readme](README.md) for the `VEX2PDF_PURE_BOM_NOVULNS` to `false`
+- Fixed Regression where it is no longer possible to show components as well as vulnerabilities. It is now possible
+to show both through the `VEX2PDF_SHOW_COMPONENTS` environment variable which is set by default to true
 
 ## [0.8.0] - 2025-09-09
 
@@ -20,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed Readme.md Section chapter hierarchy for the Changelog chapter
-
+ 
 ### Changed
 - Updated Readme.md with `VEX2PDF_PURE_BOM_NOVULNS` environment variable information
 - Migrated repository to new GitLab space

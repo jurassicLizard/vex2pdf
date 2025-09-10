@@ -147,6 +147,7 @@ license text can be found under: https://github.com/jurassicLizard/vex2pdf/blob/
         pdf_name,
         config.show_novulns_msg,
         config.pure_bom_novulns,
+        config.show_components,
     );
 
     // Find json files

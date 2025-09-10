@@ -185,14 +185,15 @@ No configuration files are required. However the application has some customizat
 The following environment variables can be used to customize behavior:
 
 
-| Variable                  | Purpose                                                                        | Default                               |
-|---------------------------|--------------------------------------------------------------------------------|---------------------------------------|
-| VEX2PDF_NOVULNS_MSG       | Controls the "No Vulnerabilities reported" message display                     | true                                  |
-| VEX2PDF_SHOW_OSS_LICENSES | Shows all relevant licenses and exits                                          | off                                   |
-| VEX2PDF_VERSION_INFO      | Shows version information before executing normally                            | off                                   |
-| VEX2PDF_REPORT_TITLE      | Overrides the default report title                                             | Not set (uses default title)          |
-| VEX2PDF_PDF_META_NAME     | Overrides the PDF metadata title                                               | Not set (uses default metadata title) |
-| VEX2PDF_PURE_BOM_NOVULNS  | Whether to treat the file as a component list instead of a vulnerability list  | false                                 |
+| Variable                  | Purpose                                                                       | Default                               |
+|---------------------------|-------------------------------------------------------------------------------|---------------------------------------|
+| VEX2PDF_NOVULNS_MSG       | Controls the "No Vulnerabilities reported" message display                    | true                                  |
+| VEX2PDF_SHOW_OSS_LICENSES | Shows all relevant licenses and exits                                         | off                                   |
+| VEX2PDF_VERSION_INFO      | Shows version information before executing normally                           | off                                   |
+| VEX2PDF_REPORT_TITLE      | Overrides the default report title                                            | Not set (uses default title)          |
+| VEX2PDF_PDF_META_NAME     | Overrides the PDF metadata title                                              | Not set (uses default metadata title) |
+| VEX2PDF_PURE_BOM_NOVULNS  | Whether to treat the file as a component list instead of a vulnerability list | false                                 |
+| VEX2PDF_SHOW_COMPONENTS   | Whether to additionally show the component list after the vulnerability list  | true                                  |                             
 
 #### VEX2PDF_NOVULNS_MSG
 
@@ -235,6 +236,11 @@ Whether to treat the file as a pure CycloneDX Bill of Materials only listing the
 
 Example : `VEX2PDF_PURE_BOM_NOVULNS=true vex2pdf`
 
+#### VEX2PDF_SHOW_COMPONENTS
+
+Whether to show the complete list of components after the vulnerabilities section. The default behaviour is `true` but this can be overridden
+
+Example: `VEX2PDF_SHOW_COMPONENTS=false vex2PDF`
 ## Documentation
 
 

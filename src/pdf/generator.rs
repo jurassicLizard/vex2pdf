@@ -9,8 +9,8 @@
 
 use crate::pdf::font_config::FontsDir;
 use cyclonedx_bom::models::tool::Tools;
-use cyclonedx_bom::prelude::{Bom};
-use genpdf::elements::{Paragraph};
+use cyclonedx_bom::prelude::Bom;
+use genpdf::elements::Paragraph;
 use genpdf::style::{Color, Style};
 use genpdf::{Alignment, Document, Element};
 use std::collections::HashMap;
@@ -39,6 +39,10 @@ pub struct PdfGenerator<'a> {
     /// when set to `true` only a list of components is shown ignoring
     /// the vulnerabilities section completely
     pure_bom_novulns: bool,
+    /// Shows the component list even with vulnerabilities. The difference to [`pure_bom_novulns`] is that show_components
+    /// dumps the component list after the Vulnerabilities whereas [`pure_bom_novulns`] controls
+    /// showing either the vulnerabilities OR the components but not both
+    show_components: bool,
 }
 
 impl Default for PdfGenerator<'_> {
@@ -71,6 +75,7 @@ impl Default for PdfGenerator<'_> {
             Some(Self::get_default_report_title()),
             Some(Self::get_default_pdf_meta_name()),
             true,
+            false,
             true,
         )
     }
@@ -97,12 +102,13 @@ impl<'a, 'b> PdfGenerator<'a> {
     ///
     /// // Create a generator with custom titles showing a No Vulnerabilities message if
     /// // the vulnerabilities array is empty and hiding the components section
-    /// let generator = PdfGenerator::new(Some("Security Analysis Results"), Some("Product Security Report"),true,false);
+    /// let generator = PdfGenerator::new(Some("Security Analysis Results"), Some("Product Security Report"),true,false,true);
     /// ```
     pub fn new(
         report_title: Option<&'a str>,
         pdf_meta_name: Option<&'a str>,
         show_novulns_msg: bool,
+        pure_bom_novulns: bool,
         show_components: bool,
     ) -> Self {
         // Initialize with default styles
@@ -145,7 +151,8 @@ impl<'a, 'b> PdfGenerator<'a> {
             report_title,
             pdf_meta_name,
             show_novulns_msg,
-            pure_bom_novulns: show_components,
+            show_components,
+            pure_bom_novulns,
         }
     }
 
@@ -346,12 +353,14 @@ impl<'a, 'b> PdfGenerator<'a> {
 
         doc.push(genpdf::elements::Break::new(2.0));
 
-        // Add a Vulnerabilities section or a components list depending on user options
+        // Add a Vulnerabilities section or a components list or both depending on user options
 
-        if self.pure_bom_novulns {
-            doc = self.render_components(doc, vex);
-        } else {
+        if !self.pure_bom_novulns {
             doc = self.render_vulns(doc, vex, &comp_ref_map);
+        }
+
+        if self.pure_bom_novulns || self.show_components {
+            doc = self.render_components(doc, vex);
         }
 
         // Render the document

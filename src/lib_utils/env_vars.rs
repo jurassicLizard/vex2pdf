@@ -23,6 +23,7 @@ pub enum EnvVarNames {
     /// When set, treats the document as a pure CycloneDX BoM without the vulnerabilities section
     /// Which would entail only listing the components and their versions
     PureBomNoVulns,
+    ShowComponentList,
 }
 
 impl EnvVarNames {
@@ -37,6 +38,7 @@ impl EnvVarNames {
             EnvVarNames::ReportTitle => "VEX2PDF_REPORT_TITLE",
             EnvVarNames::PdfName => "VEX2PDF_PDF_META_NAME",
             EnvVarNames::PureBomNoVulns => "VEX2PDF_PURE_BOM_NOVULNS",
+            EnvVarNames::ShowComponentList => "VEX2PDF_SHOW_COMPONENTS",
         }
     }
     /// this is useful for environment variables which should be on by default
