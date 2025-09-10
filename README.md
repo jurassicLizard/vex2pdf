@@ -110,7 +110,7 @@ After installation, the `vex2pdf` binary will be available in your Cargo bin dir
 Clone the repository, then build the application with `cargo build --release`. The binary will be available at target/release/vex2pdf.
 
 ### Linux and Windows Users
-Windows users can either:
+Users can either:
 1. Install via Cargo as described above
 2. Build from the source using for the respective platform and operating-system. Please check the [From Source Section](#from-source)
 3. Use a pre-built binary under the [Release Binaries section](https://gitlab.com/jurassicLizard/vex2pdf/-/releases) 

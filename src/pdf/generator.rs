@@ -11,7 +11,7 @@ use crate::pdf::font_config::FontsDir;
 use cyclonedx_bom::models::tool::Tools;
 use cyclonedx_bom::prelude::Bom;
 use genpdf::elements::Paragraph;
-use genpdf::style::{Color, Style};
+use genpdf::style::{Color, Style, StyledString};
 use genpdf::{Alignment, Document, Element};
 use std::collections::HashMap;
 use std::io;
@@ -158,12 +158,23 @@ impl<'a, 'b> PdfGenerator<'a> {
 
     /// Gets the default title for the pdf metadata
     fn get_default_pdf_meta_name() -> &'static str {
-        "VEX Vulnerability Report"
+        "Vulnerability Report"
+    }
+
+    /// Gets the default title for pure BoM reports with no vulnerabilities' section
+    fn get_default_pdf_meta_name_bom() -> &'static str {
+        "Bill of Materials"
     }
 
     /// Gets the default title of the report which shows on the first page
     fn get_default_report_title() -> &'static str {
         "Vulnerability Report Document"
+    }
+
+    /// Gets the default title of the report which shows on the first page for pure BoM reports
+    /// with no vulnerabilies' section
+    fn get_default_report_title_bom() -> &'static str {
+        "Bill of Materials Document"
     }
 
     /// Generates a PDF report from a CycloneDX VEX document.
@@ -206,12 +217,8 @@ impl<'a, 'b> PdfGenerator<'a> {
         let mut doc = Document::new(FontsDir::build().font_family);
         // Set up the document with default fonts
 
-        let document_title = self
-            .report_title
-            .unwrap_or(Self::get_default_report_title());
-        let pdf_title = self
-            .pdf_meta_name
-            .unwrap_or(Self::get_default_pdf_meta_name());
+        let document_title = self.get_report_title();
+        let pdf_title = self.get_doc_meta_name();
 
         doc.set_title(pdf_title);
         let mut decorator = genpdf::SimplePageDecorator::new();
@@ -263,10 +270,17 @@ impl<'a, 'b> PdfGenerator<'a> {
                     Tools::List(tools_list) => {
                         for tool in tools_list {
                             if let Some(tool_name) = &tool.name {
-                                ul_tools.push(
-                                    Paragraph::default()
-                                        .styled_string(tool_name.to_string(), self.indent_style),
-                                );
+                                let mut meta_tool_para = Paragraph::default()
+                                    .styled_string(tool_name.to_string(), self.indent_style);
+
+                                if let Some(tool_ver) = &tool.version {
+                                    let tool_ver_str = StyledString::new(
+                                        format!(" ({tool_ver})"),
+                                        self.version_style,
+                                    );
+                                    meta_tool_para.push(tool_ver_str);
+                                }
+                                ul_tools.push(meta_tool_para);
                             }
                         }
                     }
@@ -315,11 +329,16 @@ impl<'a, 'b> PdfGenerator<'a> {
             }
 
             if let Some(component) = &metadata.component {
-                doc.push(
-                    Paragraph::default()
-                        .styled_string("Component name : ", self.normal_style.bold())
-                        .styled_string(component.name.to_string(), self.indent_style),
-                );
+                let mut comp_para = Paragraph::default()
+                    .styled_string("Component name : ", self.normal_style.bold())
+                    .styled_string(component.name.to_string(), self.indent_style);
+
+                if let Some(comp_vers) = &component.version {
+                    let ver_str = StyledString::new(format!(" ({comp_vers})"), self.version_style);
+                    comp_para.push(ver_str);
+                }
+
+                doc.push(comp_para);
             }
 
             doc.push(genpdf::elements::Break::new(1.0));
@@ -370,6 +389,28 @@ impl<'a, 'b> PdfGenerator<'a> {
         Ok(())
     }
 
+    /// report title helper
+    fn get_report_title(&self) -> &str {
+        if let Some(title) = self.report_title {
+            title
+        } else if self.pure_bom_novulns {
+            Self::get_default_report_title_bom()
+        } else {
+            Self::get_default_report_title()
+        }
+    }
+
+    /// Document meta name helper
+    fn get_doc_meta_name(&self) -> &str {
+        if let Some(meta_name) = self.pdf_meta_name {
+            meta_name
+        } else if self.pure_bom_novulns {
+            Self::get_default_pdf_meta_name_bom()
+        } else {
+            Self::get_default_pdf_meta_name()
+        }
+    }
+    /// Internal helper function specific for the Vulnerabilities section
     fn render_vulns(
         &self,
         mut doc: Document,
@@ -467,9 +508,8 @@ impl<'a, 'b> PdfGenerator<'a> {
                 if !comp_ref_map.is_empty() {
                     // get list of affected references
                     if let Some(affected_comps) = &vuln.vulnerability_targets {
-                        let mut affected_comps_detailed: Vec<
-                            &crate::pdf::generator::ComponentTuple,
-                        > = Vec::with_capacity(affected_comps.0.len());
+                        let mut affected_comps_detailed: Vec<&ComponentTuple> =
+                            Vec::with_capacity(affected_comps.0.len());
 
                         for comp in &affected_comps.0 {
                             if let Some(map_val) = comp_ref_map.get(comp.bom_ref.as_str()) {
