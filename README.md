@@ -5,7 +5,6 @@
 [![Crates.io](https://img.shields.io/crates/v/vex2pdf.svg)](https://crates.io/crates/vex2pdf)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE-MIT)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache%20License%202.0-blue)](LICENSE-APACHE)
-[![GitHub Release](https://img.shields.io/github/v/release/jurassicLizard/vex2pdf)](https://github.com/jurassicLizard/vex2pdf/releases/latest)
 
 A command-line tool to convert CycloneDX (VEX/VDR/(S)BoM) Documents in JSON or XML format to PDF reports.
 
@@ -34,6 +33,7 @@ A command-line tool to convert CycloneDX (VEX/VDR/(S)BoM) Documents in JSON or X
       * [VEX2PDF_REPORT_TITLE](#vex2pdf_report_title)
       * [VEX2PDF_PDF_META_NAME](#vex2pdf_pdf_meta_name)
       * [VEX2PDF_PURE_BOM_NOVULNS](#vex2pdf_pure_bom_novulns)
+      * [VEX2PDF_SHOW_COMPONENTS](#vex2pdf_show_components)
   * [Documentation](#documentation)
   * [CycloneDX Document Format](#cyclonedx-document-format)
     * [Version 1.6 Compatibility Mode](#version-16-compatibility-mode)
