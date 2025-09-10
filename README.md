@@ -1,4 +1,4 @@
-# CycloneDX (VEX) to PDF Converter
+# CycloneDX (VEX/VDR/(S)BoM) to PDF Converter
 
 [![Rust](https://img.shields.io/badge/rust-stable-brightgreen.svg)](https://www.rust-lang.org/)
 [![Documentation](https://docs.rs/vex2pdf/badge.svg)](https://docs.rs/vex2pdf)
@@ -7,11 +7,15 @@
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache%20License%202.0-blue)](LICENSE-APACHE)
 [![GitHub Release](https://img.shields.io/github/v/release/jurassicLizard/vex2pdf)](https://github.com/jurassicLizard/vex2pdf/releases/latest)
 
-A command-line tool to convert CycloneDX VEX (Vulnerability Exploitability eXchange) documents in JSON or XML format to PDF reports.
+A command-line tool to convert CycloneDX (VEX/VDR/(S)BoM) Documents in JSON or XML format to PDF reports.
 
 <!-- TOC -->
-* [CycloneDX (VEX) to PDF Converter](#cyclonedx-vex-to-pdf-converter)
+* [CycloneDX (VEX/VDR/(S)BoM) to PDF Converter](#cyclonedx-vexvdrsbom-to-pdf-converter)
   * [Overview](#overview)
+  * [Supported Document Types](#supported-document-types)
+    * [VEX (Vulnerability Exploitability eXchange)](#vex-vulnerability-exploitability-exchange)
+    * [VDR (Vulnerability Disclosure Report)](#vdr-vulnerability-disclosure-report)
+    * [BOM/SBOM (Bill of Materials)](#bomsbom-bill-of-materials)
   * [Fonts Handling](#fonts-handling)
     * [Font Licensing](#font-licensing)
   * [Features](#features)
@@ -31,7 +35,7 @@ A command-line tool to convert CycloneDX VEX (Vulnerability Exploitability eXcha
       * [VEX2PDF_PDF_META_NAME](#vex2pdf_pdf_meta_name)
       * [VEX2PDF_PURE_BOM_NOVULNS](#vex2pdf_pure_bom_novulns)
   * [Documentation](#documentation)
-  * [CycloneDX VEX Format](#cyclonedx-vex-format)
+  * [CycloneDX Document Format](#cyclonedx-document-format)
     * [Version 1.6 Compatibility Mode](#version-16-compatibility-mode)
   * [Security Considerations](#security-considerations)
   * [Changelog](#changelog)
@@ -43,7 +47,22 @@ A command-line tool to convert CycloneDX VEX (Vulnerability Exploitability eXcha
 
 ## Overview
 
-VEX2PDF is a Rust application that scans the current directory for CycloneDX VEX files (JSON and XML) and converts them to human-readable PDF reports. It fully supports the CycloneDX VEX schema version 1.5 and provides compatibility for version 1.6 documents that only use 1.5 fields. Documents using 1.6-specific fields may not process correctly. The tool handles various elements of the VEX documentation format including vulnerabilities, components, metadata, and more.
+VEX2PDF is a Rust application that scans the current directory for CycloneDX (VEX/VDR/(S)BoM files (JSON and XML) and converts them to human-readable PDF reports. It fully supports the CycloneDX schema version 1.5 and provides compatibility for version 1.6 documents that only use 1.5 fields. Documents using 1.6-specific fields may not process correctly. The tool handles various elements of the VEX documentation format including vulnerabilities, components, metadata, and more.
+
+## Supported Document Types
+
+### VEX (Vulnerability Exploitability eXchange)
+- **Purpose**: Communicates exploitability of vulnerabilities in specific contexts
+- **Focus**: Real-world risk assessment and exploitability analysis
+
+### VDR (Vulnerability Disclosure Report)
+- **Purpose**: Provides comprehensive vulnerability assessments for components
+- **Focus**: Known and unknown vulnerabilities with detailed analysis
+- **Features**: Includes the "affected" property for component-vulnerability correlation
+
+### BOM/SBOM (Bill of Materials)
+- **Purpose**: Inventories software components and dependencies
+- **Focus**: Component listing and supply chain transparency
 
 ## Fonts Handling
 
@@ -58,16 +77,17 @@ Check [VEX2PDF_SHOW_OSS_LICENSES](#VEX2PDF_SHOW_OSS_LICENSES) for more Informati
 The font license file is also available at [Liberation fonts License file](external/fonts/liberation-fonts/LICENSE) in the current repository.
 
 ## Features
-- Automatically scans directories for JSON and XML files with VEX data
-- Converts VEX documents to structured PDF reports
+- Automatically scans directories for JSON and XML files with VEX/VDR/(S)BoM data
+- Converts (VEX/VDR/(S)BoM) documents to structured PDF reports
 - Supports both JSON and XML CycloneDX formats
-- Preserves all key VEX information including:
+- Preserves all key (VEX/VDR/(S)BoM) information including:
   - Document metadata and timestamps
   - Vulnerability details with severity ratings and sources
-  - **_New_** - Affected Components correlation in CycloneDX-VEX Mode (default)
-  - A list of components only when desired
-  - Tools used to generate the VEX document
-- Cross-platform support (Linux, Windows)
+  - _**New since v0.8.0**_  : Component-vulnerability correlation via "affected" property (VDR)
+  - Exploitability assessments and risk context (VEX)
+  - Component inventories and dependencies (BOM/SBOM)
+  - Tools used to generate the CycloneDX (VEX/VDR/(S)BoM)) document
+- Cross-platform support
 
 ## Installation
 ### Prerequisites
@@ -103,14 +123,14 @@ Windows users can either:
 
 ## Usage
 
-Run the application in a directory containing CycloneDX VEX files (JSON or XML):
+Run the application in a directory containing CycloneDX (VEX/VDR/(S)BoM files (JSON or XML):
 
 ```shell 
 ./vex2pdf
 ```
 The tool will:
 1. Scan the current directory for JSON and XML files
-2. Attempt to parse each file as a CycloneDX VEX document
+2. Attempt to parse each file as a CycloneDX (VEX/VDR/(S)BoM) document
 3. Generate a PDF report with the same name as the original file (with .pdf extension)
 4. Display progress and results in the console
 
@@ -172,7 +192,7 @@ The following environment variables can be used to customize behavior:
 | VEX2PDF_VERSION_INFO      | Shows version information before executing normally                            | off                                   |
 | VEX2PDF_REPORT_TITLE      | Overrides the default report title                                             | Not set (uses default title)          |
 | VEX2PDF_PDF_META_NAME     | Overrides the PDF metadata title                                               | Not set (uses default metadata title) |
-| VEX2PDF_PURE_BOM_NOVULNS  | Whether to treat the file as a component list instead of a vulnerability list  | true                                  |
+| VEX2PDF_PURE_BOM_NOVULNS  | Whether to treat the file as a component list instead of a vulnerability list  | false                                 |
 
 #### VEX2PDF_NOVULNS_MSG
 
@@ -227,10 +247,11 @@ cargo doc --open
 ```
 
 
-## CycloneDX VEX Format
-This tool fully supports CycloneDX VEX schema version 1.5 and provides compatibility for version 1.6 documents that only use 1.5 fields. Documents using 1.6-specific fields may not process correctly. For more information about the CycloneDX VEX format, see:
+## CycloneDX Document Format
+This tool fully supports CycloneDX schema version 1.5 and provides compatibility for version 1.6 documents that only use 1.5 fields. Documents using 1.6-specific fields may not process correctly. For more information about the CycloneDX format, see:
 - [CycloneDX VEX Specification](https://cyclonedx.org/capabilities/vex/)
-- [CycloneDX VEX Schema](https://cyclonedx.org/docs/1.5/json/)
+- [CycloneDX VDR Specification](https://cyclonedx.org/capabilities/vdr/)
+- [CycloneDX Schema](https://cyclonedx.org/docs/1.5/json/)
 
 ### Version 1.6 Compatibility Mode
 
@@ -280,7 +301,7 @@ This project uses third-party dependencies that may be distributed under differe
 Please refer to the license information provided with each dependency for details.
 
 ## Acknowledgments
-- [CycloneDX](https://cyclonedx.org/) for the VEX specification
+- [CycloneDX](https://cyclonedx.org/) for CycloneDX document specification
 - [cyclonedx-bom](https://crates.io/crates/cyclonedx-bom) for CycloneDX parsing
 - [genpdf](https://crates.io/crates/genpdf) for PDF generation
 - [serde_json](https://crates.io/crates/serde_json) for JSON processing
