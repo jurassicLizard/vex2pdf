@@ -23,3 +23,12 @@ cyclonedx-bom = "0.8.0"
 genpdf = "0.2.0"
 serde_json = "1.0.140"
 
+
+[profile.release]
+strip = true
+
+[profile.release-optimized]
+inherits = "release"
+opt-level = 3
+lto = "fat"
+codegen-units = 1

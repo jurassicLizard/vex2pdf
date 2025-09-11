@@ -5,11 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml
+
 ## [0.8.2] - 2025-09-10
 
 ### Added
 - Added GitLab CI yml file for automatic binary releases
-- Added VEX2PDF CycloneDX Bill of Materials
+- Added VEX2PDF CycloneDX Bill of Materials title rendering when running in Pure BoM mode with `VEX2PDF_PURE_BOM_NOVULNS=true`
 
 ### Changed
 - Added version string rendering for Metadata Tools
@@ -31,7 +36,7 @@ to show both through the `VEX2PDF_SHOW_COMPONENTS` environment variable which is
 
 ### Added
 - Added `VEX2PDF_PURE_BOM_NOVULNS` environment variable to control whether we show only the components (CycloneDX BoM) instead of the full vulnerability list (CycloneDX-VEX)
-- Changed Behaviour of the VUlnerability section renderer to also show affected components
+- Changed Behaviour of the Vulnerability section renderer to also show affected components
 
 ### Fixed
 - Fixed Readme.md Section chapter hierarchy for the Changelog chapter
