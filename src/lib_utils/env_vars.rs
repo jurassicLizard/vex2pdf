@@ -13,8 +13,10 @@ pub enum EnvVarNames {
     /// USER CANNOT YET OVERRIDE THIS OPTION
     ProcessXml,
     /// Shows OSS License Information if set to true
+    #[deprecated(since = "0.9.0", note = "replaced with argument variable. will be removed at a future minor release")]
     ShowOssLicenses,
     /// Shows Software version and copyright Information if set to true
+    #[deprecated(since = "0.9.0", note = "replaced with argument variable. will be removed at a future minor release")]
     VersionInfo,
     /// Controls the title shown in the PDF when it is generated
     ReportTitle,
@@ -23,11 +25,15 @@ pub enum EnvVarNames {
     /// When set, treats the document as a pure CycloneDX BoM without the vulnerabilities section
     /// Which would entail only listing the components and their versions
     PureBomNoVulns,
+    /// Controls whether to show the list of components after the vulnerabilities; the default is `true`
     ShowComponentList,
+    /// Overrides the output directory for the generated files, by default they get generated in the working directory
+    OutputDir
 }
 
+#[allow(deprecated)]
 impl EnvVarNames {
-    pub fn as_str(&self) -> &'static str {
+    pub const fn as_str(&self) -> &'static str {
         match self {
             EnvVarNames::Home => "HOME",
             EnvVarNames::NoVulnsMsg => "VEX2PDF_NOVULNS_MSG",
@@ -39,6 +45,7 @@ impl EnvVarNames {
             EnvVarNames::PdfName => "VEX2PDF_PDF_META_NAME",
             EnvVarNames::PureBomNoVulns => "VEX2PDF_PURE_BOM_NOVULNS",
             EnvVarNames::ShowComponentList => "VEX2PDF_SHOW_COMPONENTS",
+            EnvVarNames::OutputDir => "VEX2PDF_OUTPUT_DIR"
         }
     }
     /// this is useful for environment variables which should be on by default

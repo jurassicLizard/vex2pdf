@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml
+- Added re-export paths for some crate paths to simplify things for consumers
 
+### Removed
+- Removed redundant cyclonedx model re-export users must use `cyclondx_bom` from the upstream crate instead of the usual `model`
+
+### Changed
+- Env_vars as_str() method is now const to allow some compile time operations
 ## [0.8.2] - 2025-09-10
 
 ### Added

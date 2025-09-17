@@ -39,8 +39,8 @@
 //! For installation instructions, usage examples, and project overview,
 //! see the [project README](https://github.com/jurassicLizard/vex2pdf/blob/master/README.md).
 //!
-// Re-export cyclonedx-bom models for use by consumers of this library
-pub use cyclonedx_bom as model;
+// Re-export and simplify paths for consumers of this library
+pub use crate::lib_utils::run_utils as utils;
 
 pub mod pdf {
     pub mod font_config;
@@ -50,6 +50,7 @@ pub mod pdf {
 pub mod lib_utils {
     pub mod config;
     pub mod env_vars;
+    pub mod cli_args;
     pub mod input_file_type;
     pub mod run_utils;
 }
@@ -108,31 +109,21 @@ use std::error::Error;
 /// use vex2pdf::run;
 ///
 /// let config = Config::build().unwrap_or_else(|err| {
-/// eprintln!("Problem setting up working environment:");
-/// eprintln!("{}", { err });
-/// process::exit(1);
+///     eprintln!("Problem setting up working environment:");
+///     eprintln!("{}", { err });
+///     process::exit(1);
 /// });
 ///
 /// if let Err(e) = vex2pdf::run(&config) {
-/// eprintln!("Application error: {e}");
-/// process::exit(1);
+///     eprintln!("Application error: {e}");
+///     process::exit(1);
 /// }
 /// ```
 pub fn run(config: &Config) -> Result<(), Box<dyn Error>> {
+
     if config.show_oss_licenses {
         // show OSS licenses and return
-        print_copyright();
-        let main_license_text = r#"VEX2PDF is licensed under either MIT or Apache License, Version 2.0 at your option.
-license text can be found under: https://github.com/jurassicLizard/vex2pdf/blob/master/README.md#license"#;
-
-        println!("{main_license_text}");
-        println!();
-        println!("-----------------------------------------------------------------------------\n");
-        println!("This software makes use of Liberation Fonts licensed under SIL as follows : ");
-        println!();
-        let sil_license_text = include_bytes!("../external/fonts/liberation-fonts/LICENSE");
-
-        println!("{}", String::from_utf8_lossy(sil_license_text));
+        show_full_licenses();
 
         // abort any processing
         return Ok(());
@@ -162,6 +153,24 @@ license text can be found under: https://github.com/jurassicLizard/vex2pdf/blob/
 
     Ok(())
 }
+
+/// Helper to show OSS License information
+fn show_full_licenses() {
+
+    print_copyright();
+    let main_license_text = r#"VEX2PDF is licensed under either MIT or Apache License, Version 2.0 at your option.
+license text can be found under: https://gitlab.com/jurassicLizard/vex2pdf/-/blob/master/README.md#license"#;
+
+    println!("{main_license_text}");
+    println!();
+    println!("-----------------------------------------------------------------------------\n");
+    println!("This software makes use of Liberation Fonts licensed under SIL as follows : ");
+    println!();
+    let sil_license_text = include_bytes!("../external/fonts/liberation-fonts/LICENSE");
+
+    println!("{}", String::from_utf8_lossy(sil_license_text));
+}
+
 #[cfg(test)]
 mod tests {
     use cyclonedx_bom::models::bom::Bom;

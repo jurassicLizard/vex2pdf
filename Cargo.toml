@@ -19,6 +19,7 @@ exclude = [
 ]
 
 [dependencies]
+clap = { version = "4.5.47", features = ["derive", "env"] }
 cyclonedx-bom = "0.8.0"
 genpdf = "0.2.0"
 serde_json = "1.0.140"

@@ -5,7 +5,7 @@ use crate::pdf::generator::PdfGenerator;
 use cyclonedx_bom::errors::{BomError, JsonReadError, XmlReadError};
 use cyclonedx_bom::prelude::Bom;
 use std::error::Error;
-use std::fs;
+use std::{fs, io};
 use std::path::{Path, PathBuf};
 
 /// Finds files of a given type in the configured working directory.
@@ -17,6 +17,10 @@ pub(crate) fn find_files(
     config: &Config,
     file_type: InputFileType,
 ) -> Result<Option<Vec<PathBuf>>, Box<dyn Error>> {
+
+    // validate that our target scan path is a folder
+    if config.working_path.is_file() { return Err(Box::new(io::Error::new(io::ErrorKind::InvalidInput,"Find files called on a regular file. This is an invalid use of this function. Expected a path validation from the caller.")));}
+
     if let Some(init_process) = config.file_types_to_process.get(&file_type) {
         if !init_process {
             println!(
@@ -29,12 +33,13 @@ pub(crate) fn find_files(
     println!(
         "Scanning for {} files in: {}",
         file_type.as_str_uppercase(),
-        config.working_dir.display()
+        config.working_path.display()
     );
 
     let mut files: Vec<PathBuf> = Vec::new();
 
-    for entry in fs::read_dir(&config.working_dir)? {
+    // at this point we have already validated that working_path is a directory we can proceed
+    for entry in fs::read_dir(&config.working_path)? {
         let entry = entry?;
         let path = entry.path();
 
@@ -69,6 +74,14 @@ pub(crate) fn find_files(
 /// Iterates through each file in the provided list, attempts to parse it
 /// according to the specified input file type, and generates a PDF if successful.
 /// Does nothing if the files parameter is None.
+//
+/// # Parameters
+///
+/// `pdf_generator`: A reference to the PdfGenerator
+/// `files`: An Optional list of files or None. Use Cases for None include the use-case when
+///  file processing is disabled for a certain type and we pass None to avoid parsing all together
+/// `input_file_type`: the file type to process
+///
 pub(crate) fn parse_files(
     pdf_generator: &PdfGenerator,
     files: &Option<Vec<PathBuf>>,

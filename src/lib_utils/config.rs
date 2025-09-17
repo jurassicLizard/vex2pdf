@@ -5,9 +5,12 @@ use crate::lib_utils::run_utils::print_copyright;
 use std::collections::HashMap;
 use std::error::Error;
 use std::path::PathBuf;
+use clap::Parser;
+use crate::lib_utils::cli_args::CliArgs;
 
 pub struct Config {
-    pub working_dir: PathBuf,
+    pub working_path: PathBuf,
+    pub output_dir: PathBuf,
     pub show_novulns_msg: bool, //FIXME still unused
     pub file_types_to_process: HashMap<InputFileType, bool>, //FIXME still unused
     pub show_oss_licenses: bool,
@@ -17,15 +20,23 @@ pub struct Config {
     pub pdf_meta_name: Option<String>,
 }
 
+#[allow(deprecated)]
 impl Config {
     pub fn build() -> Result<Self, Box<dyn Error>> {
-        let working_dir = std::env::current_dir()?;
-        let show_novulns_msg = EnvVarNames::NoVulnsMsg.is_on_or_unset();
+        // handle cli arguments
+        let args = CliArgs::parse();
+
+        // validate potential permissions issues
+        let _ = args.validate()?;
+
+        let working_path = args.file.unwrap_or(std::env::current_dir()?);
+        let output_dir = args.output_dir.unwrap_or(std::env::current_dir()?);
+        let show_novulns_msg = args.show_novulns_msg.unwrap_or(EnvVarNames::NoVulnsMsg.is_on_or_unset());
         let mut process_json = EnvVarNames::ProcessJson.is_on_or_unset();
         let process_xml = EnvVarNames::ProcessXml.is_on_or_unset();
         let show_oss_licenses = EnvVarNames::ShowOssLicenses.is_on();
-        let show_pure_bom_novulns = EnvVarNames::PureBomNoVulns.is_on();
-        let show_comps = EnvVarNames::ShowComponentList.is_on_or_unset();
+        let show_pure_bom_novulns = args.pure_bom_novulns.unwrap_or(EnvVarNames::PureBomNoVulns.is_on());
+        let show_comps = args.show_components.unwrap_or(EnvVarNames::ShowComponentList.is_on_or_unset());
         // print version info if requested
         if EnvVarNames::VersionInfo.is_on() {
             print_copyright();
@@ -50,7 +61,8 @@ impl Config {
         file_types_to_process.insert(InputFileType::XML, process_xml);
 
         let config = Config {
-            working_dir,
+            working_path,
+            output_dir,
             show_novulns_msg,
             file_types_to_process,
             show_oss_licenses,
@@ -127,10 +139,11 @@ impl Default for Config {
         let mut file_types_to_process: HashMap<InputFileType, bool> = HashMap::new();
         file_types_to_process.insert(InputFileType::JSON, true);
         file_types_to_process.insert(InputFileType::XML, true);
-        let working_dir = std::env::current_dir().expect("Failed to get current directory");
-
+        let working_path = std::env::current_dir().expect("Failed to get current directory");
+        let output_dir = working_path.clone();
         Self {
-            working_dir,
+            working_path,
+            output_dir,
             show_novulns_msg: true,
             file_types_to_process,
             show_oss_licenses: true,
