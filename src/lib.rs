@@ -35,29 +35,47 @@
 //!   - `font_config`: Font configuration and discovery
 //!   - `generator`: PDF document generation
 //! - `lib_utils`: Utilities and data models used in this library and accompanying runnable
+//! - `files_proc`: File processing logic is all bundled here
 //!
 //! For installation instructions, usage examples, and project overview,
 //! see the [project README](https://github.com/jurassicLizard/vex2pdf/blob/master/README.md).
 //!
+// re-export upstream cyclondx bom path
+pub use cyclonedx_bom;
 // Re-export and simplify paths for consumers of this library
 pub use crate::lib_utils::run_utils as utils;
 
+pub mod files_proc {
+    pub mod model {
+        pub mod file_ident;
+        pub mod files_pending_proc;
+        pub mod input_file_type;
+    }
+    pub mod processor;
+    pub mod traits;
+}
 pub mod pdf {
     pub mod font_config;
     pub mod generator;
 }
 
 pub mod lib_utils {
+    pub mod errors;
+
+    pub mod cli_args;
     pub mod config;
     pub mod env_vars;
-    pub mod cli_args;
-    pub mod input_file_type;
     pub mod run_utils;
+    pub(crate) mod concurrency {
+        pub(crate) mod common;
+        pub(crate) mod threadpool;
+        pub(crate) mod worker;
+    }
 }
 
 use crate::lib_utils::run_utils::print_copyright;
+use files_proc::model::input_file_type::InputFileType;
 use lib_utils::config::Config;
-use lib_utils::input_file_type::InputFileType;
 use lib_utils::run_utils::{find_files, parse_files};
 use pdf::generator::PdfGenerator;
 use std::error::Error;
@@ -120,7 +138,6 @@ use std::error::Error;
 /// }
 /// ```
 pub fn run(config: &Config) -> Result<(), Box<dyn Error>> {
-
     if config.show_oss_licenses {
         // show OSS licenses and return
         show_full_licenses();
@@ -156,7 +173,6 @@ pub fn run(config: &Config) -> Result<(), Box<dyn Error>> {
 
 /// Helper to show OSS License information
 fn show_full_licenses() {
-
     print_copyright();
     let main_license_text = r#"VEX2PDF is licensed under either MIT or Apache License, Version 2.0 at your option.
 license text can be found under: https://gitlab.com/jurassicLizard/vex2pdf/-/blob/master/README.md#license"#;

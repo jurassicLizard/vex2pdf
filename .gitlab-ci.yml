@@ -20,9 +20,10 @@ test:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != "master"
   script:
-    - cargo test
+    - rustup component add clippy rustfmt
     - cargo fmt -- --check
     - cargo clippy -- -D warnings
+    - cargo test
 
 # Build binaries ONLY on tag pushes
 linux-build:
@@ -31,9 +32,9 @@ linux-build:
   rules:
     - if: $CI_COMMIT_TAG =~ /^v/
   script:
-    - cargo build --release
+    - cargo build --profile release-optimized
     - cargo test
-    - mv target/release/vex2pdf vex2pdf-linux-x86_64
+    - mv target/release-optimized/vex2pdf vex2pdf-linux-x86_64
     - chmod +x vex2pdf-linux-x86_64
   artifacts:
     paths:
@@ -50,8 +51,8 @@ windows-build:
     - apt-get update && apt-get install -y gcc-mingw-w64-x86-64
     - rustup target add x86_64-pc-windows-gnu
   script:
-    - cargo build --release --target x86_64-pc-windows-gnu
-    - mv target/x86_64-pc-windows-gnu/release/vex2pdf.exe vex2pdf-windows-x86_64.exe
+    - cargo build --profile release-optimized --target x86_64-pc-windows-gnu
+    - mv target/x86_64-pc-windows-gnu/release-optimized/vex2pdf.exe vex2pdf-windows-x86_64.exe
   artifacts:
     paths:
       - vex2pdf-windows-x86_64.exe

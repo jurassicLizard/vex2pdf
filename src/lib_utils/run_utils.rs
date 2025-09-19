@@ -1,12 +1,12 @@
 use super::config::Config;
-use super::input_file_type::InputFileType;
 use super::run_utils;
+use crate::files_proc::model::input_file_type::InputFileType;
 use crate::pdf::generator::PdfGenerator;
 use cyclonedx_bom::errors::{BomError, JsonReadError, XmlReadError};
 use cyclonedx_bom::prelude::Bom;
 use std::error::Error;
-use std::{fs, io};
 use std::path::{Path, PathBuf};
+use std::{fs, io};
 
 /// Finds files of a given type in the configured working directory.
 ///
@@ -17,11 +17,17 @@ pub(crate) fn find_files(
     config: &Config,
     file_type: InputFileType,
 ) -> Result<Option<Vec<PathBuf>>, Box<dyn Error>> {
-
     // validate that our target scan path is a folder
-    if config.working_path.is_file() { return Err(Box::new(io::Error::new(io::ErrorKind::InvalidInput,"Find files called on a regular file. This is an invalid use of this function. Expected a path validation from the caller.")));}
+    if config.working_path.is_file() {
+        return Err(Box::new(io::Error::new(io::ErrorKind::InvalidInput,"Find files called on a regular file. This is an invalid use of this function. Expected a path validation from the caller.")));
+    }
 
-    if let Some(init_process) = config.file_types_to_process.get(&file_type) {
+    if let Some(init_process) = config
+        .file_types_to_process
+        .as_ref()
+        .expect("value must be defined")
+        .get(&file_type)
+    {
         if !init_process {
             println!(
                 "Skipping {} files : deactivated by user",
@@ -128,7 +134,7 @@ pub(crate) fn parse_files(
 ///
 /// Note: The downgrade from 1.6 to 1.5 is a compatibility feature and may not work
 /// if the document uses 1.6-specific fields.
-pub(crate) fn parse_vex_xml(path: &Path) -> Result<Bom, Box<dyn Error>> {
+pub(crate) fn parse_vex_xml<P: AsRef<Path>>(path: P) -> Result<Bom, Box<dyn Error>> {
     // First, read the entire file content
     let content = fs::read(path)?;
 
@@ -175,7 +181,7 @@ pub(crate) fn parse_vex_xml(path: &Path) -> Result<Bom, Box<dyn Error>> {
 ///
 /// Note: The downgrade from 1.6 to 1.5 is a compatibility feature and may not work
 /// if the document uses 1.6-specific fields.
-pub(crate) fn parse_vex_json(path: &Path) -> Result<Bom, Box<dyn Error>> {
+pub(crate) fn parse_vex_json<P: AsRef<Path>>(path: P) -> Result<Bom, Box<dyn Error>> {
     // First, read the entire file content
     let content = fs::read(path)?;
     // Try to parse normally first

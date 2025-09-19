@@ -3,10 +3,10 @@
 //! Whether it is environment variables or cli arguments.
 //!
 
-use std::{fs, io};
-use std::path::PathBuf;
-use clap::Parser;
 use super::env_vars::EnvVarNames;
+use clap::Parser;
+use std::path::PathBuf;
+use std::{fs, io};
 #[derive(Parser)]
 #[command(version,about,long_about = None)]
 pub struct CliArgs {
@@ -14,10 +14,6 @@ pub struct CliArgs {
     /// so If this is not set the tool scans the current directory for all parseable files and converts them
     #[arg(value_name = "FILE_TO_PROCESS")]
     pub file: Option<PathBuf>,
-
-    /// Show version information and exit
-    #[arg(short, long)]
-    pub version: bool,
 
     #[arg(short='m', long="show-novulns-msg", env= EnvVarNames::NoVulnsMsg.as_str())]
     pub show_novulns_msg: Option<bool>,
@@ -40,32 +36,37 @@ pub struct CliArgs {
 
     /// Sets the directory where the parser should output the files
     #[arg(short='d', long="output-dir", env=EnvVarNames::OutputDir.as_str())]
-    pub output_dir: Option<PathBuf>
-
+    pub output_dir: Option<PathBuf>,
 }
 
 impl CliArgs {
-
     /// validates paths that may be passed by the user and verifies write permission
     pub fn validate(&self) -> Result<(), io::Error> {
-
         if let Some(path) = self.output_dir.as_ref() {
-            if ! path.is_dir() {
-                return Err(io::Error::new(io::ErrorKind::InvalidInput,"Expected a directory"));
+            if !path.is_dir() {
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    "Expected a directory",
+                ));
             } else {
                 // test if we have permissions to write
 
-                let tmp_file= path.join("vex2pdf_perm_test_file");
+                let tmp_file = path.join("vex2pdf_perm_test_file");
                 let res_io = fs::File::create(&tmp_file);
 
                 if let Err(_) = res_io {
-                    return Err(io::Error::new(io::ErrorKind::PermissionDenied, "Could not create a test file. possible permissions issue"));
-                }else if let Ok(_) =  res_io {
+                    return Err(io::Error::new(
+                        io::ErrorKind::PermissionDenied,
+                        "Could not create a test file. possible permissions issue",
+                    ));
+                } else if let Ok(_) = res_io {
                     if let Err(_) = fs::remove_file(tmp_file) {
-                        return Err(io::Error::new(io::ErrorKind::PermissionDenied, "unable to delete permissions test file"));
+                        return Err(io::Error::new(
+                            io::ErrorKind::PermissionDenied,
+                            "unable to delete permissions test file",
+                        ));
                     }
                 }
-
             }
         }
 

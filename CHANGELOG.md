@@ -8,21 +8,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml- Added aggressive optimization profile for CI builds in Cargo.toml
+- Added support for single-file processing instead of automatic batch processing. The default is still to scan automatically and batch process all files in the working directory
+- Added aggressive optimization profile for CI builds in Cargo.toml
 - Added re-export paths for some crate paths to simplify things for consumers
+- Added `VEX2PDF_OUTPUT_DIR` environment variable to override destination directory
+- Added Processor and Renderer trait system for improved extensibility
+- Added support for parallel processing of files 
 
-### Removed
-- Removed redundant cyclonedx model re-export users must use `cyclondx_bom` from the upstream crate instead of the usual `model`
+### Fixed
+- Fixed GitLab CI not able to test due to missing rustup dependencies
 
 ### Changed
-- Env_vars as_str() method is now const to allow some compile time operations
+- Changed Env_vars as_str() method to be const to allow some compile time operations
+
+### Deprecated
+- `VEX2PDF_VERSION_INFO` is now replaced with a cli argument and has entered a deprecation phase (will be removed by the next minor release)
+- `VEX2PDF_SHOW_OSS_LICENSES` is now replaced with a cli argument and has entered a deprecation phase (will be removed by the next minor release)
+
+
 ## [0.8.2] - 2025-09-10
 
 ### Added
 - Added GitLab CI yml file for automatic binary releases
 - Added VEX2PDF CycloneDX Bill of Materials title rendering when running in Pure BoM mode with `VEX2PDF_PURE_BOM_NOVULNS=true`
-
-### Changed
 - Added version string rendering for Metadata Tools
 - Added version string rendering for Metadata Component
 - Added various updates and fixes to the README.md
@@ -30,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.8.1] - 2025-09-10
 
 ### Added
-- Added `VEX2PDF_SHOW_COMPONENT` environment variable to restore possibility to show a flat components list as well as the vulnerabilities and associated affected components 
+- Added `VEX2PDF_SHOW_COMPONENT` environment variable to restore possibility to show a flat components list as well as the vulnerabilities and associated affected components
 
 ### Fixed
 - Updated [Readme](README.md) to make it more obvious that the tool also handles vdr as well as vex and bom
@@ -46,7 +54,7 @@ to show both through the `VEX2PDF_SHOW_COMPONENTS` environment variable which is
 
 ### Fixed
 - Fixed Readme.md Section chapter hierarchy for the Changelog chapter
- 
+
 ### Changed
 - Updated Readme.md with `VEX2PDF_PURE_BOM_NOVULNS` environment variable information
 - Migrated repository to new GitLab space
@@ -67,8 +75,8 @@ to show both through the `VEX2PDF_SHOW_COMPONENTS` environment variable which is
 - Updated Readme.md with dual-licensing details
 
 ### Fixed
-- Fix formatting of Apache 2.0 license text
-- Fix minor typo and missing date in Changelog.md
+- Fixed formatting of Apache 2.0 license text
+- Fixed minor typo and missing date in Changelog.md
 - Fixed `VEX2PDF_SHOW_OSS_LICENSES` env variable handlers to show updated license information
 
 
@@ -89,7 +97,7 @@ to show both through the `VEX2PDF_SHOW_COMPONENTS` environment variable which is
 ## [0.6.2] - 2025-05-22
 
 ### Fixed
-- fixed minor documentation issue that is causing some tests to fail
+- Fixed minor documentation issue that is causing some tests to fail
 
 ## [0.6.1] - 2025-05-22
 
@@ -102,7 +110,7 @@ to show both through the `VEX2PDF_SHOW_COMPONENTS` environment variable which is
 - Added the VEX2PDF_VERSION_INFO environment variable in order to make version info optional
 
 ### Deprecated
-- the VEX2PDF_FONTS_PATH environment variable is now deprecated. Starting from 0.7.0 we will only rely on embedded fonts to make 
+- the VEX2PDF_FONTS_PATH environment variable is now deprecated. Starting from 0.7.0 we will only rely on embedded fonts to make
 the software more portable and simplify the code
 - Old fonts handling is now deprecated, and in the future only embedded fonts will be used
 
@@ -157,9 +165,3 @@ the software more portable and simplify the code
 - File exclusion functionality
 - Documentation and license information
 
-[0.6.0]: https://github.com/jurassicLizard/vex2pdf/compare/v0.5.0...v0.6.0
-[0.5.0]: https://github.com/jurassicLizard/vex2pdf/compare/v0.4.0...v0.5.0
-[0.4.0]: https://github.com/jurassicLizard/vex2pdf/compare/v0.3.0...v0.4.0
-[0.3.0]: https://github.com/jurassicLizard/vex2pdf/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/jurassicLizard/vex2pdf/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/jurassicLizard/vex2pdf/releases/tag/v0.1.0

@@ -25,11 +25,10 @@
 //! No extra configuration is required
 //! See the README for more details.
 
-use std::error::Error;
 use std::process;
 use vex2pdf::lib_utils::config::Config;
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() {
     let config = Config::build().unwrap_or_else(|err| {
         eprintln!("Problem setting up working environment:");
         eprintln!("{}", { err });
@@ -40,6 +39,4 @@ fn main() -> Result<(), Box<dyn Error>> {
         eprintln!("Application error: {e}");
         process::exit(1);
     }
-
-    Ok(())
 }

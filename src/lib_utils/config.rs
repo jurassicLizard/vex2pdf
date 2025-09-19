@@ -1,18 +1,18 @@
 use super::super::pdf::font_config::FontsDir;
 use super::env_vars::EnvVarNames;
-use super::input_file_type::InputFileType;
+use crate::files_proc::model::input_file_type::InputFileType;
+use crate::lib_utils::cli_args::CliArgs;
 use crate::lib_utils::run_utils::print_copyright;
+use clap::Parser;
 use std::collections::HashMap;
 use std::error::Error;
 use std::path::PathBuf;
-use clap::Parser;
-use crate::lib_utils::cli_args::CliArgs;
 
 pub struct Config {
     pub working_path: PathBuf,
     pub output_dir: PathBuf,
-    pub show_novulns_msg: bool, //FIXME still unused
-    pub file_types_to_process: HashMap<InputFileType, bool>, //FIXME still unused
+    pub show_novulns_msg: bool,
+    pub file_types_to_process: Option<HashMap<InputFileType, bool>>,
     pub show_oss_licenses: bool,
     pub pure_bom_novulns: bool,
     pub show_components: bool,
@@ -31,12 +31,18 @@ impl Config {
 
         let working_path = args.file.unwrap_or(std::env::current_dir()?);
         let output_dir = args.output_dir.unwrap_or(std::env::current_dir()?);
-        let show_novulns_msg = args.show_novulns_msg.unwrap_or(EnvVarNames::NoVulnsMsg.is_on_or_unset());
+        let show_novulns_msg = args
+            .show_novulns_msg
+            .unwrap_or(EnvVarNames::NoVulnsMsg.is_on_or_unset());
         let mut process_json = EnvVarNames::ProcessJson.is_on_or_unset();
         let process_xml = EnvVarNames::ProcessXml.is_on_or_unset();
         let show_oss_licenses = EnvVarNames::ShowOssLicenses.is_on();
-        let show_pure_bom_novulns = args.pure_bom_novulns.unwrap_or(EnvVarNames::PureBomNoVulns.is_on());
-        let show_comps = args.show_components.unwrap_or(EnvVarNames::ShowComponentList.is_on_or_unset());
+        let show_pure_bom_novulns = args
+            .pure_bom_novulns
+            .unwrap_or(EnvVarNames::PureBomNoVulns.is_on());
+        let show_comps = args
+            .show_components
+            .unwrap_or(EnvVarNames::ShowComponentList.is_on_or_unset());
         // print version info if requested
         if EnvVarNames::VersionInfo.is_on() {
             print_copyright();
@@ -64,7 +70,7 @@ impl Config {
             working_path,
             output_dir,
             show_novulns_msg,
-            file_types_to_process,
+            file_types_to_process: Some(file_types_to_process),
             show_oss_licenses,
             pure_bom_novulns: show_pure_bom_novulns,
             show_components: show_comps,
@@ -145,7 +151,7 @@ impl Default for Config {
             working_path,
             output_dir,
             show_novulns_msg: true,
-            file_types_to_process,
+            file_types_to_process: Some(file_types_to_process),
             show_oss_licenses: true,
             pure_bom_novulns: false,
             show_components: true,
