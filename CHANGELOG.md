@@ -13,7 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added re-export paths for some crate paths to simplify things for consumers
 - Added `VEX2PDF_OUTPUT_DIR` environment variable to override destination directory
 - Added Processor and Renderer trait system for improved extensibility
-- Added support for parallel processing of files 
+- Added support for parallel processing of files
+- Added handling for working with single files
+- Added handling for a distinct working directory definition
 
 ### Fixed
 - Fixed GitLab CI not able to test due to missing rustup dependencies

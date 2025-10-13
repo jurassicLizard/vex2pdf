@@ -35,7 +35,7 @@ fn main() {
         process::exit(1);
     });
 
-    if let Err(e) = vex2pdf::run(&config) {
+    if let Err(e) = vex2pdf::run_new(config) {
         eprintln!("Application error: {e}");
         process::exit(1);
     }

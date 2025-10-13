@@ -139,8 +139,8 @@ impl<P: AsRef<Path> + Eq + Hash + Send +'static> SingleFileProcProvider<P> for D
 
         println!("Generating PDF:  {}", file.get_path().as_ref().display());
 
+        // FIXME consider if output path is ever handled here
         // Generate the PDF
-
         match generator.generate_pdf(&bom,get_output_pdf_path(file.get_path().as_ref())) {
 
             Ok(_) => println!("Successfully generated PDF: {}", file.get_path().as_ref().display()),
@@ -171,6 +171,7 @@ impl<P: AsRef<Path> + Eq + Hash + Send + 'static> MultipleFilesProcProvider<P> f
         let pool = ThreadPool::default();
 
         let config = self.config;
+        let file_count = self.files.get_file_count();
 
         for file in self.files {
             let single_file_proc = DefaultSingleFileProcessor::default();
@@ -182,8 +183,11 @@ impl<P: AsRef<Path> + Eq + Hash + Send + 'static> MultipleFilesProcProvider<P> f
         }
 
 
+        drop(pool); // dropping here to show information message after worker status messages
+        // pool drops gracefully and cleans up here blocking until all jobs are finished
+
+        println!("Processed {file_count} files");
 
         Ok(())
-        // pool drops gracefully and cleans up here blocking until all jobs are finished
     }
 }
