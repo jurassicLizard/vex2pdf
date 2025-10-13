@@ -5,9 +5,11 @@ use std::sync::mpsc::Sender;
 use std::sync::{mpsc, Arc, Mutex};
 use std::thread;
 
+// TODO split this off into its own crate
 pub(crate) struct ThreadPool {
     workers: Vec<Worker>,
     sender: Option<Sender<Job>>,
+    num_threads: usize
 }
 
 impl ThreadPool {
@@ -27,6 +29,7 @@ impl ThreadPool {
         Self {
             workers,
             sender: Some(sender),
+            num_threads: pool_size
         }
     }
 
@@ -39,6 +42,25 @@ impl ThreadPool {
             .unwrap()
             .send(Box::new(f))
             .map_err(|e| e.into())
+    }
+
+    /// returns the active number of threads for the pool
+    #[inline]
+    pub fn get_num_threads(&self) -> usize { self.num_threads }
+
+
+}
+
+impl Drop for ThreadPool {
+    fn drop(&mut self) {
+       // drop the sender first which causes receivers to error out gracefully
+        drop(self.sender.take());
+        // now workers will error out thus unblocking their recv calls
+
+        for worker in &mut self.workers {
+            println!("Shutting down {}", worker.id);
+            worker.thread.take().unwrap().join().unwrap();
+        }
     }
 }
 

@@ -5,8 +5,8 @@ use std::sync::{Arc, Mutex};
 use std::thread::JoinHandle;
 
 pub(crate) struct Worker {
-    id: usize,
-    thread: Option<JoinHandle<()>>,
+    pub(super) id: usize,
+    pub(super) thread: Option<JoinHandle<()>>,
 }
 
 impl Worker {

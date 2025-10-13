@@ -1,11 +1,14 @@
 use crate::files_proc::model::file_ident::BomFileIdentifier;
 use crate::files_proc::model::input_file_type::InputFileType;
-use crate::files_proc::traits::SingleFileProcProvider;
+use crate::files_proc::traits::{MultipleFilesProcProvider, SingleFileProcProvider};
 use crate::lib_utils::errors::Vex2PdfError;
 use std::collections::HashSet;
 use std::hash::Hash;
 use std::path::{Path, PathBuf};
+use crate::lib_utils::concurrency::threadpool::ThreadPool;
+
 //FIXME add documentation
+#[derive(Default)]
 pub struct FilesPendingProc<P: AsRef<Path> + Eq + Hash> {
     files: HashSet<BomFileIdentifier<P>>,
 }
@@ -26,7 +29,7 @@ impl<P: AsRef<Path> + Eq + Hash> FilesPendingProc<P> {
     }
 
     #[inline]
-    pub fn get_files(&self) -> &HashSet<BomFileIdentifier<P>> {
+    pub fn get_files_ref(&self) -> &HashSet<BomFileIdentifier<P>> {
         &self.files
     }
 
@@ -75,23 +78,54 @@ impl<P: AsRef<Path> + Eq + Hash> FilesPendingProc<P> {
 
     /// get count of files of the given type
     pub fn get_file_count_by_type(&self, file_type: InputFileType) -> usize {
-        self.get_files()
+        self.get_files_ref()
             .iter()
             .filter(|&k| *k.get_type() == file_type)
             .count()
     }
 
-    pub fn process<T: SingleFileProcProvider<P>>(&self) -> Result<(), Vex2PdfError> {
-        todo!()
+    pub fn get_file_count(&self) -> usize {
+        self.get_files_ref()
+            .iter()
+            .count()
     }
+
 }
 
+
+impl<P : AsRef<Path> + Eq + Hash> IntoIterator for FilesPendingProc<P> {
+    type Item = BomFileIdentifier<P>;
+    type IntoIter = std::collections::hash_set::IntoIter<BomFileIdentifier<P>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.files.into_iter()
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::fs;
     use std::io::Read;
     use std::path::PathBuf;
+    use crate::files_proc::processor::DefaultFilesProcessor;
+    use crate::files_proc::traits::FileSearchProvider;
+
+    macro_rules! create_multiple_files {
+        ($x:expr) => {{
+            let mut processor = FilesPendingProc::<PathBuf>::new();
+            let mut files = Vec::with_capacity($x);
+
+            for _ in 0..$x {
+                files.push(TempFile::with_timestamp_prefix("test.json"));
+            }
+
+            for file in &files {
+                let _ = processor.add_supported_file(file.path.clone());
+            }
+
+            (files, processor)
+        }};
+    }
 
     struct TempFile {
         path: PathBuf,
@@ -128,13 +162,13 @@ mod tests {
     #[test]
     fn test_new() {
         let processor: FilesPendingProc<PathBuf> = FilesPendingProc::new();
-        assert!(processor.get_files().is_empty());
+        assert!(processor.get_files_ref().is_empty());
     }
 
     #[test]
     fn test_with_capacity() {
         let processor: FilesPendingProc<PathBuf> = FilesPendingProc::with_capacity(10);
-        assert!(processor.get_files().is_empty());
+        assert!(processor.get_files_ref().is_empty());
         // Note: capacity testing is not directly observable in HashSet
     }
 
@@ -146,7 +180,7 @@ mod tests {
         let result = processor.add_supported_file(temp_file.path.as_path());
 
         assert!(result.is_ok());
-        assert_eq!(processor.get_files().len(), 1);
+        assert_eq!(processor.get_files_ref().len(), 1);
     }
 
     #[test]
@@ -158,7 +192,7 @@ mod tests {
 
         assert!(result.is_err());
         assert!(matches!(result, Err(Vex2PdfError::UnsupportedFileType)));
-        assert!(processor.get_files().is_empty());
+        assert!(processor.get_files_ref().is_empty());
     }
 
     #[test]
@@ -175,7 +209,7 @@ mod tests {
         assert!(result1.is_ok());
         assert!(result2.is_ok());
         // HashSet should prevent duplicates
-        assert_eq!(processor.get_files().len(), 1);
+        assert_eq!(processor.get_files_ref().len(), 1);
     }
 
     #[test]
@@ -187,7 +221,7 @@ mod tests {
         let result = processor.add_sup_file_ignore(temp_file.path.as_path(), &ignored_types);
 
         assert!(result.is_ok());
-        assert_eq!(processor.get_files().len(), 1);
+        assert_eq!(processor.get_files_ref().len(), 1);
     }
 
     #[test]
@@ -201,7 +235,7 @@ mod tests {
 
         assert!(result.is_err());
         assert!(matches!(result, Err(Vex2PdfError::IgnoredByUser)));
-        assert!(processor.get_files().is_empty());
+        assert!(processor.get_files_ref().is_empty());
     }
 
     #[test]
@@ -215,7 +249,7 @@ mod tests {
 
         assert!(result.is_err());
         assert!(matches!(result, Err(Vex2PdfError::UnsupportedFileType)));
-        assert!(processor.get_files().is_empty());
+        assert!(processor.get_files_ref().is_empty());
     }
 
     #[test]
@@ -229,7 +263,7 @@ mod tests {
 
         assert!(result1.is_ok());
         assert!(result2.is_ok());
-        assert_eq!(processor.get_files().len(), 2);
+        assert_eq!(processor.get_files_ref().len(), 2);
     }
 
     #[test]
@@ -238,12 +272,18 @@ mod tests {
         let temp_json = TempFile::with_timestamp_prefix("test.json");
         let _ = processor.add_supported_file(temp_json.path.as_path());
 
-        let files_ref = processor.get_files();
+        let files_ref = processor.get_files_ref();
         assert_eq!(files_ref.len(), 1);
         // Verify it's immutable reference - this shouldn't compile if uncommented:
         // files_ref.insert(BomFileIdentifier::build(PathBuf::from("test2.json")).unwrap());
     }
 
+
+    #[test]
+    fn test_file_count() {
+        let (_files, processor) = create_multiple_files!(6);
+        assert_eq!(processor.get_file_count(), 6);
+    }
     #[test]
     fn test_file_count_by_type() {
         let mut processor = FilesPendingProc::<&Path>::new();
@@ -263,5 +303,19 @@ mod tests {
             processor.get_file_count_by_type(InputFileType::UNSUPPORTED),
             0
         );
+    }
+    #[test]
+    fn test_consuming_iter() {
+        let count = 6;
+        let (_, processor) = create_multiple_files!(count);
+
+
+        // Test consuming iteration on FilesPendingProc
+        let mut iter_count = 0usize;
+        for _file in processor {
+            iter_count += 1;
+        }
+
+        assert_eq!(count, iter_count);
     }
 }

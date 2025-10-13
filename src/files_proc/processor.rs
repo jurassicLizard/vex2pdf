@@ -1,48 +1,39 @@
 use crate::files_proc::model::file_ident::BomFileIdentifier;
 use crate::files_proc::model::files_pending_proc::FilesPendingProc;
 use crate::files_proc::model::input_file_type::InputFileType;
-use crate::files_proc::traits::{FileSearchProvider, SingleFileProcProvider};
+use crate::files_proc::traits::{FileSearchProvider, MultipleFilesProcProvider, SingleFileProcProvider};
 use crate::lib_utils::config::Config;
 use crate::lib_utils::errors::Vex2PdfError;
-use crate::utils::{parse_vex_json, parse_vex_xml};
+use crate::utils::{get_output_pdf_path, parse_vex_json, parse_vex_xml};
 use cyclonedx_bom::prelude::Bom;
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::hash::Hash;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
+use crate::lib_utils::concurrency::threadpool::ThreadPool;
+use crate::pdf::generator::PdfGenerator;
 
 /// The default processor implementation for this crate
+#[derive(Default)]
 pub(crate) struct DefaultFilesProcessor {
-    config: Arc<Config>,
+    config: Config,
 }
 
 impl DefaultFilesProcessor {
     pub(crate) fn new(config: Config) -> Self {
         Self {
-            config: Arc::new(config),
+            config
         }
     }
 }
 
-impl<P: AsRef<Path> + Eq + Hash> SingleFileProcProvider<P> for DefaultFilesProcessor {
-    fn process_single_file(&self, file: BomFileIdentifier<P>) -> Result<Bom, Vex2PdfError> {
-        println!("Processing {}", file.get_path().as_ref().display());
 
-        match file.get_type() {
-            InputFileType::XML => {
-                parse_vex_xml(file.get_path()).map_err(|e| Vex2PdfError::Parse(e.to_string()))
-            }
-            InputFileType::JSON => {
-                parse_vex_json(file.get_path()).map_err(|e| Vex2PdfError::Parse(e.to_string()))
-            }
-            InputFileType::UNSUPPORTED => Err(Vex2PdfError::UnsupportedFileType),
-        }
-    }
-}
 
 impl FileSearchProvider for DefaultFilesProcessor {
-    fn find_files(&self) -> Result<FilesPendingProc<PathBuf>, Vex2PdfError> {
+    type OkType = ProcessorReady<PathBuf>;
+    type ErrType = Vex2PdfError ;
+    fn find_files(self) -> Result<Self::OkType, Self::ErrType> {
         // process map ignored pattern map
         let ignored_patterns_map = (&self.config).file_types_to_process.as_ref();
 
@@ -96,7 +87,7 @@ impl FileSearchProvider for DefaultFilesProcessor {
         }
 
         // inform over search results
-        if ret.get_files().is_empty() {
+        if ret.get_files_ref().is_empty() {
             println!("No parseable files in selected path");
         } else {
             println!(
@@ -109,6 +100,90 @@ impl FileSearchProvider for DefaultFilesProcessor {
             );
         }
 
-        Ok(ret)
+        Ok(ProcessorReady {
+            config: Arc::new(self.config),
+            files: ret
+        })
+    }
+}
+
+#[derive(Default)]
+pub(crate) struct DefaultSingleFileProcessor;
+
+impl<P: AsRef<Path> + Eq + Hash + Send +'static> SingleFileProcProvider<P> for DefaultSingleFileProcessor<> {
+    fn process_single_file(&self, file: BomFileIdentifier<P>, config: Arc<Config>) -> Result<(), Vex2PdfError> {
+        println!("Processing {}", file.get_path().as_ref().display());
+
+        // Get BoM Object
+        let bom = match file.get_type() {
+            InputFileType::XML => {
+                match parse_vex_xml(file.get_path()).map_err(|e| Vex2PdfError::Parse(e.to_string())) {
+                    Ok(bom) => bom,
+                    Err(e) => return Err(e)
+                }
+            }
+            InputFileType::JSON => {
+                match parse_vex_json(file.get_path()).map_err(|e| Vex2PdfError::Parse(e.to_string())) {
+                    Ok(bom) => bom,
+                    Err(e) => return Err(e)
+                }
+            }
+            InputFileType::UNSUPPORTED => return Err(Vex2PdfError::UnsupportedFileType),
+        };
+
+
+        //FIXME change generator signature to use config
+
+        // Generate output PDF path with same base name
+        let generator = PdfGenerator::default();
+
+        println!("Generating PDF:  {}", file.get_path().as_ref().display());
+
+        // Generate the PDF
+
+        match generator.generate_pdf(&bom,get_output_pdf_path(file.get_path().as_ref())) {
+
+            Ok(_) => println!("Successfully generated PDF: {}", file.get_path().as_ref().display()),
+            Err(e) => {
+                println!("Failed to generate PDF for {}: {}", file.get_path().as_ref().display(), e)
+            }
+        }
+
+
+
+        Ok(())
+    }
+}
+pub(crate) struct ProcessorReady<P : AsRef<Path> + Eq + Hash> {
+    config: Arc<Config>,
+    pub(super) files: FilesPendingProc<P>
+}
+
+
+
+
+impl<P: AsRef<Path> + Eq + Hash + Send + 'static> MultipleFilesProcProvider<P> for ProcessorReady<P> {
+    type OkType = ();
+    type ErrType = Vex2PdfError;
+
+    fn process(self) -> Result<Self::OkType, Self::ErrType> {
+
+        let pool = ThreadPool::default();
+
+        let config = self.config;
+
+        for file in self.files {
+            let single_file_proc = DefaultSingleFileProcessor::default();
+
+            let config_clone = Arc::clone(&config);
+            pool.execute(move || if let Err(e) =  single_file_proc.process_single_file(file,config_clone) {
+               eprintln!("{e}");
+            }).expect("Failed to send job to pool. Consider disabling Multithreading if issues persist");
+        }
+
+
+
+        Ok(())
+        // pool drops gracefully and cleans up here blocking until all jobs are finished
     }
 }
