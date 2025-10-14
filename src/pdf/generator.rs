@@ -7,6 +7,7 @@
 //! components, and document metadata.
 //!
 
+use crate::lib_utils::config::Config;
 use crate::pdf::font_config::FontsDir;
 use cyclonedx_bom::models::tool::Tools;
 use cyclonedx_bom::prelude::Bom;
@@ -16,6 +17,22 @@ use genpdf::{Alignment, Document, Element};
 use std::collections::HashMap;
 use std::io;
 use std::path::Path;
+use std::sync::Arc;
+
+// begin macro utilities
+macro_rules! create_versioned_comp_styled {
+    ($comp_name:expr,$version_option:expr,$comp_style:expr,$version_style:expr) => {{
+        let mut meta_tool_para =
+            Paragraph::default().styled_string($comp_name.to_string(), $comp_style);
+
+        if let Some(tool_ver) = &$version_option {
+            let tool_ver_str = StyledString::new(format!(" ({tool_ver})"), $version_style);
+            meta_tool_para.push(tool_ver_str);
+        }
+        meta_tool_para
+    }};
+}
+// end macro utilities
 
 type ComponentTuple<'b> = (&'b str, &'b str);
 pub struct PdfGenerator<'a> {
@@ -28,21 +45,46 @@ pub struct PdfGenerator<'a> {
     cve_id_style: Style,
     /// This is the title of the report; which is the first heading
     /// in the first page if no value is given a default title is used.
-    report_title: Option<&'a str>,
+    #[deprecated(
+        since = "0.9.0",
+        note = "this will be removed at the future minor release, new implementation uses `crate::lib_utils::config::Config` instead"
+    )]
+    _report_title: Option<&'a str>,
     /// Sets the PDF document's metadata title that appears in PDF reader applications.
     /// This is distinct from the filename on disk (which typically matches the original file with a .pdf extension).
     /// If not specified, a default title will be used.
-    pdf_meta_name: Option<&'a str>,
+    #[deprecated(
+        since = "0.9.0",
+        note = "this will be removed at the future minor release, new implementation uses `crate::lib_utils::config::Config` instead"
+    )]
+    _pdf_meta_name: Option<&'a str>,
     /// Controls whether a `No Vulnerabilities` message is shown if there are no vulnerabilities
-    show_novulns_msg: bool,
+    #[deprecated(
+        since = "0.9.0",
+        note = "this will be removed at the future minor release, new implementation uses `crate::lib_utils::config::Config` instead"
+    )]
+    _show_novulns_msg: bool,
     /// Controls whether to treat the BoM as a CycloneDX or a CycloneDX-VEX
     /// when set to `true` only a list of components is shown ignoring
     /// the vulnerabilities section completely
-    pure_bom_novulns: bool,
+    #[deprecated(
+        since = "0.9.0",
+        note = "this will be removed at the future minor release, new implementation uses `crate::lib_utils::config::Config` instead"
+    )]
+    _pure_bom_novulns: bool,
     /// Shows the component list even with vulnerabilities. The difference to [`pure_bom_novulns`] is that show_components
     /// dumps the component list after the Vulnerabilities whereas [`pure_bom_novulns`] controls
     /// showing either the vulnerabilities OR the components but not both
-    show_components: bool,
+    #[deprecated(
+        since = "0.9.0",
+        note = "this will be removed at the future minor release, new implementation uses [`crate::lib_utils::config::Config`] instead"
+    )]
+    _show_components: bool,
+    /// This is the full configuration passed to the generator, including the `show_components`, `show_novulns_msg` and more
+    /// this replaces the old behaviour of individually listing the properties as members of this struct
+    /// this is an Arc for cases where the pdfgenerator is used by multiple threads to avoid copying
+    /// around the entire configuration on every thread's stack
+    config: Arc<Config>,
 }
 
 impl Default for PdfGenerator<'_> {
@@ -71,13 +113,7 @@ impl Default for PdfGenerator<'_> {
     /// let generator: PdfGenerator = Default::default();
     /// ```
     fn default() -> Self {
-        Self::new(
-            Some(Self::get_default_report_title()),
-            Some(Self::get_default_pdf_meta_name()),
-            true,
-            false,
-            true,
-        )
+        Self::new(Arc::new(Config::default()))
     }
 }
 
@@ -98,19 +134,26 @@ impl<'a, 'b> PdfGenerator<'a> {
     /// # Examples
     ///
     /// ```rust
+    /// use std::sync::Arc;
+    /// use vex2pdf::lib_utils::config::Config;
     /// use vex2pdf::pdf::generator::PdfGenerator;
     ///
-    /// // Create a generator with custom titles showing a No Vulnerabilities message if
-    /// // the vulnerabilities array is empty and hiding the components section
-    /// let generator = PdfGenerator::new(Some("Security Analysis Results"), Some("Product Security Report"),true,false,true);
+    /// //  *Warning* : While this is a valid use of the software config Default implementation
+    /// //  it should be noted that default reads environment settings like the working directory and
+    /// //  thus may not fit your needs.
+    ///
+    /// //  Create a generator with custom titles showing a No Vulnerabilities message if
+    /// // the vulnerabilities array is empty and hiding the components sections
+    /// let config = Config {
+    ///     show_novulns_msg: true,
+    ///     show_components: false,
+    ///     report_title: Some(String::from("Custom title")),
+    ///     pdf_meta_name: Some(String::from("Custom meta name")),
+    ///     ..Config::default()
+    /// };
+    /// let generator = PdfGenerator::new(Arc::new(config));
     /// ```
-    pub fn new(
-        report_title: Option<&'a str>,
-        pdf_meta_name: Option<&'a str>,
-        show_novulns_msg: bool,
-        pure_bom_novulns: bool,
-        show_components: bool,
-    ) -> Self {
+    pub fn new(config: Arc<Config>) -> Self {
         // Initialize with default styles
         let title_style = Style::new()
             .with_font_size(18)
@@ -139,7 +182,7 @@ impl<'a, 'b> PdfGenerator<'a> {
             .with_font_size(11)
             .with_color(Color::Rgb(139, 0, 0))
             .bold();
-
+        #[allow(deprecated)]
         Self {
             title_style,
             header_style,
@@ -148,11 +191,12 @@ impl<'a, 'b> PdfGenerator<'a> {
             comp_name_style,
             version_style,
             cve_id_style,
-            report_title,
-            pdf_meta_name,
-            show_novulns_msg,
-            show_components,
-            pure_bom_novulns,
+            _report_title: Some(Self::get_default_report_title()),
+            _pdf_meta_name: Some(Self::get_default_pdf_meta_name()),
+            _show_novulns_msg: config.show_novulns_msg,
+            _show_components: config.show_components,
+            _pure_bom_novulns: config.pure_bom_novulns,
+            config,
         }
     }
 
@@ -270,16 +314,12 @@ impl<'a, 'b> PdfGenerator<'a> {
                     Tools::List(tools_list) => {
                         for tool in tools_list {
                             if let Some(tool_name) = &tool.name {
-                                let mut meta_tool_para = Paragraph::default()
-                                    .styled_string(tool_name.to_string(), self.indent_style);
-
-                                if let Some(tool_ver) = &tool.version {
-                                    let tool_ver_str = StyledString::new(
-                                        format!(" ({tool_ver})"),
-                                        self.version_style,
-                                    );
-                                    meta_tool_para.push(tool_ver_str);
-                                }
+                                let meta_tool_para = create_versioned_comp_styled!(
+                                    tool_name,
+                                    &tool.version,
+                                    self.indent_style,
+                                    self.version_style
+                                );
                                 ul_tools.push(meta_tool_para);
                             }
                         }
@@ -291,34 +331,26 @@ impl<'a, 'b> PdfGenerator<'a> {
                         // Handle components used as tools
                         if let Some(components) = &components_obj {
                             for component in &components.0 {
-                                let component_name = &component.name;
-                                let display_name = if let Some(version) = &component.version {
-                                    format!("{component_name} (v{version})")
-                                } else {
-                                    component_name.clone().to_string()
-                                };
-
-                                ul_tools.push(
-                                    Paragraph::default()
-                                        .styled_string(&display_name, self.indent_style),
+                                let styled_comp = create_versioned_comp_styled!(
+                                    &component.name,
+                                    &component.version,
+                                    self.indent_style,
+                                    self.version_style
                                 );
+                                ul_tools.push(styled_comp);
                             }
                         }
 
                         // Handle services used as tools
                         if let Some(services) = &services_obj {
                             for service in &services.0 {
-                                let service_name = &service.name;
-                                let display_name = if let Some(version) = &service.version {
-                                    format!("{service_name} (v{version})")
-                                } else {
-                                    service_name.clone().to_string()
-                                };
-
-                                ul_tools.push(
-                                    Paragraph::default()
-                                        .styled_string(&display_name, self.indent_style),
+                                let styled_service = create_versioned_comp_styled!(
+                                    &service.name,
+                                    &service.version,
+                                    self.indent_style,
+                                    self.version_style
                                 );
+                                ul_tools.push(styled_service);
                             }
                         }
                     }
@@ -374,11 +406,11 @@ impl<'a, 'b> PdfGenerator<'a> {
 
         // Add a Vulnerabilities section or a components list or both depending on user options
 
-        if !self.pure_bom_novulns {
+        if !self.config.pure_bom_novulns {
             doc = self.render_vulns(doc, vex, &comp_ref_map);
         }
 
-        if self.pure_bom_novulns || self.show_components {
+        if self.config.pure_bom_novulns || self.config.show_components {
             doc = self.render_components(doc, vex);
         }
 
@@ -391,9 +423,9 @@ impl<'a, 'b> PdfGenerator<'a> {
 
     /// report title helper
     fn get_report_title(&self) -> &str {
-        if let Some(title) = self.report_title {
+        if let Some(title) = self.config.report_title.as_ref() {
             title
-        } else if self.pure_bom_novulns {
+        } else if self.config.pure_bom_novulns {
             Self::get_default_report_title_bom()
         } else {
             Self::get_default_report_title()
@@ -402,9 +434,9 @@ impl<'a, 'b> PdfGenerator<'a> {
 
     /// Document meta name helper
     fn get_doc_meta_name(&self) -> &str {
-        if let Some(meta_name) = self.pdf_meta_name {
+        if let Some(meta_name) = self.config.pdf_meta_name.as_ref() {
             meta_name
-        } else if self.pure_bom_novulns {
+        } else if self.config.pure_bom_novulns {
             Self::get_default_pdf_meta_name_bom()
         } else {
             Self::get_default_pdf_meta_name()
@@ -424,7 +456,7 @@ impl<'a, 'b> PdfGenerator<'a> {
         }
 
         // Decide if we should show the vulnerabilities section at all
-        let show_vulns_section = vulns_available || self.show_novulns_msg;
+        let show_vulns_section = vulns_available || self.config.show_novulns_msg;
 
         if show_vulns_section {
             doc.push(Paragraph::default().styled_string("Vulnerabilities", self.header_style));
@@ -549,7 +581,7 @@ impl<'a, 'b> PdfGenerator<'a> {
         }
 
         //Add message if vulns are not available
-        if !vulns_available && self.show_novulns_msg {
+        if !vulns_available && self.config.show_novulns_msg {
             let vulns_style = Style::new()
                 .bold()
                 .with_font_size(16)

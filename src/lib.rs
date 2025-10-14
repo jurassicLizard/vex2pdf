@@ -40,10 +40,10 @@
 //! For installation instructions, usage examples, and project overview,
 //! see the [project README](https://github.com/jurassicLizard/vex2pdf/blob/master/README.md).
 //!
-// re-export upstream cyclondx bom path
-pub use cyclonedx_bom;
 // Re-export and simplify paths for consumers of this library
 pub use crate::lib_utils::run_utils as utils;
+// re-export upstream cyclondx bom path
+pub use cyclonedx_bom;
 
 pub mod files_proc {
     pub mod model {
@@ -73,15 +73,11 @@ pub mod lib_utils {
     }
 }
 
-use crate::lib_utils::run_utils::print_copyright;
-use files_proc::model::input_file_type::InputFileType;
-use lib_utils::config::Config;
-use lib_utils::run_utils::{find_files, parse_files};
-use pdf::generator::PdfGenerator;
-use std::error::Error;
 use crate::files_proc::processor::DefaultFilesProcessor;
 use crate::files_proc::traits::{FileSearchProvider, MultipleFilesProcProvider};
 use crate::lib_utils::errors::Vex2PdfError;
+use crate::lib_utils::run_utils::print_copyright;
+use lib_utils::config::Config;
 
 /// Processes CycloneDX VEX documents according to the provided configuration.
 ///
@@ -135,51 +131,12 @@ use crate::lib_utils::errors::Vex2PdfError;
 ///     process::exit(1);
 /// });
 ///
-/// if let Err(e) = vex2pdf::run(&config) {
+/// if let Err(e) = vex2pdf::run(config) {
 ///     eprintln!("Application error: {e}");
 ///     process::exit(1);
 /// }
 /// ```
-pub fn run(config: &Config) -> Result<(), Box<dyn Error>> {
-    if config.show_oss_licenses {
-        // show OSS licenses and return
-        show_full_licenses();
-
-        // abort any processing
-        return Ok(());
-    }
-
-    // Begin pdf generation
-    let report_title = config.report_title.as_deref();
-    let pdf_name = config.pdf_meta_name.as_deref();
-
-    let pdf_generator = PdfGenerator::new(
-        report_title,
-        pdf_name,
-        config.show_novulns_msg,
-        config.pure_bom_novulns,
-        config.show_components,
-    );
-
-    let mut file_count = 0usize;
-    // Find json files
-    let json_files = find_files(config, InputFileType::JSON)?;
-    // Generate PDFs out of given json files
-    parse_files(&pdf_generator, &json_files, InputFileType::JSON);
-    file_count+=json_files.map(|r| r.len()).unwrap_or(0);
-    // Find xml files and parse them
-    let xml_files = find_files(config, InputFileType::XML)?;
-    // Generate PDFs out of given xml files
-    parse_files(&pdf_generator, &xml_files, InputFileType::XML);
-
-    file_count+=xml_files.map(|r| r.len()).unwrap_or(0);
-
-    println!("Processed {file_count} files");
-    Ok(())
-}
-
-pub fn run_new(config: Config) -> Result<(), Vex2PdfError> {
-
+pub fn run(config: Config) -> Result<(), Vex2PdfError> {
     // FIXME validate output dir definition if it exists
     if config.show_oss_licenses {
         // show OSS licenses and return
@@ -189,9 +146,7 @@ pub fn run_new(config: Config) -> Result<(), Vex2PdfError> {
         return Ok(());
     }
 
-    let _ = DefaultFilesProcessor::new(config)
-        .find_files()?
-        .process();
+    let _ = DefaultFilesProcessor::new(config).find_files()?.process();
 
     Ok(())
 }

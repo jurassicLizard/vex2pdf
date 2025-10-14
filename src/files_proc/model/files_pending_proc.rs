@@ -1,11 +1,9 @@
 use crate::files_proc::model::file_ident::BomFileIdentifier;
 use crate::files_proc::model::input_file_type::InputFileType;
-use crate::files_proc::traits::{MultipleFilesProcProvider, SingleFileProcProvider};
 use crate::lib_utils::errors::Vex2PdfError;
 use std::collections::HashSet;
 use std::hash::Hash;
-use std::path::{Path, PathBuf};
-use crate::lib_utils::concurrency::threadpool::ThreadPool;
+use std::path::Path;
 
 //FIXME add documentation
 #[derive(Default)]
@@ -85,15 +83,11 @@ impl<P: AsRef<Path> + Eq + Hash> FilesPendingProc<P> {
     }
 
     pub fn get_file_count(&self) -> usize {
-        self.get_files_ref()
-            .iter()
-            .count()
+        self.get_files_ref().iter().count()
     }
-
 }
 
-
-impl<P : AsRef<Path> + Eq + Hash> IntoIterator for FilesPendingProc<P> {
+impl<P: AsRef<Path> + Eq + Hash> IntoIterator for FilesPendingProc<P> {
     type Item = BomFileIdentifier<P>;
     type IntoIter = std::collections::hash_set::IntoIter<BomFileIdentifier<P>>;
 
@@ -104,11 +98,11 @@ impl<P : AsRef<Path> + Eq + Hash> IntoIterator for FilesPendingProc<P> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::files_proc::processor::DefaultFilesProcessor;
+    use crate::files_proc::traits::FileSearchProvider;
     use std::fs;
     use std::io::Read;
     use std::path::PathBuf;
-    use crate::files_proc::processor::DefaultFilesProcessor;
-    use crate::files_proc::traits::FileSearchProvider;
 
     macro_rules! create_multiple_files {
         ($x:expr) => {{
@@ -278,7 +272,6 @@ mod tests {
         // files_ref.insert(BomFileIdentifier::build(PathBuf::from("test2.json")).unwrap());
     }
 
-
     #[test]
     fn test_file_count() {
         let (_files, processor) = create_multiple_files!(6);
@@ -308,7 +301,6 @@ mod tests {
     fn test_consuming_iter() {
         let count = 6;
         let (_, processor) = create_multiple_files!(count);
-
 
         // Test consuming iteration on FilesPendingProc
         let mut iter_count = 0usize;

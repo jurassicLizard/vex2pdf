@@ -9,7 +9,7 @@ use std::thread;
 pub(crate) struct ThreadPool {
     workers: Vec<Worker>,
     sender: Option<Sender<Job>>,
-    num_threads: usize
+    num_threads: usize,
 }
 
 impl ThreadPool {
@@ -29,7 +29,7 @@ impl ThreadPool {
         Self {
             workers,
             sender: Some(sender),
-            num_threads: pool_size
+            num_threads: pool_size,
         }
     }
 
@@ -46,14 +46,14 @@ impl ThreadPool {
 
     /// returns the active number of threads for the pool
     #[inline]
-    pub fn get_num_threads(&self) -> usize { self.num_threads }
-
-
+    pub fn get_num_threads(&self) -> usize {
+        self.num_threads
+    }
 }
 
 impl Drop for ThreadPool {
     fn drop(&mut self) {
-       // drop the sender first which causes receivers to error out gracefully
+        // drop the sender first which causes receivers to error out gracefully
         drop(self.sender.take());
         // now workers will error out thus unblocking their recv calls
 

@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Added cli arguments without changing the default behaviour of the application which is to automatically scan the current directory upon execution and work in one depth
+- Added cli arguments to env variable handling making cli arguments override environment variables
 - Added support for single-file processing instead of automatic batch processing. The default is still to scan automatically and batch process all files in the working directory
 - Added aggressive optimization profile for CI builds in Cargo.toml
 - Added re-export paths for some crate paths to simplify things for consumers
@@ -16,12 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added support for parallel processing of files
 - Added handling for working with single files
 - Added handling for a distinct working directory definition
+- Added handling for passing an input path or file which is optional and the tool reverts to default behaviour
+- Added integration tests
 
 ### Fixed
 - Fixed GitLab CI not able to test due to missing rustup dependencies
 
 ### Changed
 - Changed Env_vars as_str() method to be const to allow some compile time operations
+- Changed signature of `vex2pdf::pdf::generator::PdfGenerator::new(Option<'a str>, Option<'a str>, bool, bool, bool)` to `PdfGenerator::new(Arc<crate::lib_utils::config::Config>)`
+- Changed signature of `vex2pdf::run(config: &Config)` to `crate::run(config::Config)`, i.e. run now owns the configuration struct
+- Changed signature of `vex2pdf::utils::get_output_pdf_path` to return a `Result<T,E>`
 
 ### Deprecated
 - `VEX2PDF_VERSION_INFO` is now replaced with a cli argument and has entered a deprecation phase (will be removed by the next minor release)

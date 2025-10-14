@@ -1,6 +1,7 @@
 use super::config::Config;
 use super::run_utils;
 use crate::files_proc::model::input_file_type::InputFileType;
+use crate::lib_utils::errors::Vex2PdfError;
 use crate::pdf::generator::PdfGenerator;
 use cyclonedx_bom::errors::{BomError, JsonReadError, XmlReadError};
 use cyclonedx_bom::prelude::Bom;
@@ -8,123 +9,8 @@ use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::{fs, io};
 
-/// Finds files of a given type in the configured working directory.
-///
-/// Checks configuration to see if processing this file type is enabled,
-/// then scans the working directory for matching files.
-/// Returns None if processing is disabled for this file type.
-pub(crate) fn find_files(
-    config: &Config,
-    file_type: InputFileType,
-) -> Result<Option<Vec<PathBuf>>, Box<dyn Error>> {
-    // validate that our target scan path is a folder
-    if config.working_path.is_file() {
-        return Err(Box::new(io::Error::new(io::ErrorKind::InvalidInput,"Find files called on a regular file. This is an invalid use of this function. Expected a path validation from the caller.")));
-    }
 
-    if let Some(init_process) = config
-        .file_types_to_process
-        .as_ref()
-        .expect("value must be defined")
-        .get(&file_type)
-    {
-        if !init_process {
-            println!(
-                "Skipping {} files : deactivated by user",
-                file_type.as_str_uppercase()
-            );
-            return Ok(None);
-        }
-    }
-    println!(
-        "Scanning for {} files in: {}",
-        file_type.as_str_uppercase(),
-        config.working_path.display()
-    );
 
-    let mut files: Vec<PathBuf> = Vec::new();
-
-    // at this point we have already validated that working_path is a directory we can proceed
-    for entry in fs::read_dir(&config.working_path)? {
-        let entry = entry?;
-        let path = entry.path();
-
-        if path.is_file() {
-            if let Some(extension) = path.extension() {
-                if extension.to_string_lossy().to_lowercase() == file_type.as_str_lowercase() {
-                    files.push(path);
-                }
-            }
-        }
-    }
-
-    // inform over search results
-    if files.is_empty() {
-        println!(
-            "No {} files found in the current directory.",
-            file_type.as_str_uppercase()
-        );
-    } else {
-        println!(
-            "Found {} {} files",
-            files.len(),
-            file_type.as_str_uppercase()
-        );
-    }
-
-    Ok(Some(files))
-}
-
-/// Processes a list of files found by find_files() and generates PDFs.
-///
-/// Iterates through each file in the provided list, attempts to parse it
-/// according to the specified input file type, and generates a PDF if successful.
-/// Does nothing if the files parameter is None.
-//
-/// # Parameters
-///
-/// `pdf_generator`: A reference to the PdfGenerator
-/// `files`: An Optional list of files or None. Use Cases for None include the use-case when
-///  file processing is disabled for a certain type and we pass None to avoid parsing all together
-/// `input_file_type`: the file type to process
-///
-pub(crate) fn parse_files(
-    pdf_generator: &PdfGenerator,
-    files: &Option<Vec<PathBuf>>,
-    input_file_type: InputFileType,
-) {
-    if let Some(files) = &files {
-        // Process each JSON file
-        for file_path in files {
-            println!("Processing: {}", file_path.display());
-
-            // Try to parse the JSON file as a CycloneDX Bom
-            let parse_res = if input_file_type == InputFileType::JSON {
-                run_utils::parse_vex_json(file_path)
-            } else {
-                run_utils::parse_vex_xml(file_path)
-            };
-
-            match parse_res {
-                Ok(vex) => {
-                    // Generate output PDF path with same base name
-                    let output_path = run_utils::get_output_pdf_path(file_path);
-
-                    println!("Generating PDF: {}", output_path.display());
-
-                    // Generate the PDF
-                    match pdf_generator.generate_pdf(&vex, &output_path) {
-                        Ok(_) => println!("Successfully generated PDF: {}", output_path.display()),
-                        Err(e) => {
-                            println!("Failed to generate PDF for {}: {}", file_path.display(), e)
-                        }
-                    }
-                }
-                Err(e) => println!("Failed to parse {}: {}", file_path.display(), e),
-            }
-        }
-    }
-}
 
 /// Parses an XML file into a CycloneDX Bom object.
 ///
@@ -226,11 +112,53 @@ fn print_downgrade_warning() {
 ///
 /// Creates a new path with the same base name as the input file but with a .pdf extension.
 /// Used internally to determine where to save generated PDF files.
-pub fn get_output_pdf_path(file_path: &Path) -> PathBuf {
-    if let Some(file_stem) = file_path.file_stem() {
-        file_path.with_file_name(format!("{}.pdf", file_stem.to_string_lossy()))
-    } else {
-        file_path.with_extension("pdf")
+///
+/// ## Arguments
+/// - dest_dir : Path to build from **Optional**
+/// - file_path : file path to convert from
+///
+/// ## Behavior
+///
+/// - If `dest_dir` is `None`, replaces the input file's extension with `.pdf` in the same directory
+/// - If `dest_dir` is `Some(dir)` and is a directory, creates the PDF in that directory with the input file's base name
+/// - If `dest_dir` is `Some(file)` and is a file, returns an error
+///
+/// ## Examples
+///
+/// ```rust
+/// use std::path::PathBuf;
+/// use vex2pdf::lib_utils::run_utils;
+///
+/// let path = PathBuf::from("/tmp/file.json");
+///
+/// // No dest_dir: PDF goes in same directory as input
+/// assert_eq!(
+///     run_utils::get_output_pdf_path(None, &path).unwrap(),
+///     PathBuf::from("/tmp/file.pdf")
+/// );
+///
+/// // dest_dir is a directory: PDF goes in that directory
+/// assert_eq!(
+///     run_utils::get_output_pdf_path(Some(PathBuf::from("/tmp/output").as_path()), &path).unwrap(),
+///     PathBuf::from("/tmp/output/file.pdf")
+/// );
+/// ```
+pub fn get_output_pdf_path(
+    dest_dir: Option<&Path>,
+    file_path: &Path,
+) -> Result<PathBuf, Vex2PdfError> {
+    let file_stem = file_path
+        .file_stem()
+        .ok_or_else(|| Vex2PdfError::InvalidFileStem(file_path.to_path_buf()))?;
+
+    let pdf_name = format!("{}.pdf", file_stem.to_string_lossy());
+
+    match dest_dir {
+        None => Ok(file_path.with_file_name(pdf_name)),
+        Some(out_dir) if out_dir.is_file() => {
+            Err(Vex2PdfError::InvalidOutputDir(out_dir.to_path_buf()))
+        }
+        Some(out_dir) => Ok(out_dir.join(&pdf_name)),
     }
 }
 
@@ -242,4 +170,70 @@ pub fn print_copyright() {
     );
     println!("Copyright (c) 2025 Salem B. - MIT Or Apache 2.0 License");
     println!();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile;
+    use tempfile::env::temp_dir;
+    use tempfile::NamedTempFile;
+
+    #[test]
+    fn test_path_build_no_dest_dir() {
+        let path = PathBuf::from("/tmp/file.json");
+
+        // No dest_dir: PDF should be in same directory as input
+        assert_eq!(
+            get_output_pdf_path(None, path.as_path()).unwrap(),
+            PathBuf::from("/tmp/file.pdf")
+        );
+    }
+
+    #[test]
+    fn test_path_build_with_dest_dir() {
+        let path = PathBuf::from("/tmp/file.json");
+
+        // dest_dir provided: PDF should be in dest_dir with input's base name
+        assert_eq!(
+            get_output_pdf_path(
+                Some(PathBuf::from("/tmp/test_path").as_path()),
+                path.as_path()
+            )
+            .unwrap(),
+            PathBuf::from("/tmp/test_path/file.pdf")
+        );
+
+        assert_eq!(
+            get_output_pdf_path(Some(PathBuf::from("/output/dir").as_path()), path.as_path())
+                .unwrap(),
+            PathBuf::from("/output/dir/file.pdf")
+        );
+    }
+
+    #[test]
+    fn test_path_build_real_dir_pdf() {
+        let path = PathBuf::from("/tmp/file.json");
+        let new_dest_path = temp_dir();
+
+        // Real directory: PDF should be created inside it
+        assert_eq!(
+            get_output_pdf_path(None, path.as_path()).unwrap(),
+            PathBuf::from("/tmp/file.pdf")
+        );
+        assert_eq!(
+            get_output_pdf_path(Some(new_dest_path.as_path()), path.as_path()).unwrap(),
+            new_dest_path.join("file.pdf")
+        );
+    }
+
+    #[test]
+    fn test_path_build_file_as_dest_dir_fails() {
+        let path = PathBuf::from("/tmp/file.json");
+        let fake_file = NamedTempFile::new().unwrap();
+
+        // Passing a file as dest_dir should return an error
+        let result = get_output_pdf_path(Some(fake_file.path()), path.as_path());
+        assert!(result.is_err());
+    }
 }

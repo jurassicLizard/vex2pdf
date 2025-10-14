@@ -1,5 +1,5 @@
 //! This section is dedicated to all logic related to argument handling for the cli
-//! All  Arguments are optional and the software is designed to work with default values
+//! All Arguments are optional, and the software is designed to work with default values
 //! Whether it is environment variables or cli arguments.
 //!
 
@@ -10,10 +10,11 @@ use std::{fs, io};
 #[derive(Parser)]
 #[command(version,about,long_about = None)]
 pub struct CliArgs {
-    /// File to process (JSON or XML). Please note that this tool is designed for batch processing
-    /// so If this is not set the tool scans the current directory for all parseable files and converts them
-    #[arg(value_name = "FILE_TO_PROCESS")]
-    pub file: Option<PathBuf>,
+    /// File to process (JSON or XML) or Folder containing said file types. Please note that 
+    /// this tool is designed for batch processing. So If this is not set the tool scans the current directory for all parseable files and converts them.
+    /// if a folder is set the tool scans just the first level of the directory (non-recursive).
+    #[arg(value_name = "FILE_OR_FOLDER_TO_PROCESS", env= EnvVarNames::WorkingPath.as_str())]
+    pub input: Option<PathBuf>,
 
     #[arg(short='m', long="show-novulns-msg", env= EnvVarNames::NoVulnsMsg.as_str())]
     pub show_novulns_msg: Option<bool>,

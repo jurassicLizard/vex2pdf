@@ -29,7 +29,7 @@ impl Config {
         // validate potential permissions issues
         let _ = args.validate()?;
 
-        let working_path = args.file.unwrap_or(std::env::current_dir()?);
+        let working_path = args.input.unwrap_or(std::env::current_dir()?);
         let output_dir = args.output_dir.unwrap_or(std::env::current_dir()?);
         let show_novulns_msg = args
             .show_novulns_msg

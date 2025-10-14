@@ -33,6 +33,9 @@ pub enum EnvVarNames {
     PureBomNoVulns,
     /// Controls whether to show the list of components after the vulnerabilities; the default is `true`
     ShowComponentList,
+    /// Working path which could be a dir in which case the tool will automatically scan all files in that directory with only one depth level
+    /// or it could be a file in which case that single file is converted. This is optional and set by default to the working directory
+    WorkingPath,
     /// Overrides the output directory for the generated files, by default they get generated in the working directory
     OutputDir,
 }
@@ -52,6 +55,7 @@ impl EnvVarNames {
             EnvVarNames::PureBomNoVulns => "VEX2PDF_PURE_BOM_NOVULNS",
             EnvVarNames::ShowComponentList => "VEX2PDF_SHOW_COMPONENTS",
             EnvVarNames::OutputDir => "VEX2PDF_OUTPUT_DIR",
+            EnvVarNames::WorkingPath => "VEX2PDF_WORKING_PATH"
         }
     }
     /// this is useful for environment variables which should be on by default

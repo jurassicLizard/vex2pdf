@@ -25,6 +25,10 @@ genpdf = "0.2.0"
 serde_json = "1.0.140"
 
 
+[dev-dependencies]
+blake3 = "1.8.2"
+tempfile = "3.23.0"
+
 [profile.release]
 strip = true
 
