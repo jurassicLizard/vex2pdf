@@ -76,13 +76,8 @@ mod tests {
     #[test]
     fn test_nonexisting_files() {
         let does_not_exist = BomFileIdentifier::build("/does/not/exist");
-        match does_not_exist {
-            Err(e) => match e {
-                Vex2PdfError::Io(_) => (),
-                _ => panic!("Must return an Io error"),
-            },
-            _ => panic!("must return an error"),
-        }
+
+        assert!(matches!(does_not_exist, Err(Vex2PdfError::Io(_))));
     }
 
     #[test]
@@ -96,5 +91,12 @@ mod tests {
         assert!(supported_file_xml.is_supported_type());
         assert!(!unsupported_file.is_supported_type());
         assert!(!unsupported_folder.is_supported_type());
+    }
+
+    #[test]
+    fn test_file_path_getter() {
+        let sample_file = BomFileIdentifier::mock_new("/path/to/file.xml");
+
+        assert_eq!(*sample_file.get_path(), "/path/to/file.xml");
     }
 }

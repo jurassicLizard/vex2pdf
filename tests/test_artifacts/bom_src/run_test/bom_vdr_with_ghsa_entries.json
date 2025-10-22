@@ -1,0 +1,2418 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:439fe70b-a94d-448f-ae65-b6412c812a2f",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2025-01-15T10:00:00Z",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "author": "anchore",
+          "name": "grype",
+          "version": "0.91.0"
+        }
+      ]
+    },
+    "component": {
+      "type": "application",
+      "bom-ref": "test-application-ref",
+      "name": "Test Application",
+      "version": "1.0.0"
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "b36163950957910f",
+      "type": "library",
+      "name": "axios",
+      "version": "1.7.9",
+      "cpe": "cpe:2.3:a:axios:axios:1.7.9:*:*:*:*:*:*:*"
+    },
+    {
+      "bom-ref": "7cbc46055f673908",
+      "type": "library",
+      "name": "boost",
+      "version": "1.75.0",
+      "cpe": "cpe:2.3:a:boost:boost:1.75.0:*:*:*:*:*:*:*"
+    },
+    {
+      "bom-ref": "a3921b46cafa1de0",
+      "type": "library",
+      "name": "grpc",
+      "version": "1.35.0",
+      "cpe": "cpe:2.3:a:grpc:grpc:1.35.0:*:*:*:*:*:*:*"
+    },
+    {
+      "bom-ref": "89172be1563732ba",
+      "type": "library",
+      "name": "icons-material",
+      "version": "5.16.4",
+      "cpe": "cpe:2.3:a:mui:icons-material:5.16.4:*:*:*:*:*:*:*"
+    },
+    {
+      "bom-ref": "dda3f983128333f8",
+      "type": "library",
+      "name": "json5",
+      "version": "0.9.11",
+      "cpe": "cpe:2.3:a:dpranke:json5:0.9.11:*:*:*:*:*:*:*"
+    },
+    {
+      "bom-ref": "1c2a10ca6a68744e",
+      "type": "library",
+      "name": "notebook",
+      "version": "7.0.7",
+      "cpe": "cpe:2.3:a:jupyter:notebook:7.0.7:*:*:*:*:*:*:*"
+    },
+    {
+      "bom-ref": "f1856579877fb93c",
+      "type": "library",
+      "name": "qnx_software_development_platform",
+      "version": "7.1",
+      "cpe": "cpe:2.3:a:blackberry:qnx_software_development_platform:7.1:*:*:*:*:*:*:*"
+    },
+    {
+      "bom-ref": "161f270cf66f3df7",
+      "type": "library",
+      "name": "setuptools",
+      "version": "63.2.0",
+      "cpe": "cpe:2.3:a:python:setuptools:63.2.0:*:*:*:*:*:*:*"
+    },
+    {
+      "bom-ref": "cfe43bcb7a0608cb",
+      "type": "library",
+      "name": "sqlite",
+      "version": "3.45.2",
+      "cpe": "cpe:2.3:a:sqlite:sqlite:3.45.2:*:*:*:*:*:*:*"
+    },
+    {
+      "bom-ref": "e0b53d567b732886",
+      "type": "library",
+      "name": "starlette",
+      "version": "0.17.1",
+      "cpe": "cpe:2.3:a:encode:starlette:0.17.1:*:*:*:*:*:*:*"
+    },
+    {
+      "bom-ref": "c05f0bc96ef0f6da",
+      "type": "library",
+      "name": "tough-cookie",
+      "version": "4.1.2",
+      "cpe": "cpe:2.3:a:awaterma:tough-cookie:4.1.2:*:*:*:*:*:*:*"
+    },
+    {
+      "bom-ref": "bb4b33b4239d31a5",
+      "type": "library",
+      "name": "word-wrap",
+      "version": "1.2.3",
+      "cpe": "cpe:2.3:a:jonschlinkert:word-wrap:1.2.3:*:*:*:*:*:*:*"
+    },
+    {
+      "bom-ref": "637488c829246381",
+      "type": "library",
+      "name": "ws",
+      "version": "8.13.0",
+      "cpe": "cpe:2.3:a:lpinca:ws:8.13.0:*:*:*:*:*:*:*"
+    },
+    {
+      "bom-ref": "safe-component-1",
+      "type": "library",
+      "name": "lodash",
+      "version": "4.17.21",
+      "cpe": "cpe:2.3:a:lodash:lodash:4.17.21:*:*:*:*:*:*:*"
+    },
+    {
+      "bom-ref": "safe-component-2",
+      "type": "library",
+      "name": "express",
+      "version": "4.18.2",
+      "cpe": "cpe:2.3:a:expressjs:express:4.18.2:*:*:*:*:*:*:*"
+    },
+    {
+      "bom-ref": "safe-component-3",
+      "type": "library",
+      "name": "numpy",
+      "version": "1.24.0",
+      "cpe": "cpe:2.3:a:numpy:numpy:1.24.0:*:*:*:*:*:*:*"
+    }
+  ],
+  "vulnerabilities": [
+    {
+      "bom-ref": "urn:uuid:6f73c212-31e8-41b3-8608-1f63d4e09eaa",
+      "id": "CVE-2025-27152",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-27152"
+      },
+      "references": [
+        {
+          "id": "CVE-2025-27152",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-27152"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 7.7,
+          "severity": "high",
+          "method": "other",
+          "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N/E:P/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X"
+        }
+      ],
+      "description": "axios is a promise based HTTP client for the browser and node.js. The issue occurs when passing absolute URLs rather than protocol-relative URLs to axios. Even if ⁠baseURL is set, axios sends the request to the specified absolute URL, potentially causing SSRF and credential leakage. This issue impacts both server-side and client-side usage of axios. This issue is fixed in 1.8.2.",
+      "advisories": [
+        {
+          "url": "https://github.com/axios/axios/issues/6463"
+        },
+        {
+          "url": "https://github.com/axios/axios/security/advisories/GHSA-jr5f-v2jv-69x6"
+        },
+        {
+          "url": "https://github.com/axios/axios/security/advisories/GHSA-jr5f-v2jv-69x6"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "b36163950957910f"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:2821a1db-42c5-4162-98e4-73a55ad31cc9",
+      "id": "GHSA-jr5f-v2jv-69x6",
+      "source": {
+        "name": "github-language-javascript",
+        "url": "https://github.com/advisories/GHSA-jr5f-v2jv-69x6"
+      },
+      "references": [
+        {
+          "id": "GHSA-jr5f-v2jv-69x6",
+          "source": {
+            "name": "github-language-javascript",
+            "url": "https://github.com/advisories/GHSA-jr5f-v2jv-69x6"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "severity": "high",
+          "method": "other"
+        }
+      ],
+      "description": "axios Requests Vulnerable To Possible SSRF and Credential Leakage via Absolute URL",
+      "affects": [
+        {
+          "ref": "b36163950957910f"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:d5d7b2bf-97f6-4c10-bd8e-1add18b50ec0",
+      "id": "CVE-2016-9840",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-9840"
+      },
+      "references": [
+        {
+          "id": "CVE-2016-9840",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-9840"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 8.8,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+        },
+        {
+          "score": 6.8,
+          "severity": "high",
+          "method": "CVSSv2",
+          "vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P"
+        }
+      ],
+      "description": "inftrees.c in zlib 1.2.8 might allow context-dependent attackers to have unspecified impact by leveraging improper pointer arithmetic.",
+      "advisories": [
+        {
+          "url": "http://lists.opensuse.org/opensuse-updates/2016-12/msg00127.html"
+        },
+        {
+          "url": "http://lists.opensuse.org/opensuse-updates/2017-01/msg00050.html"
+        },
+        {
+          "url": "http://lists.opensuse.org/opensuse-updates/2017-01/msg00053.html"
+        },
+        {
+          "url": "http://www.openwall.com/lists/oss-security/2016/12/05/21"
+        },
+        {
+          "url": "http://www.oracle.com/technetwork/security-advisory/cpuoct2017-3236626.html"
+        },
+        {
+          "url": "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html"
+        },
+        {
+          "url": "http://www.securityfocus.com/bid/95131"
+        },
+        {
+          "url": "http://www.securitytracker.com/id/1039427"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2017:1220"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2017:1221"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2017:1222"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2017:2999"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2017:3046"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2017:3047"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2017:3453"
+        },
+        {
+          "url": "https://bugzilla.redhat.com/show_bug.cgi?id=1402345"
+        },
+        {
+          "url": "https://github.com/madler/zlib/commit/6a043145ca6e9c55184013841a67b2fef87e44c0"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2019/03/msg00027.html"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2020/01/msg00030.html"
+        },
+        {
+          "url": "https://security.gentoo.org/glsa/201701-56"
+        },
+        {
+          "url": "https://security.gentoo.org/glsa/202007-54"
+        },
+        {
+          "url": "https://support.apple.com/HT208112"
+        },
+        {
+          "url": "https://support.apple.com/HT208113"
+        },
+        {
+          "url": "https://support.apple.com/HT208115"
+        },
+        {
+          "url": "https://support.apple.com/HT208144"
+        },
+        {
+          "url": "https://usn.ubuntu.com/4246-1/"
+        },
+        {
+          "url": "https://usn.ubuntu.com/4292-1/"
+        },
+        {
+          "url": "https://wiki.mozilla.org/MOSS/Secure_Open_Source/Completed#zlib"
+        },
+        {
+          "url": "https://wiki.mozilla.org/images/0/09/Zlib-report.pdf"
+        },
+        {
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },
+        {
+          "url": "http://lists.opensuse.org/opensuse-updates/2016-12/msg00127.html"
+        },
+        {
+          "url": "http://lists.opensuse.org/opensuse-updates/2017-01/msg00050.html"
+        },
+        {
+          "url": "http://lists.opensuse.org/opensuse-updates/2017-01/msg00053.html"
+        },
+        {
+          "url": "http://www.openwall.com/lists/oss-security/2016/12/05/21"
+        },
+        {
+          "url": "http://www.oracle.com/technetwork/security-advisory/cpuoct2017-3236626.html"
+        },
+        {
+          "url": "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html"
+        },
+        {
+          "url": "http://www.securityfocus.com/bid/95131"
+        },
+        {
+          "url": "http://www.securitytracker.com/id/1039427"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2017:1220"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2017:1221"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2017:1222"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2017:2999"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2017:3046"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2017:3047"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2017:3453"
+        },
+        {
+          "url": "https://bugzilla.redhat.com/show_bug.cgi?id=1402345"
+        },
+        {
+          "url": "https://github.com/madler/zlib/commit/6a043145ca6e9c55184013841a67b2fef87e44c0"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2019/03/msg00027.html"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2020/01/msg00030.html"
+        },
+        {
+          "url": "https://security.gentoo.org/glsa/201701-56"
+        },
+        {
+          "url": "https://security.gentoo.org/glsa/202007-54"
+        },
+        {
+          "url": "https://support.apple.com/HT208112"
+        },
+        {
+          "url": "https://support.apple.com/HT208113"
+        },
+        {
+          "url": "https://support.apple.com/HT208115"
+        },
+        {
+          "url": "https://support.apple.com/HT208144"
+        },
+        {
+          "url": "https://usn.ubuntu.com/4246-1/"
+        },
+        {
+          "url": "https://usn.ubuntu.com/4292-1/"
+        },
+        {
+          "url": "https://wiki.mozilla.org/MOSS/Secure_Open_Source/Completed#zlib"
+        },
+        {
+          "url": "https://wiki.mozilla.org/images/0/09/Zlib-report.pdf"
+        },
+        {
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "7cbc46055f673908"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:333567a2-d982-4e9d-87be-707cc9d6b4e9",
+      "id": "CVE-2023-33953",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-33953"
+      },
+      "references": [
+        {
+          "id": "CVE-2023-33953",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-33953"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        },
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "description": "gRPC contains a vulnerability that allows hpack table accounting errors could lead to unwanted disconnects between clients and servers in exceptional cases/ Three vectors were found that allow the following DOS attacks:\n\n- Unbounded memory buffering in the HPACK parser\n- Unbounded CPU consumption in the HPACK parser\n\nThe unbounded CPU consumption is down to a copy that occurred per-input-block in the parser, and because that could be unbounded due to the memory copy bug we end up with an O(n^2) parsing loop, with n selected by the client.\n\nThe unbounded memory buffering bugs:\n\n- The header size limit check was behind the string reading code, so we needed to first buffer up to a 4 gigabyte string before rejecting it as longer than 8 or 16kb.\n- HPACK varints have an encoding quirk whereby an infinite number of 0’s can be added at the start of an integer. gRPC’s hpack parser needed to read all of them before concluding a parse.\n- gRPC’s metadata overflow check was performed per frame, so that the following sequence of frames could cause infinite buffering: HEADERS: containing a: 1 CONTINUATION: containing a: 2 CONTINUATION: containing a: 3 etc…",
+      "advisories": [
+        {
+          "url": "https://cloud.google.com/support/bulletins#gcp-2023-022"
+        },
+        {
+          "url": "https://cloud.google.com/support/bulletins#gcp-2023-022"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "a3921b46cafa1de0"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:83d3c1e0-563d-4881-b491-30a737f9109a",
+      "id": "CVE-2023-44487",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-44487"
+      },
+      "references": [
+        {
+          "id": "CVE-2023-44487",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-44487"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        },
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "description": "The HTTP/2 protocol allows a denial of service (server resource consumption) because request cancellation can reset many streams quickly, as exploited in the wild in August through October 2023.",
+      "advisories": [
+        {
+          "url": "http://www.openwall.com/lists/oss-security/2023/10/10/6"
+        },
+        {
+          "url": "http://www.openwall.com/lists/oss-security/2023/10/10/7"
+        },
+        {
+          "url": "http://www.openwall.com/lists/oss-security/2023/10/13/4"
+        },
+        {
+          "url": "http://www.openwall.com/lists/oss-security/2023/10/13/9"
+        },
+        {
+          "url": "http://www.openwall.com/lists/oss-security/2023/10/18/4"
+        },
+        {
+          "url": "http://www.openwall.com/lists/oss-security/2023/10/18/8"
+        },
+        {
+          "url": "http://www.openwall.com/lists/oss-security/2023/10/19/6"
+        },
+        {
+          "url": "http://www.openwall.com/lists/oss-security/2023/10/20/8"
+        },
+        {
+          "url": "https://access.redhat.com/security/cve/cve-2023-44487"
+        },
+        {
+          "url": "https://arstechnica.com/security/2023/10/how-ddosers-used-the-http-2-protocol-to-deliver-attacks-of-unprecedented-size/"
+        },
+        {
+          "url": "https://aws.amazon.com/security/security-bulletins/AWS-2023-011/"
+        },
+        {
+          "url": "https://blog.cloudflare.com/technical-breakdown-http2-rapid-reset-ddos-attack/"
+        },
+        {
+          "url": "https://blog.cloudflare.com/zero-day-rapid-reset-http2-record-breaking-ddos-attack/"
+        },
+        {
+          "url": "https://blog.litespeedtech.com/2023/10/11/rapid-reset-http-2-vulnerablilty/"
+        },
+        {
+          "url": "https://blog.qualys.com/vulnerabilities-threat-research/2023/10/10/cve-2023-44487-http-2-rapid-reset-attack"
+        },
+        {
+          "url": "https://blog.vespa.ai/cve-2023-44487/"
+        },
+        {
+          "url": "https://bugzilla.proxmox.com/show_bug.cgi?id=4988"
+        },
+        {
+          "url": "https://bugzilla.redhat.com/show_bug.cgi?id=2242803"
+        },
+        {
+          "url": "https://bugzilla.suse.com/show_bug.cgi?id=1216123"
+        },
+        {
+          "url": "https://cgit.freebsd.org/ports/commit/?id=c64c329c2c1752f46b73e3e6ce9f4329be6629f9"
+        },
+        {
+          "url": "https://cloud.google.com/blog/products/identity-security/google-cloud-mitigated-largest-ddos-attack-peaking-above-398-million-rps/"
+        },
+        {
+          "url": "https://cloud.google.com/blog/products/identity-security/how-it-works-the-novel-http2-rapid-reset-ddos-attack"
+        },
+        {
+          "url": "https://community.traefik.io/t/is-traefik-vulnerable-to-cve-2023-44487/20125"
+        },
+        {
+          "url": "https://discuss.hashicorp.com/t/hcsec-2023-32-vault-consul-and-boundary-affected-by-http-2-rapid-reset-denial-of-service-vulnerability-cve-2023-44487/59715"
+        },
+        {
+          "url": "https://edg.io/lp/blog/resets-leaks-ddos-and-the-tale-of-a-hidden-cve"
+        },
+        {
+          "url": "https://forums.swift.org/t/swift-nio-http2-security-update-cve-2023-44487-http-2-dos/67764"
+        },
+        {
+          "url": "https://gist.github.com/adulau/7c2bfb8e9cdbe4b35a5e131c66a0c088"
+        },
+        {
+          "url": "https://github.com/Azure/AKS/issues/3947"
+        },
+        {
+          "url": "https://github.com/Kong/kong/discussions/11741"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-qppj-fm5r-hxr3"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-vx74-f528-fxqg"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-xpw8-rcwv-8f8p"
+        },
+        {
+          "url": "https://github.com/akka/akka-http/issues/4323"
+        },
+        {
+          "url": "https://github.com/alibaba/tengine/issues/1872"
+        },
+        {
+          "url": "https://github.com/apache/apisix/issues/10320"
+        },
+        {
+          "url": "https://github.com/apache/httpd-site/pull/10"
+        },
+        {
+          "url": "https://github.com/apache/httpd/blob/afcdbeebbff4b0c50ea26cdd16e178c0d1f24152/modules/http2/h2_mplx.c#L1101-L1113"
+        },
+        {
+          "url": "https://github.com/apache/tomcat/tree/main/java/org/apache/coyote/http2"
+        },
+        {
+          "url": "https://github.com/apache/trafficserver/pull/10564"
+        },
+        {
+          "url": "https://github.com/arkrwn/PoC/tree/main/CVE-2023-44487"
+        },
+        {
+          "url": "https://github.com/bcdannyboy/CVE-2023-44487"
+        },
+        {
+          "url": "https://github.com/caddyserver/caddy/issues/5877"
+        },
+        {
+          "url": "https://github.com/caddyserver/caddy/releases/tag/v2.7.5"
+        },
+        {
+          "url": "https://github.com/dotnet/announcements/issues/277"
+        },
+        {
+          "url": "https://github.com/dotnet/core/blob/e4613450ea0da7fd2fc6b61dfb2c1c1dec1ce9ec/release-notes/6.0/6.0.23/6.0.23.md?plain=1#L73"
+        },
+        {
+          "url": "https://github.com/eclipse/jetty.project/issues/10679"
+        },
+        {
+          "url": "https://github.com/envoyproxy/envoy/pull/30055"
+        },
+        {
+          "url": "https://github.com/etcd-io/etcd/issues/16740"
+        },
+        {
+          "url": "https://github.com/facebook/proxygen/pull/466"
+        },
+        {
+          "url": "https://github.com/golang/go/issues/63417"
+        },
+        {
+          "url": "https://github.com/grpc/grpc-go/pull/6703"
+        },
+        {
+          "url": "https://github.com/grpc/grpc/releases/tag/v1.59.2"
+        },
+        {
+          "url": "https://github.com/h2o/h2o/pull/3291"
+        },
+        {
+          "url": "https://github.com/h2o/h2o/security/advisories/GHSA-2m7v-gc89-fjqf"
+        },
+        {
+          "url": "https://github.com/haproxy/haproxy/issues/2312"
+        },
+        {
+          "url": "https://github.com/icing/mod_h2/blob/0a864782af0a942aa2ad4ed960a6b32cd35bcf0a/mod_http2/README.md?plain=1#L239-L244"
+        },
+        {
+          "url": "https://github.com/junkurihara/rust-rpxy/issues/97"
+        },
+        {
+          "url": "https://github.com/kazu-yamamoto/http2/commit/f61d41a502bd0f60eb24e1ce14edc7b6df6722a1"
+        },
+        {
+          "url": "https://github.com/kazu-yamamoto/http2/issues/93"
+        },
+        {
+          "url": "https://github.com/kubernetes/kubernetes/pull/121120"
+        },
+        {
+          "url": "https://github.com/line/armeria/pull/5232"
+        },
+        {
+          "url": "https://github.com/linkerd/website/pull/1695/commits/4b9c6836471bc8270ab48aae6fd2181bc73fd632"
+        },
+        {
+          "url": "https://github.com/micrictor/http2-rst-stream"
+        },
+        {
+          "url": "https://github.com/microsoft/CBL-Mariner/pull/6381"
+        },
+        {
+          "url": "https://github.com/netty/netty/commit/58f75f665aa81a8cbcf6ffa74820042a285c5e61"
+        },
+        {
+          "url": "https://github.com/nghttp2/nghttp2/pull/1961"
+        },
+        {
+          "url": "https://github.com/nghttp2/nghttp2/releases/tag/v1.57.0"
+        },
+        {
+          "url": "https://github.com/ninenines/cowboy/issues/1615"
+        },
+        {
+          "url": "https://github.com/nodejs/node/pull/50121"
+        },
+        {
+          "url": "https://github.com/openresty/openresty/issues/930"
+        },
+        {
+          "url": "https://github.com/opensearch-project/data-prepper/issues/3474"
+        },
+        {
+          "url": "https://github.com/oqtane/oqtane.framework/discussions/3367"
+        },
+        {
+          "url": "https://github.com/projectcontour/contour/pull/5826"
+        },
+        {
+          "url": "https://github.com/tempesta-tech/tempesta/issues/1986"
+        },
+        {
+          "url": "https://github.com/varnishcache/varnish-cache/issues/3996"
+        },
+        {
+          "url": "https://groups.google.com/g/golang-announce/c/iNNxDTCjZvo"
+        },
+        {
+          "url": "https://istio.io/latest/news/security/istio-security-2023-004/"
+        },
+        {
+          "url": "https://linkerd.io/2023/10/12/linkerd-cve-2023-44487/"
+        },
+        {
+          "url": "https://lists.apache.org/thread/5py8h42mxfsn8l1wy6o41xwhsjlsd87q"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2023/10/msg00020.html"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2023/10/msg00023.html"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2023/10/msg00024.html"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2023/10/msg00045.html"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2023/10/msg00047.html"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2023/11/msg00001.html"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2023/11/msg00012.html"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2MBEPPC36UBVOZZNAXFHKLFGSLCMN5LI/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/3N4NJ7FR4X4FPZUGNTQAPSTVB2HB2Y4A/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BFQD3KUEMFBHPAPBGLWQC34L4OWL5HAZ/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/CLB4TW7KALB3EEQWNWCN7OUIWWVWWCG2/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/E72T67UPDRXHIDLO3OROR25YAMN4GGW5/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/FNA62Q767CFAFHBCDKYNPBMZWB7TWYVU/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HT7T2R4MQKLIF4ODV4BDLPARWFPCJ5CZ/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JIZSEFC3YKCGABA2BZW6ZJRMDZJMB7PJ/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JMEXY22BFG5Q64HQCM5CK2Q7KDKVV4TY/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/KSEGD2IWKNUO3DWY4KQGUQM5BISRWHQE/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/LKYHSZQFDNR7RSA7LHVLLIAQMVYCUGBG/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/LNMZJCDHGLJJLXO4OXWJMTVQRNWOC7UL/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/VHUHTSXLXGXS7JYKBXTA3VINUPHTNGVU/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/VSRDIV77HNKUSM7SJC5BKE5JSHLHU2NK/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/WE2I52RHNNU42PX6NZ2RBUHSFFJ2LVZX/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/WLPRQ5TWUQQXYWBJM7ECYDAIL2YVKIUH/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/X6QXN4ORIVF6XBW4WWFE7VNPVC74S45Y/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XFOIBB4YFICHDM7IBOP7PWXW3FX4HLL2/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZB43REMKRQR62NJEI7I5NQ4FSXNLBKRT/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZKQSIKIAT5TJ3WSLU3RDBQ35YX4GY4V3/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZLU6U2R2IC2K64NDPNMV55AUAO65MAF4/"
+        },
+        {
+          "url": "https://lists.w3.org/Archives/Public/ietf-http-wg/2023OctDec/0025.html"
+        },
+        {
+          "url": "https://mailman.nginx.org/pipermail/nginx-devel/2023-October/S36Q5HBXR7CAIMPLLPRSSSYR4PCMWILK.html"
+        },
+        {
+          "url": "https://martinthomson.github.io/h2-stream-limits/draft-thomson-httpbis-h2-stream-limits.html"
+        },
+        {
+          "url": "https://msrc.microsoft.com/blog/2023/10/microsoft-response-to-distributed-denial-of-service-ddos-attacks-against-http/2/"
+        },
+        {
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2023-44487"
+        },
+        {
+          "url": "https://my.f5.com/manage/s/article/K000137106"
+        },
+        {
+          "url": "https://netty.io/news/2023/10/10/4-1-100-Final.html"
+        },
+        {
+          "url": "https://news.ycombinator.com/item?id=37830987"
+        },
+        {
+          "url": "https://news.ycombinator.com/item?id=37830998"
+        },
+        {
+          "url": "https://news.ycombinator.com/item?id=37831062"
+        },
+        {
+          "url": "https://news.ycombinator.com/item?id=37837043"
+        },
+        {
+          "url": "https://openssf.org/blog/2023/10/10/http-2-rapid-reset-vulnerability-highlights-need-for-rapid-response/"
+        },
+        {
+          "url": "https://seanmonstar.com/post/730794151136935936/hyper-http2-rapid-reset-unaffected"
+        },
+        {
+          "url": "https://security.gentoo.org/glsa/202311-09"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20231016-0001/"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20240426-0007/"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20240621-0006/"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20240621-0007/"
+        },
+        {
+          "url": "https://security.paloaltonetworks.com/CVE-2023-44487"
+        },
+        {
+          "url": "https://tomcat.apache.org/security-10.html#Fixed_in_Apache_Tomcat_10.1.14"
+        },
+        {
+          "url": "https://ubuntu.com/security/CVE-2023-44487"
+        },
+        {
+          "url": "https://www.bleepingcomputer.com/news/security/new-http-2-rapid-reset-zero-day-attack-breaks-ddos-records/"
+        },
+        {
+          "url": "https://www.cisa.gov/news-events/alerts/2023/10/10/http2-rapid-reset-vulnerability-cve-2023-44487"
+        },
+        {
+          "url": "https://www.darkreading.com/cloud/internet-wide-zero-day-bug-fuels-largest-ever-ddos-event"
+        },
+        {
+          "url": "https://www.debian.org/security/2023/dsa-5521"
+        },
+        {
+          "url": "https://www.debian.org/security/2023/dsa-5522"
+        },
+        {
+          "url": "https://www.debian.org/security/2023/dsa-5540"
+        },
+        {
+          "url": "https://www.debian.org/security/2023/dsa-5549"
+        },
+        {
+          "url": "https://www.debian.org/security/2023/dsa-5558"
+        },
+        {
+          "url": "https://www.debian.org/security/2023/dsa-5570"
+        },
+        {
+          "url": "https://www.haproxy.com/blog/haproxy-is-not-affected-by-the-http-2-rapid-reset-attack-cve-2023-44487"
+        },
+        {
+          "url": "https://www.netlify.com/blog/netlify-successfully-mitigates-cve-2023-44487/"
+        },
+        {
+          "url": "https://www.nginx.com/blog/http-2-rapid-reset-attack-impacting-f5-nginx-products/"
+        },
+        {
+          "url": "https://www.openwall.com/lists/oss-security/2023/10/10/6"
+        },
+        {
+          "url": "https://www.phoronix.com/news/HTTP2-Rapid-Reset-Attack"
+        },
+        {
+          "url": "https://www.theregister.com/2023/10/10/http2_rapid_reset_zeroday/"
+        },
+        {
+          "url": "http://www.openwall.com/lists/oss-security/2023/10/13/4"
+        },
+        {
+          "url": "http://www.openwall.com/lists/oss-security/2023/10/13/9"
+        },
+        {
+          "url": "http://www.openwall.com/lists/oss-security/2023/10/18/4"
+        },
+        {
+          "url": "http://www.openwall.com/lists/oss-security/2023/10/18/8"
+        },
+        {
+          "url": "http://www.openwall.com/lists/oss-security/2023/10/19/6"
+        },
+        {
+          "url": "http://www.openwall.com/lists/oss-security/2023/10/20/8"
+        },
+        {
+          "url": "https://access.redhat.com/security/cve/cve-2023-44487"
+        },
+        {
+          "url": "https://arstechnica.com/security/2023/10/how-ddosers-used-the-http-2-protocol-to-deliver-attacks-of-unprecedented-size/"
+        },
+        {
+          "url": "https://aws.amazon.com/security/security-bulletins/AWS-2023-011/"
+        },
+        {
+          "url": "https://blog.cloudflare.com/technical-breakdown-http2-rapid-reset-ddos-attack/"
+        },
+        {
+          "url": "https://blog.cloudflare.com/zero-day-rapid-reset-http2-record-breaking-ddos-attack/"
+        },
+        {
+          "url": "https://blog.litespeedtech.com/2023/10/11/rapid-reset-http-2-vulnerablilty/"
+        },
+        {
+          "url": "https://blog.qualys.com/vulnerabilities-threat-research/2023/10/10/cve-2023-44487-http-2-rapid-reset-attack"
+        },
+        {
+          "url": "https://blog.vespa.ai/cve-2023-44487/"
+        },
+        {
+          "url": "https://bugzilla.proxmox.com/show_bug.cgi?id=4988"
+        },
+        {
+          "url": "https://bugzilla.redhat.com/show_bug.cgi?id=2242803"
+        },
+        {
+          "url": "https://bugzilla.suse.com/show_bug.cgi?id=1216123"
+        },
+        {
+          "url": "https://cgit.freebsd.org/ports/commit/?id=c64c329c2c1752f46b73e3e6ce9f4329be6629f9"
+        },
+        {
+          "url": "https://cloud.google.com/blog/products/identity-security/google-cloud-mitigated-largest-ddos-attack-peaking-above-398-million-rps/"
+        },
+        {
+          "url": "https://cloud.google.com/blog/products/identity-security/how-it-works-the-novel-http2-rapid-reset-ddos-attack"
+        },
+        {
+          "url": "https://community.traefik.io/t/is-traefik-vulnerable-to-cve-2023-44487/20125"
+        },
+        {
+          "url": "https://discuss.hashicorp.com/t/hcsec-2023-32-vault-consul-and-boundary-affected-by-http-2-rapid-reset-denial-of-service-vulnerability-cve-2023-44487/59715"
+        },
+        {
+          "url": "https://edg.io/lp/blog/resets-leaks-ddos-and-the-tale-of-a-hidden-cve"
+        },
+        {
+          "url": "https://forums.swift.org/t/swift-nio-http2-security-update-cve-2023-44487-http-2-dos/67764"
+        },
+        {
+          "url": "https://gist.github.com/adulau/7c2bfb8e9cdbe4b35a5e131c66a0c088"
+        },
+        {
+          "url": "https://github.com/Azure/AKS/issues/3947"
+        },
+        {
+          "url": "https://github.com/Kong/kong/discussions/11741"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-qppj-fm5r-hxr3"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-vx74-f528-fxqg"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-xpw8-rcwv-8f8p"
+        },
+        {
+          "url": "https://github.com/akka/akka-http/issues/4323"
+        },
+        {
+          "url": "https://github.com/alibaba/tengine/issues/1872"
+        },
+        {
+          "url": "https://github.com/apache/apisix/issues/10320"
+        },
+        {
+          "url": "https://github.com/apache/httpd-site/pull/10"
+        },
+        {
+          "url": "https://github.com/apache/httpd/blob/afcdbeebbff4b0c50ea26cdd16e178c0d1f24152/modules/http2/h2_mplx.c#L1101-L1113"
+        },
+        {
+          "url": "https://github.com/apache/tomcat/tree/main/java/org/apache/coyote/http2"
+        },
+        {
+          "url": "https://github.com/apache/trafficserver/pull/10564"
+        },
+        {
+          "url": "https://github.com/arkrwn/PoC/tree/main/CVE-2023-44487"
+        },
+        {
+          "url": "https://github.com/bcdannyboy/CVE-2023-44487"
+        },
+        {
+          "url": "https://github.com/caddyserver/caddy/issues/5877"
+        },
+        {
+          "url": "https://github.com/caddyserver/caddy/releases/tag/v2.7.5"
+        },
+        {
+          "url": "https://github.com/dotnet/announcements/issues/277"
+        },
+        {
+          "url": "https://github.com/dotnet/core/blob/e4613450ea0da7fd2fc6b61dfb2c1c1dec1ce9ec/release-notes/6.0/6.0.23/6.0.23.md?plain=1#L73"
+        },
+        {
+          "url": "https://github.com/eclipse/jetty.project/issues/10679"
+        },
+        {
+          "url": "https://github.com/envoyproxy/envoy/pull/30055"
+        },
+        {
+          "url": "https://github.com/etcd-io/etcd/issues/16740"
+        },
+        {
+          "url": "https://github.com/facebook/proxygen/pull/466"
+        },
+        {
+          "url": "https://github.com/golang/go/issues/63417"
+        },
+        {
+          "url": "https://github.com/grpc/grpc-go/pull/6703"
+        },
+        {
+          "url": "https://github.com/h2o/h2o/pull/3291"
+        },
+        {
+          "url": "https://github.com/h2o/h2o/security/advisories/GHSA-2m7v-gc89-fjqf"
+        },
+        {
+          "url": "https://github.com/haproxy/haproxy/issues/2312"
+        },
+        {
+          "url": "https://github.com/icing/mod_h2/blob/0a864782af0a942aa2ad4ed960a6b32cd35bcf0a/mod_http2/README.md?plain=1#L239-L244"
+        },
+        {
+          "url": "https://github.com/junkurihara/rust-rpxy/issues/97"
+        },
+        {
+          "url": "https://github.com/kazu-yamamoto/http2/commit/f61d41a502bd0f60eb24e1ce14edc7b6df6722a1"
+        },
+        {
+          "url": "https://github.com/kazu-yamamoto/http2/issues/93"
+        },
+        {
+          "url": "https://github.com/kubernetes/kubernetes/pull/121120"
+        },
+        {
+          "url": "https://github.com/line/armeria/pull/5232"
+        },
+        {
+          "url": "https://github.com/linkerd/website/pull/1695/commits/4b9c6836471bc8270ab48aae6fd2181bc73fd632"
+        },
+        {
+          "url": "https://github.com/micrictor/http2-rst-stream"
+        },
+        {
+          "url": "https://github.com/microsoft/CBL-Mariner/pull/6381"
+        },
+        {
+          "url": "https://github.com/netty/netty/commit/58f75f665aa81a8cbcf6ffa74820042a285c5e61"
+        },
+        {
+          "url": "https://github.com/nghttp2/nghttp2/pull/1961"
+        },
+        {
+          "url": "https://github.com/nghttp2/nghttp2/releases/tag/v1.57.0"
+        },
+        {
+          "url": "https://github.com/ninenines/cowboy/issues/1615"
+        },
+        {
+          "url": "https://github.com/nodejs/node/pull/50121"
+        },
+        {
+          "url": "https://github.com/openresty/openresty/issues/930"
+        },
+        {
+          "url": "https://github.com/opensearch-project/data-prepper/issues/3474"
+        },
+        {
+          "url": "https://github.com/oqtane/oqtane.framework/discussions/3367"
+        },
+        {
+          "url": "https://github.com/projectcontour/contour/pull/5826"
+        },
+        {
+          "url": "https://github.com/tempesta-tech/tempesta/issues/1986"
+        },
+        {
+          "url": "https://github.com/varnishcache/varnish-cache/issues/3996"
+        },
+        {
+          "url": "https://groups.google.com/g/golang-announce/c/iNNxDTCjZvo"
+        },
+        {
+          "url": "https://istio.io/latest/news/security/istio-security-2023-004/"
+        },
+        {
+          "url": "https://linkerd.io/2023/10/12/linkerd-cve-2023-44487/"
+        },
+        {
+          "url": "https://lists.apache.org/thread/5py8h42mxfsn8l1wy6o41xwhsjlsd87q"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2023/10/msg00020.html"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2023/10/msg00023.html"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2023/10/msg00024.html"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2023/10/msg00045.html"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2023/10/msg00047.html"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2023/11/msg00001.html"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2023/11/msg00012.html"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/2MBEPPC36UBVOZZNAXFHKLFGSLCMN5LI/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/3N4NJ7FR4X4FPZUGNTQAPSTVB2HB2Y4A/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/BFQD3KUEMFBHPAPBGLWQC34L4OWL5HAZ/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/CLB4TW7KALB3EEQWNWCN7OUIWWVWWCG2/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/E72T67UPDRXHIDLO3OROR25YAMN4GGW5/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/FNA62Q767CFAFHBCDKYNPBMZWB7TWYVU/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/HT7T2R4MQKLIF4ODV4BDLPARWFPCJ5CZ/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/JIZSEFC3YKCGABA2BZW6ZJRMDZJMB7PJ/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/JMEXY22BFG5Q64HQCM5CK2Q7KDKVV4TY/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/KSEGD2IWKNUO3DWY4KQGUQM5BISRWHQE/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/LKYHSZQFDNR7RSA7LHVLLIAQMVYCUGBG/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/LNMZJCDHGLJJLXO4OXWJMTVQRNWOC7UL/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/VHUHTSXLXGXS7JYKBXTA3VINUPHTNGVU/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/VSRDIV77HNKUSM7SJC5BKE5JSHLHU2NK/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/WE2I52RHNNU42PX6NZ2RBUHSFFJ2LVZX/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/WLPRQ5TWUQQXYWBJM7ECYDAIL2YVKIUH/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/X6QXN4ORIVF6XBW4WWFE7VNPVC74S45Y/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/XFOIBB4YFICHDM7IBOP7PWXW3FX4HLL2/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/ZB43REMKRQR62NJEI7I5NQ4FSXNLBKRT/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/ZKQSIKIAT5TJ3WSLU3RDBQ35YX4GY4V3/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/ZLU6U2R2IC2K64NDPNMV55AUAO65MAF4/"
+        },
+        {
+          "url": "https://lists.w3.org/Archives/Public/ietf-http-wg/2023OctDec/0025.html"
+        },
+        {
+          "url": "https://mailman.nginx.org/pipermail/nginx-devel/2023-October/S36Q5HBXR7CAIMPLLPRSSSYR4PCMWILK.html"
+        },
+        {
+          "url": "https://martinthomson.github.io/h2-stream-limits/draft-thomson-httpbis-h2-stream-limits.html"
+        },
+        {
+          "url": "https://msrc.microsoft.com/blog/2023/10/microsoft-response-to-distributed-denial-of-service-ddos-attacks-against-http/2/"
+        },
+        {
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2023-44487"
+        },
+        {
+          "url": "https://my.f5.com/manage/s/article/K000137106"
+        },
+        {
+          "url": "https://netty.io/news/2023/10/10/4-1-100-Final.html"
+        },
+        {
+          "url": "https://news.ycombinator.com/item?id=37830987"
+        },
+        {
+          "url": "https://news.ycombinator.com/item?id=37830998"
+        },
+        {
+          "url": "https://news.ycombinator.com/item?id=37831062"
+        },
+        {
+          "url": "https://news.ycombinator.com/item?id=37837043"
+        },
+        {
+          "url": "https://openssf.org/blog/2023/10/10/http-2-rapid-reset-vulnerability-highlights-need-for-rapid-response/"
+        },
+        {
+          "url": "https://seanmonstar.com/post/730794151136935936/hyper-http2-rapid-reset-unaffected"
+        },
+        {
+          "url": "https://security.gentoo.org/glsa/202311-09"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20231016-0001/"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20240426-0007/"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20240621-0006/"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20240621-0007/"
+        },
+        {
+          "url": "https://security.paloaltonetworks.com/CVE-2023-44487"
+        },
+        {
+          "url": "https://tomcat.apache.org/security-10.html#Fixed_in_Apache_Tomcat_10.1.14"
+        },
+        {
+          "url": "https://ubuntu.com/security/CVE-2023-44487"
+        },
+        {
+          "url": "https://www.bleepingcomputer.com/news/security/new-http-2-rapid-reset-zero-day-attack-breaks-ddos-records/"
+        },
+        {
+          "url": "https://www.cisa.gov/news-events/alerts/2023/10/10/http2-rapid-reset-vulnerability-cve-2023-44487"
+        },
+        {
+          "url": "https://www.darkreading.com/cloud/internet-wide-zero-day-bug-fuels-largest-ever-ddos-event"
+        },
+        {
+          "url": "https://www.debian.org/security/2023/dsa-5521"
+        },
+        {
+          "url": "https://www.debian.org/security/2023/dsa-5522"
+        },
+        {
+          "url": "https://www.debian.org/security/2023/dsa-5540"
+        },
+        {
+          "url": "https://www.debian.org/security/2023/dsa-5549"
+        },
+        {
+          "url": "https://www.debian.org/security/2023/dsa-5558"
+        },
+        {
+          "url": "https://www.debian.org/security/2023/dsa-5570"
+        },
+        {
+          "url": "https://www.haproxy.com/blog/haproxy-is-not-affected-by-the-http-2-rapid-reset-attack-cve-2023-44487"
+        },
+        {
+          "url": "https://www.netlify.com/blog/netlify-successfully-mitigates-cve-2023-44487/"
+        },
+        {
+          "url": "https://www.nginx.com/blog/http-2-rapid-reset-attack-impacting-f5-nginx-products/"
+        },
+        {
+          "url": "https://www.openwall.com/lists/oss-security/2023/10/10/6"
+        },
+        {
+          "url": "https://www.phoronix.com/news/HTTP2-Rapid-Reset-Attack"
+        },
+        {
+          "url": "https://www.theregister.com/2023/10/10/http2_rapid_reset_zeroday/"
+        },
+        {
+          "url": "https://www.vicarius.io/vsociety/posts/rapid-reset-cve-2023-44487-dos-in-http2-understanding-the-root-cause"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "a3921b46cafa1de0"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:84b9fb5e-48d1-411b-a7e3-581eeea2433c",
+      "id": "CVE-2023-4785",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-4785"
+      },
+      "references": [
+        {
+          "id": "CVE-2023-4785",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-4785"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        },
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "description": "Lack of error handling in the TCP server in Google's gRPC starting version 1.23 on posix-compatible platforms (ex. Linux) allows an attacker to cause a denial of service by initiating a significant number of connections with the server. Note that gRPC C++ Python, and Ruby are affected, but gRPC Java, and Go are NOT affected.",
+      "advisories": [
+        {
+          "url": "https://github.com/grpc/grpc/pull/33656"
+        },
+        {
+          "url": "https://github.com/grpc/grpc/pull/33667"
+        },
+        {
+          "url": "https://github.com/grpc/grpc/pull/33669"
+        },
+        {
+          "url": "https://github.com/grpc/grpc/pull/33670"
+        },
+        {
+          "url": "https://github.com/grpc/grpc/pull/33672"
+        },
+        {
+          "url": "https://github.com/grpc/grpc/pull/33656"
+        },
+        {
+          "url": "https://github.com/grpc/grpc/pull/33667"
+        },
+        {
+          "url": "https://github.com/grpc/grpc/pull/33669"
+        },
+        {
+          "url": "https://github.com/grpc/grpc/pull/33670"
+        },
+        {
+          "url": "https://github.com/grpc/grpc/pull/33672"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "a3921b46cafa1de0"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:a0dccbfc-e754-4b45-bdfb-312e8c9f6230",
+      "id": "CVE-2023-32732",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-32732"
+      },
+      "references": [
+        {
+          "id": "CVE-2023-32732",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-32732"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 5.3,
+          "severity": "medium",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+        },
+        {
+          "score": 5.3,
+          "severity": "medium",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+        }
+      ],
+      "description": "gRPC contains a vulnerability whereby a client can cause a termination of connection between a HTTP2 proxy and a gRPC server: a base64 encoding error for `-bin` suffixed headers will result in a disconnection by the gRPC server, but is typically allowed by HTTP2 proxies. We recommend upgrading beyond the commit in  https://github.com/grpc/grpc/pull/32309 https://www.google.com/url",
+      "advisories": [
+        {
+          "url": "https://github.com/grpc/grpc/pull/32309"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/37IDNVY5AWVH7JDMM2SDTL24ZPPZJNSY/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/VWE44J5FG7THHL7XVEVTNIGEYBNKJBLL/"
+        },
+        {
+          "url": "https://github.com/grpc/grpc/pull/32309"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/37IDNVY5AWVH7JDMM2SDTL24ZPPZJNSY/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/VWE44J5FG7THHL7XVEVTNIGEYBNKJBLL/"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "a3921b46cafa1de0"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:42e1ced7-91e7-43f8-9966-b12b28f1aab3",
+      "id": "GHSA-64vf-vj9q-5phr",
+      "source": {
+        "name": "github-language-javascript",
+        "url": "https://github.com/advisories/GHSA-64vf-vj9q-5phr"
+      },
+      "references": [
+        {
+          "id": "GHSA-64vf-vj9q-5phr",
+          "source": {
+            "name": "github-language-javascript",
+            "url": "https://github.com/advisories/GHSA-64vf-vj9q-5phr"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "severity": "critical",
+          "method": "other"
+        }
+      ],
+      "description": "Malware in icons-material",
+      "affects": [
+        {
+          "ref": "89172be1563732ba"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:fb8a8304-627c-4bcb-9ed6-c5c0256c09ab",
+      "id": "GHSA-9c47-m6qq-7p4h",
+      "source": {
+        "name": "github-language-javascript",
+        "url": "https://github.com/advisories/GHSA-9c47-m6qq-7p4h"
+      },
+      "references": [
+        {
+          "id": "GHSA-9c47-m6qq-7p4h",
+          "source": {
+            "name": "github-language-javascript",
+            "url": "https://github.com/advisories/GHSA-9c47-m6qq-7p4h"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 7.1,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:H/I:L/A:H"
+        }
+      ],
+      "description": "Prototype Pollution in JSON5 via Parse Method",
+      "affects": [
+        {
+          "ref": "dda3f983128333f8"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:76b8fe21-7171-4820-a6a2-c52adfdebc4c",
+      "id": "CVE-2024-43805",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-43805"
+      },
+      "references": [
+        {
+          "id": "CVE-2024-43805",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-43805"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 6.1,
+          "severity": "medium",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N"
+        },
+        {
+          "score": 7.6,
+          "severity": "medium",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:L/A:L"
+        }
+      ],
+      "description": "jupyterlab is an extensible environment for interactive and reproducible computing, based on the Jupyter Notebook Architecture. This vulnerability depends on user interaction by opening a malicious notebook with Markdown cells, or Markdown file using JupyterLab preview feature. A malicious user can access any data that the attacked user has access to as well as perform arbitrary requests acting as the attacked user. JupyterLab v3.6.8, v4.2.5 and Jupyter Notebook v7.2.2 have been patched to resolve this issue. Users are advised to upgrade. There is no workaround for the underlying DOM Clobbering susceptibility. However, select plugins can be disabled on deployments which cannot update in a timely fashion to minimise the risk. These are: 1. `@jupyterlab/mathjax-extension:plugin` - users will loose ability to preview mathematical equations. 2. `@jupyterlab/markdownviewer-extension:plugin` - users will loose ability to open Markdown previews. 3. `@jupyterlab/mathjax2-extension:plugin` (if installed with optional `jupyterlab-mathjax2` package) - an older version of the mathjax plugin for JupyterLab 4.x. To disable these extensions run: ```jupyter labextension disable @jupyterlab/markdownviewer-extension:plugin && jupyter labextension disable @jupyterlab/mathjax-extension:plugin && jupyter labextension disable @jupyterlab/mathjax2-extension:plugin ``` in bash.",
+      "advisories": [
+        {
+          "url": "https://github.com/jupyterlab/jupyterlab/security/advisories/GHSA-9q39-rmj3-p4r2"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "1c2a10ca6a68744e"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:31716d67-210f-431b-a6d5-24c7c772a58c",
+      "id": "CVE-2021-32024",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-32024"
+      },
+      "references": [
+        {
+          "id": "CVE-2021-32024",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-32024"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 9.8,
+          "severity": "critical",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        },
+        {
+          "score": 7.5,
+          "severity": "critical",
+          "method": "CVSSv2",
+          "vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P"
+        }
+      ],
+      "description": "A remote code execution vulnerability in the BMP image codec of BlackBerry QNX SDP version(s) 6.4 to 7.1 could allow an attacker to potentially execute code in the context of the affected process.",
+      "advisories": [
+        {
+          "url": "http://support.blackberry.com/kb/articleDetail?articleNumber=000089042"
+        },
+        {
+          "url": "http://support.blackberry.com/kb/articleDetail?articleNumber=000089042"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "f1856579877fb93c"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:d7b9fa31-bd3b-40a7-87c2-f50d795da4ac",
+      "id": "CVE-2024-48856",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-48856"
+      },
+      "references": [
+        {
+          "id": "CVE-2024-48856",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-48856"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 9.8,
+          "severity": "critical",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        },
+        {
+          "score": 9.8,
+          "severity": "critical",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "description": "Out-of-bounds write in the PCX image codec in QNX SDP versions 8.0, 7.1 and 7.0 could allow an unauthenticated attacker to cause a denial-of-service condition or execute code in the context of the process using the image codec.",
+      "advisories": [
+        {
+          "url": "https://support.blackberry.com/pkb/s/article/140334"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "f1856579877fb93c"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:8afdc846-4bf2-4ba4-bca2-a17c1ece5ce7",
+      "id": "CVE-2013-2687",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2013-2687"
+      },
+      "references": [
+        {
+          "id": "CVE-2013-2687",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2013-2687"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 7.8,
+          "severity": "high",
+          "method": "CVSSv2",
+          "vector": "AV:N/AC:L/Au:N/C:N/I:N/A:C"
+        }
+      ],
+      "description": "Stack-based buffer overflow in the bpe_decompress function in (1) BlackBerry QNX Neutrino RTOS through 6.5.0 SP1 and (2) QNX Momentics Tool Suite through 6.5.0 SP1 in the QNX Software Development Platform allows remote attackers to cause a denial of service (application crash) or possibly execute arbitrary code via crafted packets to TCP port 4868.",
+      "advisories": [
+        {
+          "url": "http://aluigi.altervista.org/adv/qnxph_1-adv.txt"
+        },
+        {
+          "url": "http://ics-cert.us-cert.gov/advisories/ICSA-13-189-01"
+        },
+        {
+          "url": "http://www.qnx.com/download/feature.html?programid=24850"
+        },
+        {
+          "url": "http://aluigi.altervista.org/adv/qnxph_1-adv.txt"
+        },
+        {
+          "url": "http://ics-cert.us-cert.gov/advisories/ICSA-13-189-01"
+        },
+        {
+          "url": "http://www.qnx.com/download/feature.html?programid=24850"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "f1856579877fb93c"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:fe54cd7a-1d96-4cdb-a96d-26300cf6242d",
+      "id": "CVE-2023-32701",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-32701"
+      },
+      "references": [
+        {
+          "id": "CVE-2023-32701",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-32701"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 7.1,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:H"
+        },
+        {
+          "score": 7.1,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:H"
+        }
+      ],
+      "description": "Improper Input Validation in the Networking Stack of QNX SDP version(s) 6.6, 7.0, and 7.1 could allow an attacker to potentially cause Information Disclosure or a Denial-of-Service condition.",
+      "advisories": [
+        {
+          "url": "https://support.blackberry.com/kb/articleDetail?articleNumber=000112401"
+        },
+        {
+          "url": "https://support.blackberry.com/kb/articleDetail?articleNumber=000112401"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "f1856579877fb93c"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:f99a8bac-5d4a-4747-8217-0803b239d0fc",
+      "id": "CVE-2024-48854",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-48854"
+      },
+      "references": [
+        {
+          "id": "CVE-2024-48854",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-48854"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+        },
+        {
+          "score": 5.3,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N"
+        }
+      ],
+      "description": "Off-by-one error in the TIFF image codec in QNX SDP versions 8.0, 7.1 and 7.0 could allow an unauthenticated attacker to cause an information disclosure in the context of the process using the image codec.",
+      "advisories": [
+        {
+          "url": "https://support.blackberry.com/pkb/s/article/140334"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "f1856579877fb93c"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:43450164-3e79-4f39-9c6c-2bcba4107514",
+      "id": "CVE-2024-48855",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-48855"
+      },
+      "references": [
+        {
+          "id": "CVE-2024-48855",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-48855"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+        },
+        {
+          "score": 5.3,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N"
+        }
+      ],
+      "description": "Out-of-bounds read in the TIFF image codec in QNX SDP versions 8.0, 7.1 and 7.0 could allow an unauthenticated attacker to cause an information disclosure in the context of the process using the image codec.",
+      "advisories": [
+        {
+          "url": "https://support.blackberry.com/pkb/s/article/140334"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "f1856579877fb93c"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:302a1fc6-9c3e-41ea-849a-2ce74fe48bae",
+      "id": "CVE-2024-48857",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-48857"
+      },
+      "references": [
+        {
+          "id": "CVE-2024-48857",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-48857"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        },
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "description": "NULL pointer dereference in the PCX image codec in QNX SDP versions 8.0, 7.1 and 7.0 could allow an unauthenticated attacker to cause a denial-of-service condition in the context of the process using the image codec.",
+      "advisories": [
+        {
+          "url": "https://support.blackberry.com/pkb/s/article/140334"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "f1856579877fb93c"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:edf99e6e-3c40-417f-98f7-cdd5e81ab920",
+      "id": "CVE-2013-2688",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2013-2688"
+      },
+      "references": [
+        {
+          "id": "CVE-2013-2688",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2013-2688"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 5.4,
+          "severity": "medium",
+          "method": "CVSSv2",
+          "vector": "AV:N/AC:H/Au:N/C:N/I:N/A:C"
+        }
+      ],
+      "description": "Buffer overflow in phrelay in BlackBerry QNX Neutrino RTOS through 6.5.0 SP1 in the QNX Software Development Platform allows remote attackers to cause a denial of service (application crash) or possibly execute arbitrary code via crafted packets to TCP port 4868 that leverage improper handling of the /dev/photon device file.",
+      "advisories": [
+        {
+          "url": "http://aluigi.altervista.org/adv/qnxph_1-adv.txt"
+        },
+        {
+          "url": "http://ics-cert.us-cert.gov/advisories/ICSA-13-189-01"
+        },
+        {
+          "url": "http://www.qnx.com/download/feature.html?programid=24850"
+        },
+        {
+          "url": "http://aluigi.altervista.org/adv/qnxph_1-adv.txt"
+        },
+        {
+          "url": "http://ics-cert.us-cert.gov/advisories/ICSA-13-189-01"
+        },
+        {
+          "url": "http://www.qnx.com/download/feature.html?programid=24850"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "f1856579877fb93c"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:0812f93e-d641-4fe4-ac18-707cfa7bf8b3",
+      "id": "CVE-2024-6345",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-6345"
+      },
+      "references": [
+        {
+          "id": "CVE-2024-6345",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-6345"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 8.8,
+          "severity": "high",
+          "method": "CVSSv3",
+          "vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "description": "A vulnerability in the package_index module of pypa/setuptools versions up to 69.1.1 allows for remote code execution via its download functions. These functions, which are used to download packages from URLs provided by users or retrieved from package index servers, are susceptible to code injection. If these functions are exposed to user-controlled inputs, such as package URLs, they can execute arbitrary commands on the system. The issue is fixed in version 70.0.",
+      "advisories": [
+        {
+          "url": "https://github.com/pypa/setuptools/commit/88807c7062788254f654ea8c03427adc859321f0"
+        },
+        {
+          "url": "https://huntr.com/bounties/d6362117-ad57-4e83-951f-b8141c6e7ca5"
+        },
+        {
+          "url": "https://github.com/pypa/setuptools/commit/88807c7062788254f654ea8c03427adc859321f0"
+        },
+        {
+          "url": "https://huntr.com/bounties/d6362117-ad57-4e83-951f-b8141c6e7ca5"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "161f270cf66f3df7"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:e8c310f4-b9f9-4b00-ac86-86718f572895",
+      "id": "CVE-2022-40897",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-40897"
+      },
+      "references": [
+        {
+          "id": "CVE-2022-40897",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-40897"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 5.9,
+          "severity": "medium",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        },
+        {
+          "score": 5.9,
+          "severity": "medium",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "description": "Python Packaging Authority (PyPA) setuptools before 65.5.1 allows remote attackers to cause a denial of service via HTML in a crafted package or custom PackageIndex page. There is a Regular Expression Denial of Service (ReDoS) in package_index.py.",
+      "advisories": [
+        {
+          "url": "https://github.com/pypa/setuptools/blob/fe8a98e696241487ba6ac9f91faa38ade939ec5d/setuptools/package_index.py#L200"
+        },
+        {
+          "url": "https://github.com/pypa/setuptools/commit/43a9c9bfa6aa626ec2a22540bea28d2ca77964be"
+        },
+        {
+          "url": "https://github.com/pypa/setuptools/compare/v65.5.0...v65.5.1"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/ADES3NLOE5QJKBLGNZNI2RGVOSQXA37R/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/YNA2BAH2ACBZ4TVJZKFLCR7L23BG5C3H/"
+        },
+        {
+          "url": "https://pyup.io/posts/pyup-discovers-redos-vulnerabilities-in-top-python-packages/"
+        },
+        {
+          "url": "https://pyup.io/vulnerabilities/CVE-2022-40897/52495/"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20230214-0001/"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20240621-0006/"
+        },
+        {
+          "url": "https://github.com/pypa/setuptools/blob/fe8a98e696241487ba6ac9f91faa38ade939ec5d/setuptools/package_index.py#L200"
+        },
+        {
+          "url": "https://github.com/pypa/setuptools/commit/43a9c9bfa6aa626ec2a22540bea28d2ca77964be"
+        },
+        {
+          "url": "https://github.com/pypa/setuptools/compare/v65.5.0...v65.5.1"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/ADES3NLOE5QJKBLGNZNI2RGVOSQXA37R/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/YNA2BAH2ACBZ4TVJZKFLCR7L23BG5C3H/"
+        },
+        {
+          "url": "https://pyup.io/posts/pyup-discovers-redos-vulnerabilities-in-top-python-packages/"
+        },
+        {
+          "url": "https://pyup.io/vulnerabilities/CVE-2022-40897/52495/"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20230214-0001/"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20240621-0006/"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "161f270cf66f3df7"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:c80f6472-5d13-420c-9ca0-98cf4bd99a2b",
+      "id": "CVE-2025-3277",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-3277"
+      },
+      "references": [
+        {
+          "id": "CVE-2025-3277",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-3277"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 6.9,
+          "severity": "medium",
+          "method": "other",
+          "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:L/VI:L/VA:L/SC:L/SI:L/SA:L/E:X/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X"
+        }
+      ],
+      "description": "An integer overflow can be triggered in SQLite’s `concat_ws()` function. The resulting, truncated integer is then used to allocate a buffer. When SQLite then writes the resulting string to the buffer, it uses the original, untruncated size and thus a wild Heap Buffer overflow of size ~4GB can be triggered. This can result in arbitrary code execution.",
+      "advisories": [
+        {
+          "url": "https://sqlite.org/src/info/498e3f1cf57f164f"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "cfe43bcb7a0608cb"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:ba0f73af-7227-44df-83bd-60f4adb9cabe",
+      "id": "CVE-2025-29087",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-29087"
+      },
+      "references": [
+        {
+          "id": "CVE-2025-29087",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-29087"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 3.2,
+          "severity": "low",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:N/S:C/C:N/I:N/A:L"
+        }
+      ],
+      "description": "In SQLite 3.44.0 through 3.49.0 before 3.49.1, the concat_ws() SQL function can cause memory to be written beyond the end of a malloc-allocated buffer. If the separator argument is attacker-controlled and has a large string (e.g., 2MB or more), an integer overflow occurs in calculating the size of the result buffer, and thus malloc may not allocate enough memory.",
+      "advisories": [
+        {
+          "url": "https://gist.github.com/ylwango613/a44a29f1ef074fa783e29f04a0afd62a"
+        },
+        {
+          "url": "https://sqlite.org/releaselog/3_49_1.html"
+        },
+        {
+          "url": "https://www.sqlite.org/cves.html"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "cfe43bcb7a0608cb"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:a5914cdc-b658-4da2-8a06-7add1bad3dbd",
+      "id": "CVE-2023-29159",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-29159"
+      },
+      "references": [
+        {
+          "id": "CVE-2023-29159",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-29159"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+        },
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+        }
+      ],
+      "description": "Directory traversal vulnerability in Starlette versions 0.13.5 and later and prior to 0.27.0 allows a remote unauthenticated attacker to view files in a web service which was built using Starlette.",
+      "advisories": [
+        {
+          "url": "https://github.com/encode/starlette/releases/tag/0.27.0"
+        },
+        {
+          "url": "https://github.com/encode/starlette/security/advisories/GHSA-v5gw-mw7f-84px"
+        },
+        {
+          "url": "https://jvn.jp/en/jp/JVN95981715/"
+        },
+        {
+          "url": "https://github.com/encode/starlette/releases/tag/0.27.0"
+        },
+        {
+          "url": "https://github.com/encode/starlette/security/advisories/GHSA-v5gw-mw7f-84px"
+        },
+        {
+          "url": "https://jvn.jp/en/jp/JVN95981715/"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "e0b53d567b732886"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:7628978a-ec5c-4149-ac01-df6b5336a25e",
+      "id": "CVE-2023-30798",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-30798"
+      },
+      "references": [
+        {
+          "id": "CVE-2023-30798",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-30798"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        },
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "description": "There MultipartParser usage in Encode's Starlette python framework before versions 0.25.0 allows an unauthenticated and remote attacker to specify any number of form fields or files which can cause excessive memory usage resulting in denial of service of the HTTP service.",
+      "advisories": [
+        {
+          "url": "https://github.com/encode/starlette/commit/8c74c2c8dba7030154f8af18e016136bea1938fa"
+        },
+        {
+          "url": "https://github.com/encode/starlette/security/advisories/GHSA-74m5-2c7w-9w3x"
+        },
+        {
+          "url": "https://vulncheck.com/advisories/starlette-multipartparser-dos"
+        },
+        {
+          "url": "https://github.com/encode/starlette/commit/8c74c2c8dba7030154f8af18e016136bea1938fa"
+        },
+        {
+          "url": "https://github.com/encode/starlette/security/advisories/GHSA-74m5-2c7w-9w3x"
+        },
+        {
+          "url": "https://vulncheck.com/advisories/starlette-multipartparser-dos"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "e0b53d567b732886"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:360fd16b-9e65-4b23-9c94-a7d443d9899f",
+      "id": "CVE-2024-47874",
+      "source": {
+        "name": "nvd-cpe",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-47874"
+      },
+      "references": [
+        {
+          "id": "CVE-2024-47874",
+          "source": {
+            "name": "nvd-cpe",
+            "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-47874"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 8.7,
+          "severity": "high",
+          "method": "other",
+          "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N/E:X/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X"
+        }
+      ],
+      "description": "Starlette is an Asynchronous Server Gateway Interface (ASGI) framework/toolkit. Prior to version 0.40.0, Starlette treats `multipart/form-data` parts without a `filename` as text form fields and buffers those in byte strings with no size limit. This allows an attacker to upload arbitrary large form fields and cause Starlette to both slow down significantly due to excessive memory allocations and copy operations, and also consume more and more memory until the server starts swapping and grinds to a halt, or the OS terminates the server process with an OOM error. Uploading multiple such requests in parallel may be enough to render a service practically unusable, even if reasonable request size limits are enforced by a reverse proxy in front of Starlette. This Denial of service (DoS) vulnerability affects all applications built with Starlette (or FastAPI) accepting form requests. Verison 0.40.0 fixes this issue.",
+      "advisories": [
+        {
+          "url": "https://github.com/encode/starlette/commit/fd038f3070c302bff17ef7d173dbb0b007617733"
+        },
+        {
+          "url": "https://github.com/encode/starlette/security/advisories/GHSA-f96h-pmfr-66vw"
+        }
+      ],
+      "affects": [
+        {
+          "ref": "e0b53d567b732886"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:26261df2-1c79-4d33-ad46-2e775aa7c031",
+      "id": "GHSA-72xf-g2v4-qvf3",
+      "source": {
+        "name": "github-language-javascript",
+        "url": "https://github.com/advisories/GHSA-72xf-g2v4-qvf3"
+      },
+      "references": [
+        {
+          "id": "GHSA-72xf-g2v4-qvf3",
+          "source": {
+            "name": "github-language-javascript",
+            "url": "https://github.com/advisories/GHSA-72xf-g2v4-qvf3"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 6.5,
+          "severity": "medium",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N"
+        }
+      ],
+      "description": "tough-cookie Prototype Pollution vulnerability",
+      "affects": [
+        {
+          "ref": "c05f0bc96ef0f6da"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:e7a71f96-4c5a-4ee0-9897-44af0f2944b4",
+      "id": "GHSA-j8xg-fqg3-53r7",
+      "source": {
+        "name": "github-language-javascript",
+        "url": "https://github.com/advisories/GHSA-j8xg-fqg3-53r7"
+      },
+      "references": [
+        {
+          "id": "GHSA-j8xg-fqg3-53r7",
+          "source": {
+            "name": "github-language-javascript",
+            "url": "https://github.com/advisories/GHSA-j8xg-fqg3-53r7"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 5.3,
+          "severity": "medium",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+        }
+      ],
+      "description": "word-wrap vulnerable to Regular Expression Denial of Service",
+      "affects": [
+        {
+          "ref": "bb4b33b4239d31a5"
+        }
+      ]
+    },
+    {
+      "bom-ref": "urn:uuid:64d51c40-1a68-49b5-8151-f6f884cfe9e8",
+      "id": "GHSA-3h5v-q93c-6h6q",
+      "source": {
+        "name": "github-language-javascript",
+        "url": "https://github.com/advisories/GHSA-3h5v-q93c-6h6q"
+      },
+      "references": [
+        {
+          "id": "GHSA-3h5v-q93c-6h6q",
+          "source": {
+            "name": "github-language-javascript",
+            "url": "https://github.com/advisories/GHSA-3h5v-q93c-6h6q"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "description": "ws affected by a DoS when handling a request with many HTTP headers",
+      "affects": [
+        {
+          "ref": "637488c829246381"
+        }
+      ]
+    }
+  ]
+}

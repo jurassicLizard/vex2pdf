@@ -1,0 +1,424 @@
+{
+  "bomFormat" : "CycloneDX",
+  "specVersion" : "1.5",
+  "serialNumber" : "urn:uuid:b2896d3a-f7a1-47dc-a611-0f4f67643536",
+  "version" : 1,
+  "metadata" : {
+    "timestamp" : "2025-04-14T08:39:10Z",
+    "tools" : [
+      {
+        "vendor" : "OWASP",
+        "name" : "Dependency-Track",
+        "version" : "4.12.0"
+      }
+    ],
+    "component" : {
+      "type" : "container",
+      "bom-ref" : "ad620f20-91e8-4b66-b6ed-ad165de4d9b8",
+      "name" : "Custom Project",
+      "version" : "1.0"
+    }
+  },
+  "vulnerabilities" : [
+    {
+      "bom-ref" : "73334fcb-0417-4745-921c-8049fec58fd5",
+      "id" : "CVE-2014-2893",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 1.9,
+          "severity" : "low",
+          "method" : "CVSSv2",
+          "vector" : "(AV:L/AC:M/Au:N/C:P/I:N/A:N)"
+        }
+      ],
+      "cwes" : [
+        59
+      ],
+      "description" : "The GetHTMLRunDir function in the scan-build utility in Clang 3.5 and earlier allows local users to obtain sensitive information or overwrite arbitrary files via a symlink attack on temporary directories with predictable names.",
+      "published" : "2014-04-23T15:55:00Z",
+      "updated" : "2018-10-30T16:27:00Z",
+      "affects" : [
+        {
+          "ref" : "ad620f20-91e8-4b66-b6ed-ad165de4d9b8"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "b05d3bbd-fd7e-4edb-bfb8-99a42d2e0b5f",
+      "id" : "CVE-2019-14871",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 4.0,
+          "severity" : "medium",
+          "method" : "CVSSv2",
+          "vector" : "(AV:N/AC:L/Au:S/C:N/I:N/A:P)"
+        },
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 6.5,
+          "severity" : "medium",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "cwes" : [
+        476
+      ],
+      "description" : "The REENT_CHECK macro (see newlib/libc/include/sys/reent.h) as used by REENT_CHECK_TM, REENT_CHECK_MISC, REENT_CHECK_MP and other newlib macros in versions prior to 3.3.0, does not check for memory allocation problems when the DEBUG flag is unset (as is the case in production firmware builds).",
+      "published" : "2020-03-18T16:15:00Z",
+      "updated" : "2020-03-24T20:05:00Z",
+      "affects" : [
+        {
+          "ref" : "ad620f20-91e8-4b66-b6ed-ad165de4d9b8"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "964550e2-a44a-4f39-95cf-90c9f92c2e5b",
+      "id" : "CVE-2019-14872",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 4.0,
+          "severity" : "medium",
+          "method" : "CVSSv2",
+          "vector" : "(AV:N/AC:L/Au:S/C:N/I:N/A:P)"
+        },
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 6.5,
+          "severity" : "medium",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "cwes" : [
+        476
+      ],
+      "description" : "The _dtoa_r function of the newlib libc library, prior to version 3.3.0, performs multiple memory allocations without checking their return value. This could result in NULL pointer dereference.",
+      "published" : "2020-03-19T13:15:00Z",
+      "updated" : "2020-03-24T18:08:00Z",
+      "affects" : [
+        {
+          "ref" : "ad620f20-91e8-4b66-b6ed-ad165de4d9b8"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "b5a08c9e-6aac-4fee-bd26-9ead09586762",
+      "id" : "CVE-2019-14873",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 4.0,
+          "severity" : "medium",
+          "method" : "CVSSv2",
+          "vector" : "(AV:N/AC:L/Au:S/C:N/I:N/A:P)"
+        },
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 6.5,
+          "severity" : "medium",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "cwes" : [
+        476
+      ],
+      "description" : "In the __multadd function of the newlib libc library, prior to versions 3.3.0 (see newlib/libc/stdlib/mprec.c), Balloc is used to allocate a big integer, however no check is performed to verify if the allocation succeeded or not. This will trigger a null pointer dereference bug in case of a memory allocation failure.",
+      "published" : "2020-03-19T16:15:00Z",
+      "updated" : "2020-03-24T17:46:00Z",
+      "affects" : [
+        {
+          "ref" : "ad620f20-91e8-4b66-b6ed-ad165de4d9b8"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "e3c708ff-2807-470c-8c84-41ed5c8d4262",
+      "id" : "CVE-2019-14874",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 4.0,
+          "severity" : "medium",
+          "method" : "CVSSv2",
+          "vector" : "(AV:N/AC:L/Au:S/C:N/I:N/A:P)"
+        },
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 6.5,
+          "severity" : "medium",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "cwes" : [
+        476
+      ],
+      "description" : "In the __i2b function of the newlib libc library, all versions prior to 3.3.0 (see newlib/libc/stdlib/mprec.c), Balloc is used to allocate a big integer, however no check is performed to verify if the allocation succeeded or not. The access of _ x[0] will trigger a null pointer dereference bug in case of a memory allocation failure.",
+      "published" : "2020-03-19T16:15:00Z",
+      "updated" : "2020-03-24T19:24:00Z",
+      "affects" : [
+        {
+          "ref" : "ad620f20-91e8-4b66-b6ed-ad165de4d9b8"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "4a08c26d-e03d-43a9-a872-b204b20777f7",
+      "id" : "CVE-2019-14875",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 4.0,
+          "severity" : "medium",
+          "method" : "CVSSv2",
+          "vector" : "(AV:N/AC:L/Au:S/C:N/I:N/A:P)"
+        },
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 6.5,
+          "severity" : "medium",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "cwes" : [
+        476
+      ],
+      "description" : "In the __multiply function of the newlib libc library, all versions prior to 3.3.0 (see newlib/libc/stdlib/mprec.c), Balloc is used to allocate a big integer, however no check is performed to verify if the allocation succeeded or not. The access of _x[0] will trigger a null pointer dereference bug in case of a memory allocation failure.",
+      "published" : "2020-03-19T16:15:00Z",
+      "updated" : "2020-03-24T20:16:00Z",
+      "affects" : [
+        {
+          "ref" : "ad620f20-91e8-4b66-b6ed-ad165de4d9b8"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "bc666e7e-fa83-4a62-8139-fa6d66847835",
+      "id" : "CVE-2019-14876",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 4.0,
+          "severity" : "medium",
+          "method" : "CVSSv2",
+          "vector" : "(AV:N/AC:L/Au:S/C:N/I:N/A:P)"
+        },
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 6.5,
+          "severity" : "medium",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "cwes" : [
+        476
+      ],
+      "description" : "In the __lshift function of the newlib libc library, all versions prior to 3.3.0 (see newlib/libc/stdlib/mprec.c), Balloc is used to allocate a big integer, however no check is performed to verify if the allocation succeeded or not. The access to b1 will trigger a null pointer dereference bug in case of a memory allocation failure.",
+      "published" : "2020-03-19T16:15:00Z",
+      "updated" : "2020-03-24T20:18:00Z",
+      "affects" : [
+        {
+          "ref" : "ad620f20-91e8-4b66-b6ed-ad165de4d9b8"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "f08e5656-9fc5-491d-820b-35d5c4b09b26",
+      "id" : "CVE-2019-14877",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 4.0,
+          "severity" : "medium",
+          "method" : "CVSSv2",
+          "vector" : "(AV:N/AC:L/Au:S/C:N/I:N/A:P)"
+        },
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 6.5,
+          "severity" : "medium",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "cwes" : [
+        476
+      ],
+      "description" : "In the __mdiff function of the newlib libc library, all versions prior to 3.3.0 (see newlib/libc/stdlib/mprec.c), Balloc is used to allocate big integers, however no check is performed to verify if the allocation succeeded or not. The access to _wds and _sign will trigger a null pointer dereference bug in case of a memory allocation failure.",
+      "published" : "2020-03-19T16:15:00Z",
+      "updated" : "2020-03-24T17:53:00Z",
+      "affects" : [
+        {
+          "ref" : "ad620f20-91e8-4b66-b6ed-ad165de4d9b8"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "ddc58341-e99d-471b-9901-7f8b811ed5e6",
+      "id" : "CVE-2019-14878",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 4.0,
+          "severity" : "medium",
+          "method" : "CVSSv2",
+          "vector" : "(AV:N/AC:L/Au:S/C:N/I:N/A:P)"
+        },
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 6.5,
+          "severity" : "medium",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "cwes" : [
+        476
+      ],
+      "description" : "In the __d2b function of the newlib libc library, all versions prior to 3.3.0 (see newlib/libc/stdlib/mprec.c), Balloc is used to allocate a big integer, however no check is performed to verify if the allocation succeeded or not. Accessing _x will trigger a null pointer dereference bug in case of a memory allocation failure.",
+      "published" : "2020-03-19T16:15:00Z",
+      "updated" : "2020-03-24T18:11:00Z",
+      "affects" : [
+        {
+          "ref" : "ad620f20-91e8-4b66-b6ed-ad165de4d9b8"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "58313126-ece2-4694-bb93-bcf16981f85d",
+      "id" : "CVE-2021-3420",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 7.5,
+          "severity" : "high",
+          "method" : "CVSSv2",
+          "vector" : "(AV:N/AC:L/Au:N/C:P/I:P/A:P)"
+        },
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 9.8,
+          "severity" : "critical",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "cwes" : [
+        190
+      ],
+      "description" : "A flaw was found in newlib in versions prior to 4.0.0. Improper overflow validation in the memory allocation functions mEMALIGn, pvALLOc, nano_memalign, nano_valloc, nano_pvalloc could case an integer overflow, leading to an allocation of a small buffer and then to a heap-based buffer overflow.",
+      "published" : "2021-03-05T21:15:00Z",
+      "updated" : "2023-11-07T03:37:00Z",
+      "affects" : [
+        {
+          "ref" : "ad620f20-91e8-4b66-b6ed-ad165de4d9b8"
+        }
+      ]
+    }
+  ]
+}

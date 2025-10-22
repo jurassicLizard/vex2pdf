@@ -1,0 +1,42 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "serialNumber": "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
+  "metadata": {
+    "timestamp": "2025-04-24T15:40:04.505527878Z",
+    "tools": [
+      {
+        "name": "my_tool"
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "ratings": [
+        {
+          "score": 8.1,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "description": "Known vulnerability in library that allows unauthorized access",
+      "detail": "Detailed explanation of the vulnerability and its potential impact.",
+      "recommendation": "Upgrade to version 1.2.4 or later"
+    },
+    {
+      "ratings": [
+        {
+          "score": 6.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L"
+        }
+      ],
+      "description": "Component does not use the affected library",
+      "detail": "Detailed explanation of the vulnerability and its potential impact.",
+      "recommendation": "Upgrade to version 1.2.3 or later"
+    }
+  ]
+}

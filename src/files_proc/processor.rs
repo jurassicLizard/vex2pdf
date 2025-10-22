@@ -144,18 +144,10 @@ impl<P: AsRef<Path> + Eq + Hash + Send + 'static> SingleFileProcProvider<P>
 
         // FIXME consider if output path is ever handled here
         // Generate the PDF
-        let output_path = get_output_pdf_path(
-            Some(config.output_dir.as_path()),
-            file.get_path().as_ref(),
-        )?;
-        match generator.generate_pdf(
-            &bom,
-            &output_path,
-        ) {
-            Ok(_) => println!(
-                "Successfully generated PDF: {}",
-                output_path.display()
-            ),
+        let output_path =
+            get_output_pdf_path(Some(config.output_dir.as_path()), file.get_path().as_ref())?;
+        match generator.generate_pdf(&bom, &output_path) {
+            Ok(_) => println!("Successfully generated PDF: {}", output_path.display()),
             Err(e) => {
                 println!(
                     "Failed to generate PDF for {}: {}",

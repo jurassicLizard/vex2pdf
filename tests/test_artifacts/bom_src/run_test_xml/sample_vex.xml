@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bom xmlns="http://cyclonedx.org/schema/bom/1.5" serialNumber="urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79" version="1">
+  <metadata>
+    <timestamp>2025-01-15T10:00:00Z</timestamp>
+    <tools>
+      <tool>
+        <name>my_tool</name>
+      </tool>
+    </tools>
+  </metadata>
+  <vulnerabilities>
+    <vulnerability>
+      <ratings>
+        <rating>
+          <score>8.1</score>
+          <severity>high</severity>
+          <method>CVSSv31</method>
+          <vector>CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H</vector>
+        </rating>
+      </ratings>
+      <description>Known vulnerability in library that allows unauthorized access</description>
+      <detail>Detailed explanation of the vulnerability and its potential impact.</detail>
+      <recommendation>Upgrade to version 1.2.4 or later</recommendation>
+    </vulnerability>
+    <vulnerability>
+      <ratings>
+        <rating>
+          <score>6.5</score>
+          <severity>high</severity>
+          <method>CVSSv31</method>
+          <vector>CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L</vector>
+        </rating>
+      </ratings>
+      <description>Component does not use the affected library</description>
+      <detail>Detailed explanation of the vulnerability and its potential impact.</detail>
+      <recommendation>Upgrade to version 1.2.3 or later</recommendation>
+    </vulnerability>
+  </vulnerabilities>
+</bom>

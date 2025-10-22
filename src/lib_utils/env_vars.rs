@@ -55,7 +55,7 @@ impl EnvVarNames {
             EnvVarNames::PureBomNoVulns => "VEX2PDF_PURE_BOM_NOVULNS",
             EnvVarNames::ShowComponentList => "VEX2PDF_SHOW_COMPONENTS",
             EnvVarNames::OutputDir => "VEX2PDF_OUTPUT_DIR",
-            EnvVarNames::WorkingPath => "VEX2PDF_WORKING_PATH"
+            EnvVarNames::WorkingPath => "VEX2PDF_WORKING_PATH",
         }
     }
     /// this is useful for environment variables which should be on by default

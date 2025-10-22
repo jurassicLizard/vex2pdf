@@ -9,9 +9,6 @@ use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::{fs, io};
 
-
-
-
 /// Parses an XML file into a CycloneDX Bom object.
 ///
 /// Reads the file content and attempts to parse it as a CycloneDX 1.5 XML document.
