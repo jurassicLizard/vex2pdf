@@ -479,7 +479,8 @@ impl<'a, 'b> PdfGenerator<'a> {
 
                 vuln_layout.push(id_paragraph);
 
-                let vuln_description_unpacked_ref = vuln.description.as_ref().filter(|e| !e.is_empty());
+                let vuln_description_unpacked_ref =
+                    vuln.description.as_ref().filter(|e| !e.is_empty());
 
                 if let Some(desc) = vuln_description_unpacked_ref {
                     // we need to split around \n new line characters if they exist else they will be rendered as gibberish
@@ -488,13 +489,13 @@ impl<'a, 'b> PdfGenerator<'a> {
                     vuln_layout.push(
                         Paragraph::default()
                             .styled_string("Description: ", self.indent_style.bold())
-                            .styled_string(first_line,self.indent_style)
+                            .styled_string(first_line, self.indent_style),
                     );
 
-
                     for line in lines {
-                        vuln_layout
-                            .push(Paragraph::default().styled_string(line.trim(), self.indent_style))
+                        vuln_layout.push(
+                            Paragraph::default().styled_string(line.trim(), self.indent_style),
+                        )
                     }
                 } else {
                     vuln_layout.push(
@@ -503,7 +504,7 @@ impl<'a, 'b> PdfGenerator<'a> {
                             .styled_string("N/A", self.indent_style),
                     );
                 };
-                    // Line break after the CVE entry section
+                // Line break after the CVE entry section
                 vuln_layout.push(genpdf::elements::Break::new(0.5));
 
                 let mut ratings_list = genpdf::elements::UnorderedList::new();

@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed GitLab CI not able to test due to missing rustup dependencies
+- Fixed the rendering issue for the newline character
 
 ### Changed
 - Changed Env_vars as_str() method to be const to allow some compile time operations

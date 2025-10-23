@@ -277,7 +277,10 @@ fn test_batch_run_test_directory() {
     let files_copied =
         copy_directory_files(src_dir, temp_input_dir.path()).expect("Failed to copy files");
 
-    assert!(files_copied > 0, "No files were copied from run_test directory");
+    assert!(
+        files_copied > 0,
+        "No files were copied from run_test directory"
+    );
 
     // Count expected processable files
     let expected_count = count_processable_files(temp_input_dir.path());
@@ -325,7 +328,10 @@ fn test_batch_run_test_xml_directory() {
     let files_copied =
         copy_directory_files(src_dir, temp_input_dir.path()).expect("Failed to copy files");
 
-    assert!(files_copied > 0, "No files were copied from run_test_xml directory");
+    assert!(
+        files_copied > 0,
+        "No files were copied from run_test_xml directory"
+    );
 
     // Count expected processable files
     let expected_count = count_processable_files(temp_input_dir.path());
