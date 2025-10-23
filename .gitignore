@@ -11,3 +11,6 @@
 /*VEX.json
 /*VDR.json
 /run_test*
+
+# Prevent generated PDFs in test source directories
+tests/test_artifacts/bom_src/**/*.pdf

@@ -74,27 +74,29 @@ pub mod paths {
     // No vulns test
     pub const BOM_NOVULNS: &str = concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/tests/test_artifacts/bom_src/run_test_novulns/bom_vdr_with_no_vulns.json"
+        "/tests/test_artifacts/bom_src/run_test/bom_vdr_with_no_vulns.json"
     );
 
     // XML test files
     pub const BOM_VDR_SIMPLE_XML: &str = concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/tests/test_artifacts/bom_src/run_test_xml/bom_vdr_simple.xml"
+        "/tests/test_artifacts/bom_src/run_test_xml/bom_xml_vdr_simple.xml"
     );
 
     pub const BOM_VEX_SIMPLE_XML: &str = concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/tests/test_artifacts/bom_src/run_test_xml/bom_vex_simple.xml"
+        "/tests/test_artifacts/bom_src/run_test_xml/bom_xml_vex_simple.xml"
     );
 
     pub const SAMPLE_VEX_XML: &str = concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/tests/test_artifacts/bom_src/run_test_xml/sample_vex.xml"
+        "/tests/test_artifacts/bom_src/run_test_xml/sample_xml_vex.xml"
     );
 }
 
-// Utility functions for test assertions
+// Utility functions for test assertions, we allow unused because tests expand and as such these functions maybe used temporarily for debugging purposes
+
+#[allow(unused)]
 pub mod utils {
     use std::borrow::Cow;
     use std::fs;

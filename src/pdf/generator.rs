@@ -118,7 +118,6 @@ impl Default for PdfGenerator<'_> {
 }
 
 impl<'a, 'b> PdfGenerator<'a> {
-    /// Creates a new PDF generator with custom report and PDF titles.
     ///
     /// # Arguments
     ///
@@ -480,17 +479,31 @@ impl<'a, 'b> PdfGenerator<'a> {
 
                 vuln_layout.push(id_paragraph);
 
-                let desc_paragraph = if let Some(desc) = &vuln.description {
-                    Paragraph::default()
-                        .styled_string("Description: ", self.indent_style.bold())
-                        .styled_string(desc, self.indent_style)
-                } else {
-                    Paragraph::default()
-                        .styled_string("Description: ", self.indent_style.bold())
-                        .styled_string("N/A", self.indent_style)
-                };
+                let vuln_description_unpacked_ref = vuln.description.as_ref().filter(|e| !e.is_empty());
 
-                vuln_layout.push(desc_paragraph);
+                if let Some(desc) = vuln_description_unpacked_ref {
+                    // we need to split around \n new line characters if they exist else they will be rendered as gibberish
+                    let mut lines = desc.split('\n');
+                    let first_line = lines.next().unwrap_or_default().trim(); // it is safe to unwrap here as we mapped the reference to return None when empty thus moving into the else branch and not here
+                    vuln_layout.push(
+                        Paragraph::default()
+                            .styled_string("Description: ", self.indent_style.bold())
+                            .styled_string(first_line,self.indent_style)
+                    );
+
+
+                    for line in lines {
+                        vuln_layout
+                            .push(Paragraph::default().styled_string(line.trim(), self.indent_style))
+                    }
+                } else {
+                    vuln_layout.push(
+                        Paragraph::default()
+                            .styled_string("Description: ", self.indent_style.bold())
+                            .styled_string("N/A", self.indent_style),
+                    );
+                };
+                    // Line break after the CVE entry section
                 vuln_layout.push(genpdf::elements::Break::new(0.5));
 
                 let mut ratings_list = genpdf::elements::UnorderedList::new();

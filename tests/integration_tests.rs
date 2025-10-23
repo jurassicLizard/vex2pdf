@@ -41,6 +41,65 @@ fn get_expected_pdf_name(input_path: &str) -> String {
     format!("{}.pdf", stem)
 }
 
+/// Helper function to copy all files from source directory to destination directory
+fn copy_directory_files(src_dir: &Path, dest_dir: &Path) -> std::io::Result<usize> {
+    let mut count = 0;
+    for entry in std::fs::read_dir(src_dir)? {
+        let entry = entry?;
+        let path = entry.path();
+        if path.is_file() {
+            let file_name = path.file_name().unwrap();
+            std::fs::copy(&path, dest_dir.join(file_name))?;
+            count += 1;
+        }
+    }
+    Ok(count)
+}
+
+/// Helper function to count processable files (.json and .xml) in a directory
+fn count_processable_files(dir: &Path) -> usize {
+    std::fs::read_dir(dir)
+        .expect("Failed to read directory")
+        .filter_map(|entry| entry.ok())
+        .filter(|entry| {
+            let path = entry.path();
+            path.is_file()
+                && path
+                    .extension()
+                    .and_then(|ext| ext.to_str())
+                    .map(|ext| ext == "json" || ext == "xml")
+                    .unwrap_or(false)
+        })
+        .count()
+}
+
+/// Helper function to count PDF files in a directory
+fn count_pdf_files(dir: &Path) -> usize {
+    std::fs::read_dir(dir)
+        .expect("Failed to read directory")
+        .filter_map(|entry| entry.ok())
+        .filter(|entry| {
+            let path = entry.path();
+            path.is_file()
+                && path
+                    .extension()
+                    .and_then(|ext| ext.to_str())
+                    .map(|ext| ext == "pdf")
+                    .unwrap_or(false)
+        })
+        .count()
+}
+
+/// Helper function to assert the number of PDF files created
+fn assert_pdf_count(dir: &Path, expected: usize) {
+    let actual = count_pdf_files(dir);
+    assert_eq!(
+        actual, expected,
+        "Expected {} PDFs but found {} in directory: {:?}",
+        expected, actual, dir
+    );
+}
+
 // ============================================================================
 // JSON BOM Tests
 // ============================================================================
@@ -201,6 +260,232 @@ fn test_sample_vex_xml() {
 
     utils::assert_pdf_created(&generated_pdf);
     utils::assert_pdf_content_similar(&generated_pdf, &expected_pdf);
+}
+
+// ============================================================================
+// Batch Processing Tests
+// ============================================================================
+
+#[test]
+fn test_batch_run_test_directory() {
+    // Test batch processing of all files in run_test directory
+    let temp_input_dir = TempDir::new().expect("Failed to create temp input dir");
+    let temp_output_dir = TempDir::new().expect("Failed to create temp output dir");
+
+    // Copy all test files from run_test directory
+    let src_dir = Path::new(paths::SOURCE_BOMS_BASE_ARTIFACTS_DIR);
+    let files_copied =
+        copy_directory_files(src_dir, temp_input_dir.path()).expect("Failed to copy files");
+
+    assert!(files_copied > 0, "No files were copied from run_test directory");
+
+    // Count expected processable files
+    let expected_count = count_processable_files(temp_input_dir.path());
+
+    // Run vex2pdf on the directory
+    let output = Command::new(paths::PATH_TO_EXE)
+        .arg("-d")
+        .arg(temp_output_dir.path())
+        .arg(temp_input_dir.path())
+        .output()
+        .expect("Failed to execute command");
+
+    assert!(
+        output.status.success(),
+        "Batch processing failed: {}",
+        utils::bytes_to_str(&output.stderr)
+    );
+
+    // Verify correct number of PDFs created
+    assert_pdf_count(temp_output_dir.path(), expected_count);
+
+    // Verify each PDF matches expected output
+    for entry in std::fs::read_dir(temp_output_dir.path()).unwrap() {
+        let entry = entry.unwrap();
+        let generated_pdf = entry.path();
+        if generated_pdf.extension().and_then(|e| e.to_str()) == Some("pdf") {
+            let pdf_name = generated_pdf.file_name().unwrap();
+            let expected_pdf = PathBuf::from(paths::REFERENCE_PDFS_DIR).join(pdf_name);
+
+            if expected_pdf.exists() {
+                utils::assert_pdf_content_similar(&generated_pdf, &expected_pdf);
+            }
+        }
+    }
+}
+
+#[test]
+fn test_batch_run_test_xml_directory() {
+    // Test batch processing of all files in run_test_xml directory
+    let temp_input_dir = TempDir::new().expect("Failed to create temp input dir");
+    let temp_output_dir = TempDir::new().expect("Failed to create temp output dir");
+
+    // Copy all test files from run_test_xml directory
+    let src_dir = Path::new(paths::SOURCE_BOMS_XML_ARTIFACTS_DIR);
+    let files_copied =
+        copy_directory_files(src_dir, temp_input_dir.path()).expect("Failed to copy files");
+
+    assert!(files_copied > 0, "No files were copied from run_test_xml directory");
+
+    // Count expected processable files
+    let expected_count = count_processable_files(temp_input_dir.path());
+
+    // Run vex2pdf on the directory
+    let output = Command::new(paths::PATH_TO_EXE)
+        .arg("-d")
+        .arg(temp_output_dir.path())
+        .arg(temp_input_dir.path())
+        .output()
+        .expect("Failed to execute command");
+
+    assert!(
+        output.status.success(),
+        "Batch processing failed: {}",
+        utils::bytes_to_str(&output.stderr)
+    );
+
+    // Verify correct number of PDFs created
+    assert_pdf_count(temp_output_dir.path(), expected_count);
+
+    // Verify each PDF matches expected output
+    for entry in std::fs::read_dir(temp_output_dir.path()).unwrap() {
+        let entry = entry.unwrap();
+        let generated_pdf = entry.path();
+        if generated_pdf.extension().and_then(|e| e.to_str()) == Some("pdf") {
+            let pdf_name = generated_pdf.file_name().unwrap();
+            let expected_pdf = PathBuf::from(paths::REFERENCE_PDFS_DIR).join(pdf_name);
+
+            if expected_pdf.exists() {
+                utils::assert_pdf_content_similar(&generated_pdf, &expected_pdf);
+            }
+        }
+    }
+}
+
+#[test]
+fn test_batch_no_args_current_directory() {
+    // Test batch processing with no arguments (scans current directory)
+    let temp_work_dir = TempDir::new().expect("Failed to create temp work dir");
+
+    // Copy a few test files to the working directory
+    std::fs::copy(
+        paths::SIMPLE_BOM_PATH,
+        temp_work_dir.path().join("test1.json"),
+    )
+    .expect("Failed to copy test file");
+
+    std::fs::copy(
+        paths::BOM_VDR_WITH_NO_VULNS,
+        temp_work_dir.path().join("test2.json"),
+    )
+    .expect("Failed to copy test file");
+
+    std::fs::copy(
+        paths::BOM_VDR_SIMPLE_XML,
+        temp_work_dir.path().join("test3.xml"),
+    )
+    .expect("Failed to copy test file");
+
+    let expected_count = 3;
+
+    // Run vex2pdf with NO arguments from that directory
+    let output = Command::new(paths::PATH_TO_EXE)
+        .current_dir(temp_work_dir.path())
+        .output()
+        .expect("Failed to execute command");
+
+    assert!(
+        output.status.success(),
+        "Batch processing in current dir failed: {}",
+        utils::bytes_to_str(&output.stderr)
+    );
+
+    // Verify PDFs were created in the same directory
+    assert_pdf_count(temp_work_dir.path(), expected_count);
+
+    // Verify specific PDFs exist
+    utils::assert_pdf_created(&temp_work_dir.path().join("test1.pdf"));
+    utils::assert_pdf_created(&temp_work_dir.path().join("test2.pdf"));
+    utils::assert_pdf_created(&temp_work_dir.path().join("test3.pdf"));
+}
+
+#[test]
+fn test_batch_non_recursive_scanning() {
+    // Test that directory scanning is non-recursive (only first level)
+    let temp_input_dir = TempDir::new().expect("Failed to create temp input dir");
+    let temp_output_dir = TempDir::new().expect("Failed to create temp output dir");
+
+    // Create a subdirectory with a file
+    let subdir = temp_input_dir.path().join("subdir");
+    std::fs::create_dir(&subdir).expect("Failed to create subdir");
+
+    std::fs::copy(paths::SIMPLE_BOM_PATH, subdir.join("nested.json"))
+        .expect("Failed to copy to subdir");
+
+    // Put files in the main directory
+    std::fs::copy(
+        paths::BOM_VDR_WITH_NO_VULNS,
+        temp_input_dir.path().join("top_level1.json"),
+    )
+    .expect("Failed to copy to main dir");
+
+    std::fs::copy(
+        paths::BOM_VDR_SIMPLE_XML,
+        temp_input_dir.path().join("top_level2.xml"),
+    )
+    .expect("Failed to copy to main dir");
+
+    // Run vex2pdf on the directory
+    let output = Command::new(paths::PATH_TO_EXE)
+        .arg("-d")
+        .arg(temp_output_dir.path())
+        .arg(temp_input_dir.path())
+        .output()
+        .expect("Failed to execute command");
+
+    assert!(output.status.success());
+
+    // Only top-level files should be processed (2 files)
+    assert_pdf_count(temp_output_dir.path(), 2);
+
+    // Verify top-level PDFs created
+    utils::assert_pdf_created(&temp_output_dir.path().join("top_level1.pdf"));
+    utils::assert_pdf_created(&temp_output_dir.path().join("top_level2.pdf"));
+
+    // Nested file should NOT be processed
+    assert!(
+        !temp_output_dir.path().join("nested.pdf").exists(),
+        "Should not process files in subdirectories"
+    );
+}
+
+#[test]
+fn test_batch_empty_directory() {
+    // Test that running on empty directory handles gracefully
+    let temp_empty_dir = TempDir::new().expect("Failed to create temp empty dir");
+    let temp_output_dir = TempDir::new().expect("Failed to create temp output dir");
+
+    let output = Command::new(paths::PATH_TO_EXE)
+        .arg("-d")
+        .arg(temp_output_dir.path())
+        .arg(temp_empty_dir.path())
+        .output()
+        .expect("Failed to execute command");
+
+    // Should succeed but process 0 files
+    assert!(
+        output.status.success(),
+        "Empty directory processing should succeed"
+    );
+
+    // Verify no PDFs created
+    assert_pdf_count(temp_output_dir.path(), 0);
+
+    let stdout = utils::bytes_to_str(&output.stdout);
+    assert!(
+        stdout.contains("Found 0 JSON files") || stdout.contains("Processed 0 files"),
+        "Should report 0 files processed"
+    );
 }
 
 // ============================================================================
