@@ -1,0 +1,257 @@
+<?xml version="1.0" ?>
+<bom xmlns="http://cyclonedx.org/schema/bom/1.5" serialNumber="urn:uuid:647aaf7f-394d-4ade-bb79-18879e4d3b24" version="1">
+  <metadata>
+    <timestamp>2025-10-24T09:50:00Z</timestamp>
+    <tools>
+      <tool>
+        <vendor>OWASP</vendor>
+        <name>Dependency-Track</name>
+        <version>4.13.3</version>
+      </tool>
+    </tools>
+    <component type="device" bom-ref="0a3d94a7-f9e0-487f-96d1-3bb88bfb2caf">
+      <name>analysis results</name>
+      <version/>
+    </component>
+    <supplier>
+      <name>Example Test Organization</name>
+      <url>https://www.example.com</url>
+    </supplier>
+  </metadata>
+  <components>
+    <component type="application" bom-ref="7b021ceb-c0e6-436e-8a3b-8654acc80299">
+      <name>axios</name>
+      <version>1.8.2</version>
+      <cpe>cpe:2.3:a:axios:axios:1.8.2:*:*:*:*:*:*:*</cpe>
+    </component>
+    <component type="application" bom-ref="06f1ccf0-bd5d-4d05-b02b-094b8c3a4b6a">
+      <name>boost</name>
+      <version>1.75.0</version>
+      <cpe>cpe:2.3:a:boost:boost:1.75.0:*:*:*:*:*:*:*</cpe>
+    </component>
+    <component type="application" bom-ref="f0881369-6e2e-4716-b296-8fd39aae22b6">
+      <name>qnx_software_development_platform</name>
+      <version>7.1</version>
+      <cpe>cpe:2.3:a:blackberry:qnx_software_development_platform:7.1:*:*:*:*:*:*:*</cpe>
+    </component>
+    <component type="application" bom-ref="ecd211ae-4b41-4984-94ae-17a406df6373">
+      <name>setuptools</name>
+      <version>75.3.0</version>
+      <cpe>cpe:2.3:a:python:setuptools:75.3.0:*:*:*:*:*:*:*</cpe>
+    </component>
+  </components>
+  <vulnerabilities>
+    <vulnerability bom-ref="8a46cee7-9cf0-47ba-beee-757b25393e34">
+      <id>CVE-2025-58754</id>
+      <source>
+        <name>NVD</name>
+        <url>https://nvd.nist.gov/</url>
+      </source>
+      <ratings>
+        <rating>
+          <score>7.5</score>
+          <severity>high</severity>
+          <method>CVSSv3</method>
+          <vector>CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H</vector>
+        </rating>
+      </ratings>
+      <description>Axios is a promise based HTTP client for the browser and Node.js. When Axios prior to versions 0.30.2 and 1.12.0 runs on Node.js and is given a URL with the `data:` scheme, it does not perform HTTP. Instead, its Node http adapter decodes the entire payload into memory (`Buffer`/`Blob`) and returns a synthetic 200 response. This path ignores `maxContentLength` / `maxBodyLength` (which only protect HTTP responses), so an attacker can supply a very large `data:` URI and cause the process to allocate unbounded memory and crash (DoS), even if the caller requested `responseType: 'stream'`. Versions 0.30.2 and 1.12.0 contain a patch for the issue.</description>
+      <analysis/>
+      <affects>
+        <target>
+          <ref>7b021ceb-c0e6-436e-8a3b-8654acc80299</ref>
+        </target>
+      </affects>
+    </vulnerability>
+    <vulnerability bom-ref="95296d50-ea0b-4847-9869-501ae784d56c">
+      <id>CVE-2016-9840</id>
+      <source>
+        <name>NVD</name>
+        <url>https://nvd.nist.gov/</url>
+      </source>
+      <ratings>
+        <rating>
+          <score>6.8</score>
+          <severity>medium</severity>
+          <method>CVSSv2</method>
+          <vector>(AV:N/AC:M/Au:N/C:P/I:P/A:P)</vector>
+        </rating>
+        <rating>
+          <score>8.8</score>
+          <severity>high</severity>
+          <method>CVSSv3</method>
+          <vector>CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H</vector>
+        </rating>
+      </ratings>
+      <description>inftrees.c in zlib 1.2.8 might allow context-dependent attackers to have unspecified impact by leveraging improper pointer arithmetic.</description>
+      <analysis>
+        <state>exploitable</state>
+      </analysis>
+      <affects>
+        <target>
+          <ref>06f1ccf0-bd5d-4d05-b02b-094b8c3a4b6a</ref>
+        </target>
+      </affects>
+    </vulnerability>
+    <vulnerability bom-ref="a965498b-67a6-402e-95f5-50256aa2fe7e">
+      <id>CVE-2021-32024</id>
+      <source>
+        <name>NVD</name>
+        <url>https://nvd.nist.gov/</url>
+      </source>
+      <ratings>
+        <rating>
+          <score>7.5</score>
+          <severity>high</severity>
+          <method>CVSSv2</method>
+          <vector>(AV:N/AC:L/Au:N/C:P/I:P/A:P)</vector>
+        </rating>
+        <rating>
+          <score>9.8</score>
+          <severity>critical</severity>
+          <method>CVSSv3</method>
+          <vector>CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H</vector>
+        </rating>
+      </ratings>
+      <description>A remote code execution vulnerability in the BMP image codec of BlackBerry QNX SDP version(s) 6.4 to 7.1 could allow an attacker to potentially execute code in the context of the affected process.</description>
+      <analysis>
+        <state>exploitable</state>
+        <detail>test details</detail>
+      </analysis>
+      <affects>
+        <target>
+          <ref>f0881369-6e2e-4716-b296-8fd39aae22b6</ref>
+        </target>
+      </affects>
+    </vulnerability>
+    <vulnerability bom-ref="850145ac-f068-45ae-ace7-cdedaf9d80ec">
+      <id>CVE-2023-32701</id>
+      <source>
+        <name>NVD</name>
+        <url>https://nvd.nist.gov/</url>
+      </source>
+      <ratings>
+        <rating>
+          <score>7.1</score>
+          <severity>high</severity>
+          <method>CVSSv3</method>
+          <vector>CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:H</vector>
+        </rating>
+      </ratings>
+      <description>Improper Input Validation in the Networking Stack of QNX SDP version(s) 6.6, 7.0, and 7.1 could allow an attacker to potentially cause Information Disclosure or a Denial-of-Service condition.</description>
+      <affects>
+        <target>
+          <ref>f0881369-6e2e-4716-b296-8fd39aae22b6</ref>
+        </target>
+      </affects>
+    </vulnerability>
+    <vulnerability bom-ref="8b940b8c-3ab7-490b-8d1a-035e8ffad4fe">
+      <id>CVE-2024-48854</id>
+      <source>
+        <name>NVD</name>
+        <url>https://nvd.nist.gov/</url>
+      </source>
+      <ratings>
+        <rating>
+          <score>7.5</score>
+          <severity>high</severity>
+          <method>CVSSv3</method>
+          <vector>CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N</vector>
+        </rating>
+      </ratings>
+      <description>Off-by-one error in the TIFF image codec in QNX SDP versions 8.0, 7.1 and 7.0 could allow an unauthenticated attacker to cause an information disclosure in the context of the process using the image codec.</description>
+      <affects>
+        <target>
+          <ref>f0881369-6e2e-4716-b296-8fd39aae22b6</ref>
+        </target>
+      </affects>
+    </vulnerability>
+    <vulnerability bom-ref="e13fdee9-25a9-47a8-81cd-daf1fc18e238">
+      <id>CVE-2024-48855</id>
+      <source>
+        <name>NVD</name>
+        <url>https://nvd.nist.gov/</url>
+      </source>
+      <ratings>
+        <rating>
+          <score>7.5</score>
+          <severity>high</severity>
+          <method>CVSSv3</method>
+          <vector>CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N</vector>
+        </rating>
+      </ratings>
+      <description>Out-of-bounds read in the TIFF image codec in QNX SDP versions 8.0, 7.1 and 7.0 could allow an unauthenticated attacker to cause an information disclosure in the context of the process using the image codec.</description>
+      <affects>
+        <target>
+          <ref>f0881369-6e2e-4716-b296-8fd39aae22b6</ref>
+        </target>
+      </affects>
+    </vulnerability>
+    <vulnerability bom-ref="8c6cfa22-2c51-4794-b2b8-7b21284e691f">
+      <id>CVE-2024-48856</id>
+      <source>
+        <name>NVD</name>
+        <url>https://nvd.nist.gov/</url>
+      </source>
+      <ratings>
+        <rating>
+          <score>9.8</score>
+          <severity>critical</severity>
+          <method>CVSSv3</method>
+          <vector>CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H</vector>
+        </rating>
+      </ratings>
+      <description>Out-of-bounds write in the PCX image codec in QNX SDP versions 8.0, 7.1 and 7.0 could allow an unauthenticated attacker to cause a denial-of-service condition or execute code in the context of the process using the image codec.</description>
+      <affects>
+        <target>
+          <ref>f0881369-6e2e-4716-b296-8fd39aae22b6</ref>
+        </target>
+      </affects>
+    </vulnerability>
+    <vulnerability bom-ref="abde85e3-2e75-4363-b9ff-e8533dc6bc65">
+      <id>CVE-2024-48857</id>
+      <source>
+        <name>NVD</name>
+        <url>https://nvd.nist.gov/</url>
+      </source>
+      <ratings>
+        <rating>
+          <score>7.5</score>
+          <severity>high</severity>
+          <method>CVSSv3</method>
+          <vector>CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H</vector>
+        </rating>
+      </ratings>
+      <description>NULL pointer dereference in the PCX image codec in QNX SDP versions 8.0, 7.1 and 7.0 could allow an unauthenticated attacker to cause a denial-of-service condition in the context of the process using the image codec.</description>
+      <affects>
+        <target>
+          <ref>f0881369-6e2e-4716-b296-8fd39aae22b6</ref>
+        </target>
+      </affects>
+    </vulnerability>
+    <vulnerability bom-ref="2b954041-5e57-4524-8552-4a2ed5599dbb">
+      <id>CVE-2025-47273</id>
+      <source>
+        <name>NVD</name>
+        <url>https://nvd.nist.gov/</url>
+      </source>
+      <ratings>
+        <rating>
+          <score>8.8</score>
+          <severity>high</severity>
+          <method>CVSSv3</method>
+          <vector>CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H</vector>
+        </rating>
+      </ratings>
+      <description>setuptools is a package that allows users to download, build, install, upgrade, and uninstall Python packages. A path traversal vulnerability in `PackageIndex` is present in setuptools prior to version 78.1.1. An attacker would be allowed to write files to arbitrary locations on the filesystem with the permissions of the process running the Python code, which could escalate to remote code execution depending on the context. Version 78.1.1 fixes the issue.</description>
+      <analysis>
+        <state>false_positive</state>
+      </analysis>
+      <affects>
+        <target>
+          <ref>ecd211ae-4b41-4984-94ae-17a406df6373</ref>
+        </target>
+      </affects>
+    </vulnerability>
+  </vulnerabilities>
+</bom>

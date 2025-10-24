@@ -547,3 +547,41 @@ fn test_nonexistent_input_file_fails() {
     // Command should fail
     assert!(!output.status.success());
 }
+
+#[test]
+fn test_json_with_analysis_renders_correctly() {
+    let temp_dir = TempDir::new().expect("Failed to create temporary directory");
+
+    let output = run_vex2pdf(paths::BOM_VDR_WITH_ANALYSIS, temp_dir.path());
+
+    // Verify PDF was created
+    let pdf_name = get_expected_pdf_name(paths::BOM_VDR_WITH_ANALYSIS);
+    let pdf_path = temp_dir.path().join(&pdf_name);
+    assert!(
+        pdf_path.exists(),
+        "Expected PDF not found: {}",
+        pdf_path.display()
+    );
+
+    // Compare with expected PDF
+    utils::assert_pdf_content_similar(&pdf_path, Path::new(paths::EXPECTED_BOM_VDR_WITH_ANALYSIS_PDF));
+}
+
+#[test]
+fn test_xml_with_analysis_renders_correctly() {
+    let temp_dir = TempDir::new().expect("Failed to create temporary directory");
+
+    let output = run_vex2pdf(paths::BOM_VDR_WITH_ANALYSIS_XML, temp_dir.path());
+
+    // Verify PDF was created
+    let pdf_name = get_expected_pdf_name(paths::BOM_VDR_WITH_ANALYSIS_XML);
+    let pdf_path = temp_dir.path().join(&pdf_name);
+    assert!(
+        pdf_path.exists(),
+        "Expected PDF not found: {}",
+        pdf_path.display()
+    );
+
+    // Compare with expected PDF
+    utils::assert_pdf_content_similar(&pdf_path, Path::new(paths::EXPECTED_BOM_VDR_WITH_ANALYSIS_XML_PDF));
+}

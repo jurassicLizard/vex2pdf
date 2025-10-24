@@ -93,6 +93,29 @@ pub mod paths {
         env!("CARGO_MANIFEST_DIR"),
         "/tests/test_artifacts/bom_src/run_test_xml/sample_xml_vex.xml"
     );
+
+    // Analysis test files - JSON
+    pub const BOM_VDR_WITH_ANALYSIS: &str = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/test_artifacts/bom_src/run_test/bom_vdr_with_analysis.json"
+    );
+
+    // Analysis test files - XML
+    pub const BOM_VDR_WITH_ANALYSIS_XML: &str = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/test_artifacts/bom_src/run_test_xml/bom_xml_vdr_with_analysis.xml"
+    );
+
+    // Expected PDFs for analysis tests
+    pub const EXPECTED_BOM_VDR_WITH_ANALYSIS_PDF: &str = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/test_artifacts/expected_pdfs/bom_vdr_with_analysis.pdf"
+    );
+
+    pub const EXPECTED_BOM_VDR_WITH_ANALYSIS_XML_PDF: &str = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/test_artifacts/expected_pdfs/bom_xml_vdr_with_analysis.pdf"
+    );
 }
 
 // Utility functions for test assertions, we allow unused because tests expand and as such these functions maybe used temporarily for debugging purposes
