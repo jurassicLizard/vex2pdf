@@ -15,6 +15,10 @@ A command-line tool to convert CycloneDX (VEX/VDR/(S)BoM) Documents in JSON or X
     * [VEX (Vulnerability Exploitability eXchange)](#vex-vulnerability-exploitability-exchange)
     * [VDR (Vulnerability Disclosure Report)](#vdr-vulnerability-disclosure-report)
     * [BOM/SBOM (Bill of Materials)](#bomsbom-bill-of-materials)
+  * [Vulnerability Analysis Display](#vulnerability-analysis-display)
+    * [Analysis States](#analysis-states)
+    * [Response Actions](#response-actions)
+    * [Analysis Information](#analysis-information)
   * [Fonts Handling](#fonts-handling)
     * [Font Licensing](#font-licensing)
   * [Features](#features)
@@ -65,6 +69,43 @@ VEX2PDF is a Rust application that scans the current directory for CycloneDX (VE
 - **Purpose**: Inventories software components and dependencies
 - **Focus**: Component listing and supply chain transparency
 
+## Vulnerability Analysis Display
+
+VEX2PDF renders CycloneDX vulnerability analysis information with visual enhancements to improve readability and quick risk assessment:
+
+### Analysis States
+
+The tool displays vulnerability analysis states with color-coded formatting for immediate visual recognition:
+
+- **Exploitable** (Red) - Vulnerability is directly or indirectly exploitable in the current environment
+- **In Triage** (Orange) - Vulnerability is under active investigation by the security team
+- **Resolved** (Green) - Vulnerability has been successfully remediated
+- **Resolved With Pedigree** (Dark Green) - Remediated with verifiable commit history and audit trail
+- **Not Affected** (Forest Green) - Component is confirmed not vulnerable to this issue
+- **False Positive** (Steel Blue) - Incorrectly identified as vulnerable; not a real security issue
+
+### Response Actions
+
+Response actions indicate what remediation steps are available or planned:
+
+- **Update** (Blue) - Software update available to fix the vulnerability
+- **Rollback** (Blue) - Rollback to a previous non-vulnerable version is the recommended action
+- **Workaround Available** (Orange) - Temporary mitigation or configuration change exists
+- **Can Not Fix** (Red) - Technical limitations prevent fixing this vulnerability
+- **Will Not Fix** (Red) - Vulnerability will not be addressed (risk accepted or deprioritized)
+
+### Analysis Information
+
+When present in the CycloneDX document, the analysis section appears after each vulnerability's description and includes:
+
+1. **State** - Current vulnerability assessment status (color-coded)
+2. **Response** - Available or planned remediation actions (displayed as a bracketed list)
+3. **Justification** - Explanation for "Not Affected" determinations (e.g., "Code Not Reachable", "Protected By Compiler")
+4. **Details** - Comprehensive analysis text explaining the security team's assessment
+5. **Timestamps** - First issued and last updated dates for tracking analysis history
+
+Analysis sections only appear when the CycloneDX document includes analysis data. If no analysis information exists for a vulnerability, the section is omitted entirely.
+
 ## Fonts Handling
 
 This tool uses Liberation Sans fonts to render PDFs. The fonts are embedded directly in the binary, so **no extra font configuration is required** and the binary works standalone and is fully portable.
@@ -86,6 +127,11 @@ The font license file is also available at [Liberation fonts License file](exter
   - Vulnerability details with severity ratings and sources
   - _**New since v0.8.0**_  : Component-vulnerability correlation via "affected" property (VDR)
   - Exploitability assessments and risk context (VEX)
+  - **New**: Vulnerability analysis with color-coded states and responses
+    - Analysis states: Exploitable (red), Resolved (green), In Triage (orange), False Positive (blue), Not Affected (green), Resolved With Pedigree (dark green)
+    - Response actions: Update/Rollback (blue), Workaround Available (orange), Can Not Fix/Will Not Fix (red)
+    - Justification explanations for not-affected vulnerabilities
+    - Detailed analysis text and timestamps (firstIssued, lastUpdated)
   - Component inventories and dependencies (BOM/SBOM)
   - Tools used to generate the CycloneDX (VEX/VDR/(S)BoM)) document
 - Cross-platform support

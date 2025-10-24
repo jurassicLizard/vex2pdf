@@ -10,12 +10,16 @@
 use crate::lib_utils::config::Config;
 use crate::pdf::font_config::FontsDir;
 use cyclonedx_bom::models::tool::Tools;
+use cyclonedx_bom::models::vulnerability_analysis::{ImpactAnalysisResponse, ImpactAnalysisState};
 use cyclonedx_bom::prelude::Bom;
 use genpdf::elements::Paragraph;
 use genpdf::style::{Color, Style, StyledString};
 use genpdf::{Alignment, Document, Element};
+use std::borrow::Cow;
 use std::collections::HashMap;
+use std::fmt::format;
 use std::io;
+use std::ops::Deref;
 use std::path::Path;
 use std::sync::Arc;
 
@@ -33,7 +37,171 @@ macro_rules! create_versioned_comp_styled {
     }};
 }
 // end macro utilities
+/// Utilities used by the generator
+pub(super) struct Utils;
+impl Utils {
+    /// This is used for analysis results to prettify labels like 'not_justified' into "Not Justified"
+    /// as an example. This applies to everything containing an underscore in it
+    pub(super) fn prettify_string_analysis(state_str: &str) -> String {
+        let ret: Vec<String> = state_str
+            .split('_')
+            .map(|e| {
+                if !e.is_empty() {
+                    format!("{}{}", &e[0..1].to_uppercase(), &e[1..])
+                } else {
+                    String::new()
+                }
+            })
+            .collect();
 
+        ret.join(" ").to_string()
+    }
+
+    /// Returns a styled format for impact analysis response actions.
+    ///
+    /// Color scheme:
+    /// - Update/Rollback: Blue (action available)
+    /// - Workaround: Orange (temporary solution)
+    /// - Can't/Won't Fix: Red (no fix)
+    pub(super) fn get_style_analysis_response(response: &ImpactAnalysisResponse) -> Style {
+        match response {
+            ImpactAnalysisResponse::Update => {
+                Style::new()
+                    .with_font_size(10)
+                    .with_color(Color::Rgb(0, 102, 204)) // Blue - action available
+            }
+            ImpactAnalysisResponse::Rollback => {
+                Style::new()
+                    .with_font_size(10)
+                    .with_color(Color::Rgb(0, 102, 204)) // Blue - action available
+            }
+            ImpactAnalysisResponse::WorkaroundAvailable => {
+                Style::new()
+                    .with_font_size(10)
+                    .with_color(Color::Rgb(255, 140, 0)) // Orange - temporary solution
+            }
+            ImpactAnalysisResponse::CanNotFix => {
+                Style::new()
+                    .with_font_size(10)
+                    .with_color(Color::Rgb(178, 34, 34)) // Red - no fix possible
+            }
+            ImpactAnalysisResponse::WillNotFix => {
+                Style::new()
+                    .with_font_size(10)
+                    .with_color(Color::Rgb(178, 34, 34)) // Red - no fix planned
+            }
+            ImpactAnalysisResponse::UndefinedResponse(_) => {
+                Style::new()
+                    .with_font_size(10)
+                    .with_color(Color::Rgb(128, 128, 128)) // Gray - undefined
+            }
+        }
+    }
+
+    pub(super) fn get_style_analysis_state(state: &ImpactAnalysisState) -> Style {
+        match state {
+            ImpactAnalysisState::Resolved => {
+                Style::new()
+                    .with_font_size(10)
+                    .with_color(Color::Rgb(0, 128, 0)) // Green - safe/resolved
+                    .bold()
+            }
+            ImpactAnalysisState::ResolvedWithPedigree => {
+                Style::new()
+                    .with_font_size(10)
+                    .with_color(Color::Rgb(0, 100, 0)) // Dark green - verified safe
+                    .bold()
+            }
+            ImpactAnalysisState::Exploitable => {
+                Style::new()
+                    .with_font_size(10)
+                    .with_color(Color::Rgb(178, 34, 34)) // Firebrick red - critical attention
+                    .bold()
+            }
+            ImpactAnalysisState::InTriage => {
+                Style::new()
+                    .with_font_size(10)
+                    .with_color(Color::Rgb(255, 140, 0)) // Dark orange - warning/investigation
+                    .bold()
+            }
+            ImpactAnalysisState::FalsePositive => {
+                Style::new()
+                    .with_font_size(10)
+                    .with_color(Color::Rgb(70, 130, 180)) // Steel blue - informational
+                    .bold()
+            }
+            ImpactAnalysisState::NotAffected => {
+                Style::new()
+                    .with_font_size(10)
+                    .with_color(Color::Rgb(34, 139, 34)) // Forest green - safe/not applicable
+                    .bold()
+            }
+            ImpactAnalysisState::UndefinedImpactAnalysisState(_) => {
+                Style::new()
+                    .with_font_size(10)
+                    .with_color(Color::Rgb(128, 128, 128)) // Gray - undefined/unknown
+                    .bold()
+            }
+        }
+    }
+
+    /// returns a formatted text in the form > **key**: value < where value can be a long text
+    /// also converts any newline character in val to real newlines for proper rendering
+    pub(super) fn get_formatted_key_val_text(key: &str, val: &str, style: Style) -> Paragraph {
+        let mut lines = val.split('\n');
+        let first_line = lines.next().unwrap_or_default().trim(); // it is safe to unwrap here as we mapped the reference to return None when empty thus moving into the else branch and not here
+        let mut res = Paragraph::default()
+            .styled_string(format!("{}: ", key), style.bold())
+            .styled_string(first_line, style);
+
+        for line in lines {
+            res.push_styled(line, style);
+        }
+
+        res
+    }
+
+
+    /// Formats a vector of styled strings as a bracketed, comma-separated paragraph.
+    ///
+    /// Creates a paragraph in the format `[ item1, item2, item3 ]` where each item
+    /// retains its individual styling while brackets and commas use the provided style.
+    ///
+    /// # Arguments
+    /// * `multi_style_scentence` - Vector of `StyledString` items to format
+    /// * `style` - Style for brackets `[ ]` and comma separators `, `
+    ///
+    /// # Returns
+    /// A [`Paragraph`] with the formatted content. Returns a paragraph object representing `[ ]` if the vector is empty.
+    ///
+    pub(super) fn get_styled_vector_as_paragraph(
+        key: Option<impl ToString>,
+        multi_style_scentence: Vec<StyledString>,
+        style: Style,
+    ) -> Paragraph {
+        let mut scentence_iter = multi_style_scentence.into_iter();
+
+        let mut styled_vector_par = Paragraph::default();
+        if let Some(key_val) = key {styled_vector_par.push_styled(format!("{}: ",key_val.to_string()), style.bold());}
+
+        styled_vector_par.push_styled("[ ", style.bold());
+
+        styled_vector_par.push(scentence_iter.next().unwrap_or_default());
+
+        for scentence_part in scentence_iter {
+            styled_vector_par.push_styled(", ", style);
+            styled_vector_par.push(scentence_part);
+        }
+
+        styled_vector_par.push_styled(" ]", style.bold());
+
+
+
+        styled_vector_par
+    }
+}
+
+/// ComponentTuple is a type that should hold a reference to component_name and component_version respectively
 type ComponentTuple<'b> = (&'b str, &'b str);
 pub struct PdfGenerator<'a> {
     title_style: Style,
@@ -463,7 +631,7 @@ impl<'a, 'b> PdfGenerator<'a> {
         }
 
         if let Some(vulnerabilities) = &vex.vulnerabilities {
-            let mut ordered_list = genpdf::elements::OrderedList::new();
+            let mut vulns_ordered_list = genpdf::elements::OrderedList::new();
 
             // Add each vulnerability
             for vuln in &vulnerabilities.0 {
@@ -550,6 +718,68 @@ impl<'a, 'b> PdfGenerator<'a> {
                 // add our ratings list to the vuln layout
                 vuln_layout.push(ratings_list);
 
+
+
+                // add analysis results if they exist
+                if let Some(analysis) = &vuln.vulnerability_analysis {
+                    // no point showing the analysis if we have no state
+                    if let Some(analysis_state) = &analysis.state {
+                        let mut analysis_para_layout = genpdf::elements::LinearLayout::vertical();
+
+                        analysis_para_layout.push(    Paragraph::default()
+                                .styled_string("Analysis: ", self.indent_style.bold())
+                                .styled_string(
+                                    Utils::prettify_string_analysis(
+                                        analysis_state.to_string().as_str(),
+                                    ),
+                                    Utils::get_style_analysis_state(analysis_state),
+                                ));
+
+                        // indented bullet points for analysis data
+                        let mut analysis_details_ul = genpdf::elements::UnorderedList::new();
+
+                        // handle responses if they exist
+                        if let Some(responses) = &analysis.responses {
+                            let mut responses_scentence =
+                                Vec::<StyledString>::with_capacity(responses.len());
+
+                            for response in responses {
+                                responses_scentence.push(StyledString::new(
+                                    Utils::prettify_string_analysis(
+                                        response.to_string().as_str(),
+                                    ),
+                                    Utils::get_style_analysis_response(response),
+                                ));
+                            }
+
+                            let responses_par = Utils::get_styled_vector_as_paragraph(Some("Responses"),responses_scentence, self.indent_style);
+
+
+
+                            analysis_details_ul.push(responses_par);
+                        }
+
+                        // handle justification if it exists
+                        if let Some(justification) = &analysis.justification {
+                            let justif_par = Utils::get_formatted_key_val_text("Justification", &Utils::prettify_string_analysis(justification.to_string().as_str()), self.indent_style);
+
+                            analysis_details_ul.push(justif_par)
+                        }
+
+                        // Show details if they exist
+                        if let Some(details) = &analysis.detail {
+                            analysis_details_ul.push(Utils::get_formatted_key_val_text("Details",&details,self.indent_style));
+                        }
+
+                        // add the finalized analysis section
+
+                        analysis_para_layout.push(analysis_details_ul);
+
+                        vuln_layout.push(genpdf::elements::Break::new(0.5));
+                        vuln_layout.push(analysis_para_layout);
+                    }
+                }
+
                 // add affected components to vulnerability
                 if !comp_ref_map.is_empty() {
                     // get list of affected references
@@ -585,12 +815,14 @@ impl<'a, 'b> PdfGenerator<'a> {
                         vuln_layout.push(affected_comp_para);
                     }
                 }
+
                 vuln_layout.push(genpdf::elements::Break::new(1));
-                ordered_list.push(vuln_layout);
+                    // Add vulnerability to numbered list of vulnerabilities
+                vulns_ordered_list.push(vuln_layout);
             }
 
             // list_layout.push(ordered_list);
-            doc.push(ordered_list);
+            doc.push(vulns_ordered_list);
             doc.push(genpdf::elements::Break::new(0.5));
         }
 
@@ -639,5 +871,100 @@ impl<'a, 'b> PdfGenerator<'a> {
         }
 
         doc
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use cyclonedx_bom::models::vulnerability_analysis::{ImpactAnalysisResponse, ImpactAnalysisState};
+    use genpdf::style::{Color, Style, StyledString};
+
+    #[test]
+    fn test_prettify_string_analysis() {
+        assert_eq!(Utils::prettify_string_analysis("not_affected"), "Not Affected");
+        assert_eq!(Utils::prettify_string_analysis("code_not_reachable"), "Code Not Reachable");
+        assert_eq!(Utils::prettify_string_analysis("exploitable"), "Exploitable");
+        assert_eq!(Utils::prettify_string_analysis(""), "");
+    }
+
+    #[test]
+    fn test_get_style_analysis_state_exploitable() {
+        let state = ImpactAnalysisState::Exploitable;
+        let style = Utils::get_style_analysis_state(&state);
+
+        // Verify it returns a style (basic check)
+        assert_eq!(style.font_size(), 10);
+    }
+
+    #[test]
+    fn test_get_style_analysis_state_resolved() {
+        let state = ImpactAnalysisState::Resolved;
+        let style = Utils::get_style_analysis_state(&state);
+
+        assert_eq!(style.font_size(), 10);
+    }
+
+    #[test]
+    fn test_get_style_analysis_response_update() {
+        let response = ImpactAnalysisResponse::Update;
+        let style = Utils::get_style_analysis_response(&response);
+
+        assert_eq!(style.font_size(), 10);
+    }
+
+    #[test]
+    fn test_get_formatted_key_val_text() {
+        let style = Style::new().with_font_size(10);
+        let para = Utils::get_formatted_key_val_text(
+            "Description",
+            "Test value",
+            style
+        );
+
+        // Basic check that paragraph was created
+        assert!(format!("{:?}", para).contains("Description"));
+    }
+
+    #[test]
+    fn test_get_styled_vector_as_paragraph_with_key() {
+        let style = Style::new().with_font_size(10);
+        let red_style = Style::new().with_color(Color::Rgb(178, 34, 34));
+        let items = vec![
+            StyledString::new("Update", red_style),
+            StyledString::new("Rollback", red_style),
+        ];
+
+        let para = Utils::get_styled_vector_as_paragraph(Some("Response"), items, style);
+
+        // Basic check that paragraph contains expected content
+        let debug_str = format!("{:?}", para);
+        assert!(debug_str.contains("Response"));
+    }
+
+    #[test]
+    fn test_get_styled_vector_as_paragraph_without_key() {
+        let style = Style::new().with_font_size(10);
+        let items = vec![
+            StyledString::new("Item1", style),
+        ];
+
+        let para = Utils::get_styled_vector_as_paragraph(None::<String>, items, style);
+
+        // Basic check that paragraph was created
+        let debug_str = format!("{:?}", para);
+        assert!(debug_str.contains("Item1"));
+    }
+
+    #[test]
+    fn test_get_styled_vector_as_paragraph_empty() {
+        let style = Style::new().with_font_size(10);
+        let items: Vec<StyledString> = vec![];
+
+        let para = Utils::get_styled_vector_as_paragraph(Some("Empty"), items, style);
+
+        // Should handle empty vector gracefully
+        let debug_str = format!("{:?}", para);
+        assert!(debug_str.contains("Empty"));
     }
 }

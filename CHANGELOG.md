@@ -20,6 +20,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added handling for a distinct working directory definition
 - Added handling for passing an input path or file which is optional and the tool reverts to default behaviour
 - Added integration tests
+- Added a vulnerability analysis section to PDF reports displaying CycloneDX analysis data with color-coded states and responses
+- Added color-coded analysis state indicators (Exploitable=red, Resolved=green, In Triage=orange, False Positive=blue, Not Affected=green, Resolved With Pedigree=dark green)
+- Added color-coded response action indicators (Update/Rollback=blue, Workaround Available=orange, Can Not Fix/Will Not Fix=red)
+- Added utility functions for analysis formatting (`get_style_analysis_state`, `get_style_analysis_response`, `get_styled_vector_as_paragraph`, `get_formatted_key_val_text`, `prettify_string_analysis`)
+- Added unit tests for analysis utility functions in generator module
 
 ### Fixed
 - Fixed GitLab CI not able to test due to missing rustup dependencies

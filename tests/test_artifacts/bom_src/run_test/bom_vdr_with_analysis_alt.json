@@ -1,0 +1,586 @@
+{
+  "bomFormat" : "CycloneDX",
+  "specVersion" : "1.5",
+  "serialNumber" : "urn:uuid:52a575aa-462b-4259-a0a5-dc55beb7fc77",
+  "version" : 1,
+  "metadata" : {
+    "timestamp" : "2025-10-24T10:52:21Z",
+    "tools" : [
+      {
+        "vendor" : "OWASP",
+        "name" : "Dependency-Track",
+        "version" : "4.13.3"
+      }
+    ],
+    "component" : {
+      "type" : "device",
+      "bom-ref" : "b62030ee-23aa-4e42-b9ea-515449e429ef",
+      "name" : "another test",
+      "version" : "0.5.0"
+    },
+    "supplier" : {
+      "name" : "Example Test Organization",
+      "url" : [
+        "https://www.example.com"
+      ]
+    }
+  },
+  "components" : [
+    {
+      "type" : "application",
+      "bom-ref" : "30ae5fe6-d8bc-425a-b1fd-853b3e481528",
+      "name" : "axios",
+      "version" : "1.8.2",
+      "cpe" : "cpe:2.3:a:axios:axios:1.8.2:*:*:*:*:*:*:*"
+    },
+    {
+      "type" : "application",
+      "bom-ref" : "965538f5-ec45-4eb2-a540-51e74f91aebb",
+      "name" : "boost",
+      "version" : "1.75.0",
+      "cpe" : "cpe:2.3:a:boost:boost:1.75.0:*:*:*:*:*:*:*"
+    },
+    {
+      "type" : "application",
+      "bom-ref" : "c74cbb89-29a6-40bf-b3aa-1e8812bc4178",
+      "name" : "cpp-httplib",
+      "version" : "0.15.3",
+      "cpe" : "cpe:2.3:a:yhirose:cpp-httplib:0.15.3:*:*:*:*:*:*:*"
+    },
+    {
+      "type" : "application",
+      "bom-ref" : "0c3e7c08-906e-482e-9179-22550c7729a5",
+      "name" : "poco",
+      "version" : "1.14.0",
+      "cpe" : "cpe:2.3:a:pocoproject:poco:1.14.0:*:*:*:*:*:*:*"
+    },
+    {
+      "type" : "application",
+      "bom-ref" : "5d7119b6-224e-45d6-a540-18b827402552",
+      "name" : "qnx_software_development_platform",
+      "version" : "7.1",
+      "cpe" : "cpe:2.3:a:blackberry:qnx_software_development_platform:7.1:*:*:*:*:*:*:*"
+    },
+    {
+      "type" : "application",
+      "bom-ref" : "3d945525-590b-40fc-9bc1-681f6cd72d79",
+      "name" : "setuptools",
+      "version" : "75.3.0",
+      "cpe" : "cpe:2.3:a:python:setuptools:75.3.0:*:*:*:*:*:*:*"
+    },
+    {
+      "type" : "application",
+      "bom-ref" : "62ff5cc7-08b3-4936-a118-92996f4ea3c7",
+      "name" : "tinyxml2",
+      "version" : "10.0.0",
+      "cpe" : "cpe:2.3:a:tinyxml2_project:tinyxml2:10.0.0:*:*:*:*:*:*:*"
+    }
+  ],
+  "dependencies" : [
+    {
+      "ref" : "b62030ee-23aa-4e42-b9ea-515449e429ef",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "30ae5fe6-d8bc-425a-b1fd-853b3e481528",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "965538f5-ec45-4eb2-a540-51e74f91aebb",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "c74cbb89-29a6-40bf-b3aa-1e8812bc4178",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "0c3e7c08-906e-482e-9179-22550c7729a5",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "5d7119b6-224e-45d6-a540-18b827402552",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "3d945525-590b-40fc-9bc1-681f6cd72d79",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "62ff5cc7-08b3-4936-a118-92996f4ea3c7",
+      "dependsOn" : [ ]
+    }
+  ],
+  "vulnerabilities" : [
+    {
+      "bom-ref" : "95296d50-ea0b-4847-9869-501ae784d56c",
+      "id" : "CVE-2016-9840",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 6.8,
+          "severity" : "medium",
+          "method" : "CVSSv2",
+          "vector" : "(AV:N/AC:M/Au:N/C:P/I:P/A:P)"
+        },
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 8.8,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "description" : "inftrees.c in zlib 1.2.8 might allow context-dependent attackers to have unspecified impact by leveraging improper pointer arithmetic.",
+      "published" : "2017-05-23T04:29:01Z",
+      "updated" : "2025-04-20T01:37:25Z",
+      "affects" : [
+        {
+          "ref" : "965538f5-ec45-4eb2-a540-51e74f91aebb"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "468da9f7-749a-41be-898b-40a7cdc8610d",
+      "id" : "CVE-2025-53628",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 8.8,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "cwes" : [
+        770,
+        835,
+        444
+      ],
+      "description" : "cpp-httplib is a C++11 single-file header-only cross platform HTTP/HTTPS library. Prior to 0.20.1, cpp-httplib does not have a limit for a unique line, permitting an attacker to explore this to allocate memory arbitrarily. This vulnerability is fixed in 0.20.1. NOTE: This vulnerability is related to CVE-2025-53629.",
+      "published" : "2025-07-10T20:15:27Z",
+      "updated" : "2025-08-06T18:08:15Z",
+      "affects" : [
+        {
+          "ref" : "c74cbb89-29a6-40bf-b3aa-1e8812bc4178"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "38943a6e-fa7a-48d4-9961-2e03aa068a30",
+      "id" : "CVE-2025-53629",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 7.5,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "cwes" : [
+        770
+      ],
+      "description" : "cpp-httplib is a C++11 single-file header-only cross platform HTTP/HTTPS library. Prior to 0.23.0, incoming requests using Transfer-Encoding: chunked in the header can allocate memory arbitrarily in the server, potentially leading to its exhaustion. This vulnerability is fixed in 0.23.0. NOTE: This vulnerability is related to CVE-2025-53628.",
+      "published" : "2025-07-10T20:15:27Z",
+      "updated" : "2025-08-06T18:09:49Z",
+      "affects" : [
+        {
+          "ref" : "c74cbb89-29a6-40bf-b3aa-1e8812bc4178"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "a965498b-67a6-402e-95f5-50256aa2fe7e",
+      "id" : "CVE-2021-32024",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 7.5,
+          "severity" : "high",
+          "method" : "CVSSv2",
+          "vector" : "(AV:N/AC:L/Au:N/C:P/I:P/A:P)"
+        },
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 9.8,
+          "severity" : "critical",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "cwes" : [
+        1287
+      ],
+      "description" : "A remote code execution vulnerability in the BMP image codec of BlackBerry QNX SDP version(s) 6.4 to 7.1 could allow an attacker to potentially execute code in the context of the affected process.",
+      "published" : "2021-12-13T19:15:07Z",
+      "updated" : "2025-09-09T16:15:31Z",
+      "affects" : [
+        {
+          "ref" : "5d7119b6-224e-45d6-a540-18b827402552"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "850145ac-f068-45ae-ace7-cdedaf9d80ec",
+      "id" : "CVE-2023-32701",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 7.1,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:H"
+        }
+      ],
+      "cwes" : [
+        1288
+      ],
+      "description" : "Improper Input Validation in the Networking Stack of QNX SDP version(s) 6.6, 7.0, and 7.1 could allow an attacker to potentially cause Information Disclosure or a Denial-of-Service condition.",
+      "published" : "2023-11-14T19:15:27Z",
+      "updated" : "2025-09-09T15:15:30Z",
+      "affects" : [
+        {
+          "ref" : "5d7119b6-224e-45d6-a540-18b827402552"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "8b940b8c-3ab7-490b-8d1a-035e8ffad4fe",
+      "id" : "CVE-2024-48854",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 7.5,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+        }
+      ],
+      "cwes" : [
+        193
+      ],
+      "description" : "Off-by-one error in the TIFF image codec in QNX SDP versions 8.0, 7.1 and 7.0 could allow an unauthenticated attacker to cause an information disclosure in the context of the process using the image codec.",
+      "published" : "2025-01-14T19:15:31Z",
+      "updated" : "2025-01-21T18:07:08Z",
+      "affects" : [
+        {
+          "ref" : "5d7119b6-224e-45d6-a540-18b827402552"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "e13fdee9-25a9-47a8-81cd-daf1fc18e238",
+      "id" : "CVE-2024-48855",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 7.5,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+        }
+      ],
+      "cwes" : [
+        125
+      ],
+      "description" : "Out-of-bounds read in the TIFF image codec in QNX SDP versions 8.0, 7.1 and 7.0 could allow an unauthenticated attacker to cause an information disclosure in the context of the process using the image codec.",
+      "published" : "2025-01-14T19:15:31Z",
+      "updated" : "2025-01-21T18:07:12Z",
+      "affects" : [
+        {
+          "ref" : "5d7119b6-224e-45d6-a540-18b827402552"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "8c6cfa22-2c51-4794-b2b8-7b21284e691f",
+      "id" : "CVE-2024-48856",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 9.8,
+          "severity" : "critical",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "cwes" : [
+        787
+      ],
+      "description" : "Out-of-bounds write in the PCX image codec in QNX SDP versions 8.0, 7.1 and 7.0 could allow an unauthenticated attacker to cause a denial-of-service condition or execute code in the context of the process using the image codec.",
+      "published" : "2025-01-14T19:15:31Z",
+      "updated" : "2025-01-21T18:06:49Z",
+      "affects" : [
+        {
+          "ref" : "5d7119b6-224e-45d6-a540-18b827402552"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "abde85e3-2e75-4363-b9ff-e8533dc6bc65",
+      "id" : "CVE-2024-48857",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 7.5,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "cwes" : [
+        476
+      ],
+      "description" : "NULL pointer dereference in the PCX image codec in QNX SDP versions 8.0, 7.1 and 7.0 could allow an unauthenticated attacker to cause a denial-of-service condition in the context of the process using the image codec.",
+      "published" : "2025-01-14T19:15:31Z",
+      "updated" : "2025-01-21T18:06:46Z",
+      "affects" : [
+        {
+          "ref" : "5d7119b6-224e-45d6-a540-18b827402552"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "2b954041-5e57-4524-8552-4a2ed5599dbb",
+      "id" : "CVE-2025-47273",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 8.8,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "cwes" : [
+        22
+      ],
+      "description" : "setuptools is a package that allows users to download, build, install, upgrade, and uninstall Python packages. A path traversal vulnerability in `PackageIndex` is present in setuptools prior to version 78.1.1. An attacker would be allowed to write files to arbitrary locations on the filesystem with the permissions of the process running the Python code, which could escalate to remote code execution depending on the context. Version 78.1.1 fixes the issue.",
+      "published" : "2025-05-17T16:15:19Z",
+      "updated" : "2025-06-12T16:29:01Z",
+      "affects" : [
+        {
+          "ref" : "3d945525-590b-40fc-9bc1-681f6cd72d79"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "0731a02e-a0bd-410f-99cb-48129f995e1d",
+      "id" : "CVE-2024-50614",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 6.5,
+          "severity" : "medium",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "cwes" : [
+        617
+      ],
+      "description" : "TinyXML2 through 10.0.0 has a reachable assertion for UINT_MAX/16, that may lead to application exit, in tinyxml2.cpp XMLUtil::GetCharacterRef.",
+      "published" : "2024-10-27T22:15:03Z",
+      "updated" : "2025-09-04T16:42:33Z",
+      "affects" : [
+        {
+          "ref" : "62ff5cc7-08b3-4936-a118-92996f4ea3c7"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "3346ad9e-d88c-44d0-bbca-19f38245cf49",
+      "id" : "CVE-2024-50615",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 6.5,
+          "severity" : "medium",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "cwes" : [
+        617
+      ],
+      "description" : "TinyXML2 through 10.0.0 has a reachable assertion for UINT_MAX/digit, that may lead to application exit, in tinyxml2.cpp XMLUtil::GetCharacterRef.",
+      "published" : "2024-10-27T22:15:03Z",
+      "updated" : "2025-09-04T16:42:17Z",
+      "affects" : [
+        {
+          "ref" : "62ff5cc7-08b3-4936-a118-92996f4ea3c7"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "c2d6430b-e313-4c08-9cb1-dad8fb57b5a0",
+      "id" : "CVE-2025-6375",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 1.7,
+          "severity" : "low",
+          "method" : "CVSSv2",
+          "vector" : "(AV:L/AC:L/Au:S/C:N/I:N/A:P)"
+        },
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 5.5,
+          "severity" : "medium",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "cwes" : [
+        404,
+        476
+      ],
+      "description" : "A vulnerability was found in poco up to 1.14.1. It has been rated as problematic. Affected by this issue is the function MultipartInputStream of the file Net/src/MultipartReader.cpp. The manipulation leads to null pointer dereference. The attack needs to be approached locally. The exploit has been disclosed to the public and may be used. Upgrading to version 1.14.2 is able to address this issue. The patch is identified as 6f2f85913c191ab9ddfb8fae781f5d66afccf3bf. It is recommended to upgrade the affected component.",
+      "published" : "2025-06-21T01:15:29Z",
+      "updated" : "2025-09-18T13:38:16Z",
+      "analysis" : {
+        "state" : "in_triage",
+        "justification" : "requires_configuration",
+        "response" : [
+          "rollback"
+        ]
+      },
+      "affects" : [
+        {
+          "ref" : "0c3e7c08-906e-482e-9179-22550c7729a5"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "8a46cee7-9cf0-47ba-beee-757b25393e34",
+      "id" : "CVE-2025-58754",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 7.5,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "cwes" : [
+        770
+      ],
+      "description" : "Axios is a promise based HTTP client for the browser and Node.js. When Axios prior to versions 0.30.2 and 1.12.0 runs on Node.js and is given a URL with the `data:` scheme, it does not perform HTTP. Instead, its Node http adapter decodes the entire payload into memory (`Buffer`/`Blob`) and returns a synthetic 200 response. This path ignores `maxContentLength` / `maxBodyLength` (which only protect HTTP responses), so an attacker can supply a very large `data:` URI and cause the process to allocate unbounded memory and crash (DoS), even if the caller requested `responseType: 'stream'`. Versions 0.30.2 and 1.12.0 contain a patch for the issue.",
+      "published" : "2025-09-12T02:15:46Z",
+      "updated" : "2025-09-29T15:16:08Z",
+      "affects" : [
+        {
+          "ref" : "30ae5fe6-d8bc-425a-b1fd-853b3e481528"
+        }
+      ]
+    }
+  ]
+}
