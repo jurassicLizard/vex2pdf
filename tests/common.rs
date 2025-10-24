@@ -5,6 +5,7 @@ pub mod names {
 }
 
 // Paths to test artifacts and executables
+#[allow(unused)]
 pub mod paths {
     pub const PATH_TO_EXE: &str = env!("CARGO_BIN_EXE_vex2pdf");
     pub const DEFAULT_WORKING_DIR: &str = env!("CARGO_MANIFEST_DIR");

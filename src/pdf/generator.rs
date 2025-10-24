@@ -15,11 +15,8 @@ use cyclonedx_bom::prelude::Bom;
 use genpdf::elements::Paragraph;
 use genpdf::style::{Color, Style, StyledString};
 use genpdf::{Alignment, Document, Element};
-use std::borrow::Cow;
 use std::collections::HashMap;
-use std::fmt::format;
 use std::io;
-use std::ops::Deref;
 use std::path::Path;
 use std::sync::Arc;
 
@@ -151,7 +148,7 @@ impl Utils {
         let mut lines = val.split('\n');
         let first_line = lines.next().unwrap_or_default().trim(); // it is safe to unwrap here as we mapped the reference to return None when empty thus moving into the else branch and not here
         let mut res = Paragraph::default()
-            .styled_string(format!("{}: ", key), style.bold())
+            .styled_string(format!("{key}: "), style.bold())
             .styled_string(first_line, style);
 
         for line in lines {
@@ -160,7 +157,6 @@ impl Utils {
 
         res
     }
-
 
     /// Formats a vector of styled strings as a bracketed, comma-separated paragraph.
     ///
@@ -182,7 +178,9 @@ impl Utils {
         let mut scentence_iter = multi_style_scentence.into_iter();
 
         let mut styled_vector_par = Paragraph::default();
-        if let Some(key_val) = key {styled_vector_par.push_styled(format!("{}: ",key_val.to_string()), style.bold());}
+        if let Some(key_val) = key {
+            styled_vector_par.push_styled(format!("{}: ", key_val.to_string()), style.bold());
+        }
 
         styled_vector_par.push_styled("[ ", style.bold());
 
@@ -194,8 +192,6 @@ impl Utils {
         }
 
         styled_vector_par.push_styled(" ]", style.bold());
-
-
 
         styled_vector_par
     }
@@ -718,22 +714,22 @@ impl<'a, 'b> PdfGenerator<'a> {
                 // add our ratings list to the vuln layout
                 vuln_layout.push(ratings_list);
 
-
-
                 // add analysis results if they exist
                 if let Some(analysis) = &vuln.vulnerability_analysis {
                     // no point showing the analysis if we have no state
                     if let Some(analysis_state) = &analysis.state {
                         let mut analysis_para_layout = genpdf::elements::LinearLayout::vertical();
 
-                        analysis_para_layout.push(    Paragraph::default()
+                        analysis_para_layout.push(
+                            Paragraph::default()
                                 .styled_string("Analysis: ", self.indent_style.bold())
                                 .styled_string(
                                     Utils::prettify_string_analysis(
                                         analysis_state.to_string().as_str(),
                                     ),
                                     Utils::get_style_analysis_state(analysis_state),
-                                ));
+                                ),
+                        );
 
                         // indented bullet points for analysis data
                         let mut analysis_details_ul = genpdf::elements::UnorderedList::new();
@@ -745,30 +741,40 @@ impl<'a, 'b> PdfGenerator<'a> {
 
                             for response in responses {
                                 responses_scentence.push(StyledString::new(
-                                    Utils::prettify_string_analysis(
-                                        response.to_string().as_str(),
-                                    ),
+                                    Utils::prettify_string_analysis(response.to_string().as_str()),
                                     Utils::get_style_analysis_response(response),
                                 ));
                             }
 
-                            let responses_par = Utils::get_styled_vector_as_paragraph(Some("Responses"),responses_scentence, self.indent_style);
-
-
+                            let responses_par = Utils::get_styled_vector_as_paragraph(
+                                Some("Responses"),
+                                responses_scentence,
+                                self.indent_style,
+                            );
 
                             analysis_details_ul.push(responses_par);
                         }
 
                         // handle justification if it exists
                         if let Some(justification) = &analysis.justification {
-                            let justif_par = Utils::get_formatted_key_val_text("Justification", &Utils::prettify_string_analysis(justification.to_string().as_str()), self.indent_style);
+                            let justif_par = Utils::get_formatted_key_val_text(
+                                "Justification",
+                                &Utils::prettify_string_analysis(
+                                    justification.to_string().as_str(),
+                                ),
+                                self.indent_style,
+                            );
 
                             analysis_details_ul.push(justif_par)
                         }
 
                         // Show details if they exist
                         if let Some(details) = &analysis.detail {
-                            analysis_details_ul.push(Utils::get_formatted_key_val_text("Details",&details,self.indent_style));
+                            analysis_details_ul.push(Utils::get_formatted_key_val_text(
+                                "Details",
+                                details,
+                                self.indent_style,
+                            ));
                         }
 
                         // add the finalized analysis section
@@ -817,7 +823,7 @@ impl<'a, 'b> PdfGenerator<'a> {
                 }
 
                 vuln_layout.push(genpdf::elements::Break::new(1));
-                    // Add vulnerability to numbered list of vulnerabilities
+                // Add vulnerability to numbered list of vulnerabilities
                 vulns_ordered_list.push(vuln_layout);
             }
 
@@ -877,14 +883,25 @@ impl<'a, 'b> PdfGenerator<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use cyclonedx_bom::models::vulnerability_analysis::{ImpactAnalysisResponse, ImpactAnalysisState};
+    use cyclonedx_bom::models::vulnerability_analysis::{
+        ImpactAnalysisResponse, ImpactAnalysisState,
+    };
     use genpdf::style::{Color, Style, StyledString};
 
     #[test]
     fn test_prettify_string_analysis() {
-        assert_eq!(Utils::prettify_string_analysis("not_affected"), "Not Affected");
-        assert_eq!(Utils::prettify_string_analysis("code_not_reachable"), "Code Not Reachable");
-        assert_eq!(Utils::prettify_string_analysis("exploitable"), "Exploitable");
+        assert_eq!(
+            Utils::prettify_string_analysis("not_affected"),
+            "Not Affected"
+        );
+        assert_eq!(
+            Utils::prettify_string_analysis("code_not_reachable"),
+            "Code Not Reachable"
+        );
+        assert_eq!(
+            Utils::prettify_string_analysis("exploitable"),
+            "Exploitable"
+        );
         assert_eq!(Utils::prettify_string_analysis(""), "");
     }
 
@@ -916,11 +933,7 @@ mod tests {
     #[test]
     fn test_get_formatted_key_val_text() {
         let style = Style::new().with_font_size(10);
-        let para = Utils::get_formatted_key_val_text(
-            "Description",
-            "Test value",
-            style
-        );
+        let para = Utils::get_formatted_key_val_text("Description", "Test value", style);
 
         // Basic check that paragraph was created
         assert!(format!("{:?}", para).contains("Description"));
@@ -945,9 +958,7 @@ mod tests {
     #[test]
     fn test_get_styled_vector_as_paragraph_without_key() {
         let style = Style::new().with_font_size(10);
-        let items = vec![
-            StyledString::new("Item1", style),
-        ];
+        let items = vec![StyledString::new("Item1", style)];
 
         let para = Utils::get_styled_vector_as_paragraph(None::<String>, items, style);
 

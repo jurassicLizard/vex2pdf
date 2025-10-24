@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added color-coded response action indicators (Update/Rollback=blue, Workaround Available=orange, Can Not Fix/Will Not Fix=red)
 - Added utility functions for analysis formatting (`get_style_analysis_state`, `get_style_analysis_response`, `get_styled_vector_as_paragraph`, `get_formatted_key_val_text`, `prettify_string_analysis`)
 - Added unit tests for analysis utility functions in generator module
+- Added structured logging system using `log` and `env_logger` crates with intelligent output routing (info/debug → stdout, warn/error → stderr)
+- Added compile-time debug log stripping in release builds for improved performance and binary size
+- Added default info-level logging without requiring RUST_LOG environment variable configuration
 
 ### Fixed
 - Fixed GitLab CI not able to test due to missing rustup dependencies
@@ -35,6 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed signature of `vex2pdf::pdf::generator::PdfGenerator::new(Option<'a str>, Option<'a str>, bool, bool, bool)` to `PdfGenerator::new(Arc<crate::lib_utils::config::Config>)`
 - Changed signature of `vex2pdf::run(config: &Config)` to `crate::run(config::Config)`, i.e. run now owns the configuration struct
 - Changed signature of `vex2pdf::utils::get_output_pdf_path` to return a `Result<T,E>`
+- Migrated from `println!`/`eprintln!` statements to structured logging with log levels (error, warn, info, debug)
+- Changed log output routing: informational logs now go to stdout, errors and warnings to stderr for better Unix compatibility
 
 ### Deprecated
 - `VEX2PDF_VERSION_INFO` is now replaced with a cli argument and has entered a deprecation phase (will be removed by the next minor release)

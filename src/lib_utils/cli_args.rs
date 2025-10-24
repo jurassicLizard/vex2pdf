@@ -55,18 +55,16 @@ impl CliArgs {
                 let tmp_file = path.join("vex2pdf_perm_test_file");
                 let res_io = fs::File::create(&tmp_file);
 
-                if let Err(_) = res_io {
+                if res_io.is_err() {
                     return Err(io::Error::new(
                         io::ErrorKind::PermissionDenied,
                         "Could not create a test file. possible permissions issue",
                     ));
-                } else if let Ok(_) = res_io {
-                    if let Err(_) = fs::remove_file(tmp_file) {
-                        return Err(io::Error::new(
-                            io::ErrorKind::PermissionDenied,
-                            "unable to delete permissions test file",
-                        ));
-                    }
+                } else if res_io.is_ok() && fs::remove_file(tmp_file).is_err() {
+                    return Err(io::Error::new(
+                        io::ErrorKind::PermissionDenied,
+                        "unable to delete permissions test file",
+                    ));
                 }
             }
         }

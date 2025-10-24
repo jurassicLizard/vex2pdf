@@ -1,3 +1,5 @@
+use log::info;
+
 /// Environment variable names used in the application
 pub enum EnvVarNames {
     /// Standard HOME environment variable
@@ -75,33 +77,33 @@ impl EnvVarNames {
 
     /// Prints information about currently used pdf titles
     pub fn print_report_titles_info() {
-        println!();
+        info!("");
         match EnvVarNames::ReportTitle.get_value() {
             Some(title) => {
-                println!("Overriding report title to {title}");
+                info!("Overriding report title to {title}");
             }
             None => {
-                println!("Using default report title");
-                println!(
+                info!("Using default report title");
+                info!(
                     "to override this set the {} environment variable to the desired title",
                     EnvVarNames::ReportTitle.as_str()
                 );
             }
         };
-        println!();
+        info!("");
         match EnvVarNames::PdfName.get_value() {
             Some(title) => {
-                println!("Overriding pdf metadata title to {title}");
+                info!("Overriding pdf metadata title to {title}");
             }
             None => {
-                println!("Using default pdf metadata title");
-                println!(
+                info!("Using default pdf metadata title");
+                info!(
                     "to override this set the {} environment variable to the desired title",
                     EnvVarNames::PdfName.as_str()
                 );
             }
         };
-        println!();
+        info!("");
     }
 
     // Helper method to determine if a value represents "on"

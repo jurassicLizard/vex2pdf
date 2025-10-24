@@ -1,13 +1,10 @@
-use super::config::Config;
-use super::run_utils;
-use crate::files_proc::model::input_file_type::InputFileType;
 use crate::lib_utils::errors::Vex2PdfError;
-use crate::pdf::generator::PdfGenerator;
 use cyclonedx_bom::errors::{BomError, JsonReadError, XmlReadError};
 use cyclonedx_bom::prelude::Bom;
+use log::warn;
 use std::error::Error;
+use std::fs;
 use std::path::{Path, PathBuf};
-use std::{fs, io};
 
 /// Parses an XML file into a CycloneDX Bom object.
 ///
@@ -97,12 +94,12 @@ pub(crate) fn parse_vex_json<P: AsRef<Path>>(path: P) -> Result<Bom, Box<dyn Err
 /// Called when the parser encounters a 1.6 document and attempts to process it
 /// by downgrading to version 1.5.
 fn print_downgrade_warning() {
-    println!();
-    println!("NOTE: Downgrading CycloneDX BOM from spec version 1.6 to 1.5");
-    println!("Reason: Current implementation does not yet fully support spec version 1.6");
-    println!("Warning: This compatibility mode only works for BOMs that don't utilize 1.6-specific fields");
-    println!("         Processing will fail if 1.6-specific fields are encountered");
-    println!();
+    warn!("");
+    warn!("NOTE: Downgrading CycloneDX BOM from spec version 1.6 to 1.5");
+    warn!("Reason: Current implementation does not yet fully support spec version 1.6");
+    warn!("Warning: This compatibility mode only works for BOMs that don't utilize 1.6-specific fields");
+    warn!("         Processing will fail if 1.6-specific fields are encountered");
+    warn!("");
 }
 
 /// Constructs an output PDF path based on the input file path.

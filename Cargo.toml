@@ -21,12 +21,13 @@ exclude = [
 [dependencies]
 clap = { version = "4.5.47", features = ["derive", "env"] }
 cyclonedx-bom = "0.8.0"
+env_logger = "0.11"
 genpdf = "0.2.0"
+log = { version = "0.4", features = ["max_level_debug", "release_max_level_info"] }
 serde_json = "1.0.140"
 
 
 [dev-dependencies]
-blake3 = "1.8.2"
 tempfile = "3.23.0"
 
 [profile.release]

@@ -1,6 +1,7 @@
 use crate::lib_utils::concurrency::common::Job;
 use crate::lib_utils::concurrency::worker::Worker;
 use crate::lib_utils::errors::Vex2PdfError;
+use log::debug;
 use std::sync::mpsc::Sender;
 use std::sync::{mpsc, Arc, Mutex};
 use std::thread;
@@ -58,7 +59,7 @@ impl Drop for ThreadPool {
         // now workers will error out thus unblocking their recv calls
 
         for worker in &mut self.workers {
-            println!("Shutting down {}", worker.id);
+            debug!("Shutting down worker {}", worker.id);
             worker.thread.take().unwrap().join().unwrap();
         }
     }

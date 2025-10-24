@@ -39,6 +39,9 @@ A command-line tool to convert CycloneDX (VEX/VDR/(S)BoM) Documents in JSON or X
       * [VEX2PDF_PDF_META_NAME](#vex2pdf_pdf_meta_name)
       * [VEX2PDF_PURE_BOM_NOVULNS](#vex2pdf_pure_bom_novulns)
       * [VEX2PDF_SHOW_COMPONENTS](#vex2pdf_show_components)
+  * [Logging](#logging)
+    * [Log Levels](#log-levels)
+    * [Controlling Log Output](#controlling-log-output)
   * [Documentation](#documentation)
   * [CycloneDX Document Format](#cyclonedx-document-format)
     * [Version 1.6 Compatibility Mode](#version-16-compatibility-mode)
@@ -183,39 +186,35 @@ The tool will:
 
 
 ## Example
-``` 
+```
 $ ./vex2pdf
-vex2pdf v0.6.1 - CycloneDX (VEX) to PDF Converter
-Copyright (c) 2025 jurassicLizard - MIT License
+vex2pdf v0.9.0 - CycloneDX (VEX) to PDF Converter
+Copyright (c) 2025 Salem B. - MIT Or Apache 2.0 License
 
-Active font path: <embedded liberationSans fonts> -- the env variable VEX2PDF_SHOW_OSS_LICENSES=true shows Font license details
-
-Scanning for JSON files in: ./documents
-Found 2 JSON files
-Processing: ./documents/example1.json
-Generating PDF: ./documents/example1.pdf
-Successfully generated PDF: ./documents/example1.pdf
-Processing: ./documents/example2.json
-Generating PDF: ./documents/example2.pdf
-Successfully generated PDF: ./documents/example2.pdf
-
-Scanning for XML files in: ./documents
-Found 5 XML files
-Processing: ./documents/example1.xml
-Generating PDF: ./documents/example1.pdf
-Successfully generated PDF: ./documents/example1.pdf
-Processing: ./documents/example2.xml
-Generating PDF: ./documents/example2.pdf
-Successfully generated PDF: ./documents/example2.pdf
-Processing: ./documents/example3.xml
-
-NOTE: Downgrading CycloneDX BOM from spec version 1.6 to 1.5
-Reason: Current implementation does not yet fully support spec version 1.6
-Warning: This compatibility mode only works for BOMs that don't utilize 1.6-specific fields
-         Processing will fail if 1.6-specific fields are encountered
-
-Generating PDF: ./documents/example3.pdf
-Successfully generated PDF: ./documents/example3.pdf
+[2025-10-24T18:00:00Z INFO] Active font path: <embedded liberationSans fonts> -- the env variable VEX2PDF_SHOW_OSS_LICENSES=true shows Font license details
+[2025-10-24T18:00:00Z INFO]
+[2025-10-24T18:00:00Z INFO] Using default report title
+[2025-10-24T18:00:00Z INFO] Using default pdf metadata title
+[2025-10-24T18:00:00Z INFO]
+[2025-10-24T18:00:00Z INFO] Scanning for BoM/Vex Files in ./documents
+[2025-10-24T18:00:00Z INFO] Found 2 JSON files
+[2025-10-24T18:00:00Z INFO] Found 5 XML files
+[2025-10-24T18:00:00Z INFO] Processing ./documents/example1.json
+[2025-10-24T18:00:00Z INFO] Generating PDF:  ./documents/example1.json
+[2025-10-24T18:00:00Z INFO] Successfully generated PDF: ./documents/example1.pdf
+[2025-10-24T18:00:00Z INFO] Processing ./documents/example2.json
+[2025-10-24T18:00:00Z INFO] Generating PDF:  ./documents/example2.json
+[2025-10-24T18:00:00Z INFO] Successfully generated PDF: ./documents/example2.pdf
+[2025-10-24T18:00:00Z INFO] Processing ./documents/example3.xml
+[2025-10-24T18:00:01Z WARN]
+[2025-10-24T18:00:01Z WARN] NOTE: Downgrading CycloneDX BOM from spec version 1.6 to 1.5
+[2025-10-24T18:00:01Z WARN] Reason: Current implementation does not yet fully support spec version 1.6
+[2025-10-24T18:00:01Z WARN] Warning: This compatibility mode only works for BOMs that don't utilize 1.6-specific fields
+[2025-10-24T18:00:01Z WARN]          Processing will fail if 1.6-specific fields are encountered
+[2025-10-24T18:00:01Z WARN]
+[2025-10-24T18:00:01Z INFO] Generating PDF:  ./documents/example3.xml
+[2025-10-24T18:00:01Z INFO] Successfully generated PDF: ./documents/example3.pdf
+[2025-10-24T18:00:01Z INFO] Processed 7 files
 ```
 ## Configuration
 
@@ -288,6 +287,56 @@ Example : `VEX2PDF_PURE_BOM_NOVULNS=true vex2pdf`
 Whether to show the complete list of components after the vulnerabilities section. The default behaviour is `true` but this can be overridden
 
 Example: `VEX2PDF_SHOW_COMPONENTS=false vex2pdf`
+
+## Logging
+
+VEX2PDF uses structured logging to provide clear visibility into its operation. Logs include timestamps, severity levels, and module paths for easy troubleshooting.
+
+### Log Levels
+
+The tool supports four log levels:
+
+- **ERROR** - Critical errors that prevent operation (output to stderr)
+- **WARN** - Warnings about potential issues or compatibility concerns (output to stderr)
+- **INFO** - Normal operational messages showing progress and results (output to stdout) - **Default level**
+- **DEBUG** - Detailed internal information including worker thread activity (output to stdout)
+
+### Controlling Log Output
+
+By default, the tool shows **INFO** level logs without any configuration. You can control the log level using the `RUST_LOG` environment variable:
+
+```bash
+# Default behavior (info level) - no configuration needed
+vex2pdf
+
+# Show all logs including debug information (verbose mode)
+RUST_LOG=debug vex2pdf
+
+# Show only warnings and errors (quiet mode)
+RUST_LOG=warn vex2pdf
+
+# Show only errors (minimal output)
+RUST_LOG=error vex2pdf
+
+# Disable all logging
+RUST_LOG=off vex2pdf
+```
+
+**Note:** Debug logs are completely removed from release builds at compile time for optimal performance and smaller binary size.
+
+**Output Routing:**
+- Informational logs (INFO, DEBUG) → stdout - normal operational output
+- Problem logs (WARN, ERROR) → stderr - errors and warnings for script handling
+
+This separation allows for proper Unix-style piping and redirection:
+```bash
+# Capture only errors to a file
+vex2pdf 2> errors.log
+
+# Separate normal output and errors
+vex2pdf > output.log 2> errors.log
+```
+
 ## Documentation
 
 

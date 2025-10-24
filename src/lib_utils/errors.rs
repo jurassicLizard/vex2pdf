@@ -34,7 +34,7 @@ impl Display for Vex2PdfError {
                 "failed to extract filename stem from `{}`",
                 path.display()
             ),
-            Vex2PdfError::Parse(message) => write!(f, "{}", message),
+            Vex2PdfError::Parse(message) => write!(f, "{message}"),
             Vex2PdfError::UnsupportedFileType => write!(f, "Unsupported file type for parsing"),
             Vex2PdfError::IgnoredByUser => write!(f, "file ignored explicitly by user"),
             Vex2PdfError::ConcurrencyError(s) => write!(f, "Concurrency error : {s}"),
@@ -53,8 +53,7 @@ impl From<io::Error> for Vex2PdfError {
 impl<T> From<mpsc::SendError<T>> for Vex2PdfError {
     fn from(value: mpsc::SendError<T>) -> Self {
         Vex2PdfError::ConcurrencyError(format!(
-            "Attempted to send where there are no more receivers. {}",
-            value.to_string()
+            "Attempted to send where there are no more receivers. {value}"
         ))
     }
 }

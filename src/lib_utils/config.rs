@@ -4,6 +4,7 @@ use crate::files_proc::model::input_file_type::InputFileType;
 use crate::lib_utils::cli_args::CliArgs;
 use crate::lib_utils::run_utils::print_copyright;
 use clap::Parser;
+use log::warn;
 use std::collections::HashMap;
 use std::error::Error;
 use std::path::PathBuf;
@@ -27,7 +28,7 @@ impl Config {
         let args = CliArgs::parse();
 
         // validate potential permissions issues
-        let _ = args.validate()?;
+        args.validate()?;
 
         let working_path = args.input.unwrap_or(std::env::current_dir()?);
         let output_dir = args.output_dir.unwrap_or(std::env::current_dir()?);
@@ -57,7 +58,7 @@ impl Config {
 
         // validate
         if !(process_json || process_xml) {
-            println!("**** WARNING: we cannot have both json and xml deactivated. defaulting to json processing");
+            warn!("**** WARNING: we cannot have both json and xml deactivated. defaulting to json processing");
             process_json = true;
         }
 

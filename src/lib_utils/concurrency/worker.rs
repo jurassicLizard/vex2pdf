@@ -1,5 +1,6 @@
 //! Worker model for concurrent jobs handling
 use crate::lib_utils::concurrency::common::Job;
+use log::debug;
 use std::sync::mpsc::Receiver;
 use std::sync::{Arc, Mutex};
 use std::thread::JoinHandle;
@@ -17,11 +18,11 @@ impl Worker {
 
             match job_msg {
                 Ok(job) => {
-                    println!("Worker {id} got a job; executing.");
+                    debug!("Worker {id} got a job; executing.");
                     job();
                 }
                 Err(_) => {
-                    println!("Worker {id} disconnected; shutting down;");
+                    debug!("Worker {id} disconnected; shutting down;");
                     break;
                 }
             }

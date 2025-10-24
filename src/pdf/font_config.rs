@@ -1,4 +1,5 @@
 use genpdf::fonts::{FontData, FontFamily};
+use log::info;
 use std::error::Error;
 
 /// `FontsDir` manages font directory paths across different locations in the system.
@@ -86,8 +87,8 @@ impl FontsDir {
     ///
     /// ```
     pub fn print_fonts_info() {
-        println!("Active font path: <embedded liberationSans fonts> -- the env variable VEX2PDF_SHOW_OSS_LICENSES=true shows Font license details");
-        println!();
+        info!("Active font path: <embedded liberationSans fonts> -- the env variable VEX2PDF_SHOW_OSS_LICENSES=true shows Font license details");
+        info!("");
     }
 
     /// private builder method that loads the embedded font files
