@@ -173,9 +173,11 @@ Currently, No Mac Binaries are provided however Mac Users can build and install 
 
 ## Usage
 
+VEX2PDF is designed for batch processing and can be run without arguments to automatically process all CycloneDX files in the current directory. As of **v0.9.0**, the tool also supports command-line arguments for more precise control over input files, output directories, and report customization.
+
 Run the application in a directory containing CycloneDX (VEX/VDR/(S)BoM files (JSON or XML):
 
-```shell 
+```shell
 ./vex2pdf
 ```
 The tool will:
@@ -183,6 +185,73 @@ The tool will:
 2. Attempt to parse each file as a CycloneDX (VEX/VDR/(S)BoM) document
 3. Generate a PDF report with the same name as the original file (with .pdf extension)
 4. Display progress and results in the console
+
+### Command-Line Arguments
+
+VEX2PDF supports command-line arguments for convenient configuration. All arguments can also be set via environment variables as shown in the [Configuration](#configuration) section.
+
+To see all available options, run:
+
+```bash
+vex2pdf --help
+```
+
+**Available options:**
+
+```
+A tool to convert CycloneDX(VEX) JSON or XML documents to PDF reports
+
+Usage: vex2pdf [OPTIONS] [FILE_OR_FOLDER_TO_PROCESS]
+
+Arguments:
+  [FILE_OR_FOLDER_TO_PROCESS]  File to process (JSON or XML) or Folder containing said file types.
+                               Please note that this tool is designed for batch processing. So If
+                               this is not set the tool scans the current directory for all parseable
+                               files and converts them. if a folder is set the tool scans just the
+                               first level of the directory (non-recursive) [env: VEX2PDF_WORKING_PATH=]
+
+Options:
+  -m, --show-novulns-msg <SHOW_NOVULNS_MSG>
+          [env: VEX2PDF_NOVULNS_MSG=] [possible values: true, false]
+  -t, --report-title <REPORT_TITLE>
+          Overrides the default title of the report [env: VEX2PDF_REPORT_TITLE=]
+  -n, --pdf-meta-name <PDF_META_TITLE>
+          Overrides the default PDF meta name [env: VEX2PDF_PDF_META_NAME=]
+  -b, --bom-novulns <PURE_BOM_NOVULNS>
+          Treats the file as a pure bill of materials and shows only the components
+          without the vulnerabilities [env: VEX2PDF_PURE_BOM_NOVULNS=] [possible values: true, false]
+  -c, --show-components <SHOW_COMPONENTS>
+          Controls whether the component list is shown [env: VEX2PDF_SHOW_COMPONENTS=]
+          [possible values: true, false]
+  -d, --output-dir <OUTPUT_DIR>
+          Sets the directory where the parser should output the files [env: VEX2PDF_OUTPUT_DIR=]
+  -h, --help
+          Print help
+  -V, --version
+          Print version
+```
+
+**Examples:**
+
+```bash
+# Process a specific file
+vex2pdf my-bom.json
+
+# Process a specific directory
+vex2pdf /path/to/bom/files/
+
+# Specify output directory
+vex2pdf my-bom.json -d /path/to/output/
+
+# Hide components list
+vex2pdf -c false
+
+# Custom report title
+vex2pdf -t "Security Vulnerability Assessment"
+
+# Combine multiple options
+vex2pdf my-bom.json -d ./reports/ -t "Q4 Security Report"
+```
 
 
 ## Example
