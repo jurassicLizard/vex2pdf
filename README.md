@@ -408,7 +408,6 @@ vex2pdf > output.log 2> errors.log
 
 ## Documentation
 
-
 For full API documentation, please visit:
 - [vex2pdf on docs.rs](https://docs.rs/vex2pdf)
 
@@ -416,6 +415,10 @@ To generate documentation locally:
 ```bash
 cargo doc --open
 ```
+
+### Developer Notes
+
+For information about testing, code coverage, architecture, and the traits system, see [Developer Notes](docs/DEVELOPER_NOTES.md).
 
 
 ## CycloneDX Document Format
