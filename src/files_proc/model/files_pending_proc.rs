@@ -98,10 +98,7 @@ impl<P: AsRef<Path> + Eq + Hash> IntoIterator for FilesPendingProc<P> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::files_proc::processor::DefaultFilesProcessor;
-    use crate::files_proc::traits::FileSearchProvider;
     use std::fs;
-    use std::io::Read;
     use std::path::PathBuf;
 
     macro_rules! create_multiple_files {
@@ -123,7 +120,7 @@ mod tests {
 
     struct TempFile {
         path: PathBuf,
-        file: fs::File,
+        _file: fs::File,
     }
 
     impl TempFile {
@@ -138,11 +135,11 @@ mod tests {
 
             temp_file_path.push(filename);
 
-            let file = fs::File::create(temp_file_path.clone()).unwrap();
+            let _file = fs::File::create(temp_file_path.clone()).unwrap();
 
             Self {
                 path: PathBuf::from(temp_file_path),
-                file,
+                _file,
             }
         }
     }

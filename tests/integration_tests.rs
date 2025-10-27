@@ -493,7 +493,7 @@ fn test_nonexistent_input_file_fails() {
 fn test_json_with_analysis_renders_correctly() {
     let temp_dir = TempDir::new().expect("Failed to create temporary directory");
 
-    let output = run_vex2pdf(paths::BOM_VDR_WITH_ANALYSIS, temp_dir.path());
+    let _ = run_vex2pdf(paths::BOM_VDR_WITH_ANALYSIS, temp_dir.path());
 
     // Verify PDF was created
     let pdf_name = get_expected_pdf_name(paths::BOM_VDR_WITH_ANALYSIS);
@@ -515,7 +515,7 @@ fn test_json_with_analysis_renders_correctly() {
 fn test_xml_with_analysis_renders_correctly() {
     let temp_dir = TempDir::new().expect("Failed to create temporary directory");
 
-    let output = run_vex2pdf(paths::BOM_VDR_WITH_ANALYSIS_XML, temp_dir.path());
+    let _ = run_vex2pdf(paths::BOM_VDR_WITH_ANALYSIS_XML, temp_dir.path());
 
     // Verify PDF was created
     let pdf_name = get_expected_pdf_name(paths::BOM_VDR_WITH_ANALYSIS_XML);

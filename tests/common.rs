@@ -1,9 +1,3 @@
-// General constants for test directory names
-pub mod names {
-    pub const EXPECTED_PDFS_DIR_NAME: &str = "expected_pdfs";
-    pub const ERRONEOUS_PDFS_DIR_NAME: &str = "err_pdfs";
-}
-
 // Paths to test artifacts and executables
 #[allow(unused)]
 pub mod paths {
@@ -133,7 +127,7 @@ pub mod utils {
     }
 
     /// Convert bytes to string (lossy conversion for non-UTF8)
-    pub fn bytes_to_str(bytes: &[u8]) -> Cow<str> {
+    pub fn bytes_to_str(bytes: &[u8]) -> Cow<'_, str> {
         String::from_utf8_lossy(bytes)
     }
 
