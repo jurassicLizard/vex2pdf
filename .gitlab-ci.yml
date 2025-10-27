@@ -23,7 +23,7 @@ test:
     - rustup component add clippy rustfmt
     - cargo fmt -- --check
     - cargo clippy -- -D warnings
-    - cargo test
+    - cargo test -- --skip test_validate_readonly_directory # that one test must be skipped because gitlab-ci tasks run as root making that test fail (root can write to readonly dirs in linux)
 
 # Build binaries ONLY on tag pushes
 linux-build:
@@ -33,7 +33,7 @@ linux-build:
     - if: $CI_COMMIT_TAG =~ /^v/
   script:
     - cargo build --profile release-optimized
-    - cargo test
+    - cargo test -- --skip test_validate_readonly_directory # that one test must be skipped because gitlab-ci tasks run as root making that test fail (root can write to readonly dirs in linux)
     - mv target/release-optimized/vex2pdf vex2pdf-linux-x86_64
     - chmod +x vex2pdf-linux-x86_64
   artifacts:
