@@ -61,9 +61,8 @@ This is configured in `Cargo.toml`:
 [package]
 # ...
 exclude = [
-    "tests/",  # All tests + ~42MB of PDF artifacts
+    "tests/",  # All integration tests + ~42MB of PDF artifacts
     ".gitlab-ci.yml",
-    "docs/DEVELOPER_NOTES.md",
 ]
 ```
 
