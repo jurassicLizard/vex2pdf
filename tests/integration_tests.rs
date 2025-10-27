@@ -41,65 +41,6 @@ fn get_expected_pdf_name(input_path: &str) -> String {
     format!("{}.pdf", stem)
 }
 
-/// Helper function to copy all files from source directory to destination directory
-fn copy_directory_files(src_dir: &Path, dest_dir: &Path) -> std::io::Result<usize> {
-    let mut count = 0;
-    for entry in std::fs::read_dir(src_dir)? {
-        let entry = entry?;
-        let path = entry.path();
-        if path.is_file() {
-            let file_name = path.file_name().unwrap();
-            std::fs::copy(&path, dest_dir.join(file_name))?;
-            count += 1;
-        }
-    }
-    Ok(count)
-}
-
-/// Helper function to count processable files (.json and .xml) in a directory
-fn count_processable_files(dir: &Path) -> usize {
-    std::fs::read_dir(dir)
-        .expect("Failed to read directory")
-        .filter_map(|entry| entry.ok())
-        .filter(|entry| {
-            let path = entry.path();
-            path.is_file()
-                && path
-                    .extension()
-                    .and_then(|ext| ext.to_str())
-                    .map(|ext| ext == "json" || ext == "xml")
-                    .unwrap_or(false)
-        })
-        .count()
-}
-
-/// Helper function to count PDF files in a directory
-fn count_pdf_files(dir: &Path) -> usize {
-    std::fs::read_dir(dir)
-        .expect("Failed to read directory")
-        .filter_map(|entry| entry.ok())
-        .filter(|entry| {
-            let path = entry.path();
-            path.is_file()
-                && path
-                    .extension()
-                    .and_then(|ext| ext.to_str())
-                    .map(|ext| ext == "pdf")
-                    .unwrap_or(false)
-        })
-        .count()
-}
-
-/// Helper function to assert the number of PDF files created
-fn assert_pdf_count(dir: &Path, expected: usize) {
-    let actual = count_pdf_files(dir);
-    assert_eq!(
-        actual, expected,
-        "Expected {} PDFs but found {} in directory: {:?}",
-        expected, actual, dir
-    );
-}
-
 // ============================================================================
 // JSON BOM Tests
 // ============================================================================
@@ -275,7 +216,7 @@ fn test_batch_run_test_directory() {
     // Copy all test files from run_test directory
     let src_dir = Path::new(paths::SOURCE_BOMS_BASE_ARTIFACTS_DIR);
     let files_copied =
-        copy_directory_files(src_dir, temp_input_dir.path()).expect("Failed to copy files");
+        utils::copy_directory_files(src_dir, temp_input_dir.path()).expect("Failed to copy files");
 
     assert!(
         files_copied > 0,
@@ -283,7 +224,7 @@ fn test_batch_run_test_directory() {
     );
 
     // Count expected processable files
-    let expected_count = count_processable_files(temp_input_dir.path());
+    let expected_count = utils::count_processable_files(temp_input_dir.path());
 
     // Run vex2pdf on the directory
     let output = Command::new(paths::PATH_TO_EXE)
@@ -300,7 +241,7 @@ fn test_batch_run_test_directory() {
     );
 
     // Verify correct number of PDFs created
-    assert_pdf_count(temp_output_dir.path(), expected_count);
+    utils::assert_pdf_count(temp_output_dir.path(), expected_count);
 
     // Verify each PDF matches expected output
     for entry in std::fs::read_dir(temp_output_dir.path()).unwrap() {
@@ -326,7 +267,7 @@ fn test_batch_run_test_xml_directory() {
     // Copy all test files from run_test_xml directory
     let src_dir = Path::new(paths::SOURCE_BOMS_XML_ARTIFACTS_DIR);
     let files_copied =
-        copy_directory_files(src_dir, temp_input_dir.path()).expect("Failed to copy files");
+        utils::copy_directory_files(src_dir, temp_input_dir.path()).expect("Failed to copy files");
 
     assert!(
         files_copied > 0,
@@ -334,7 +275,7 @@ fn test_batch_run_test_xml_directory() {
     );
 
     // Count expected processable files
-    let expected_count = count_processable_files(temp_input_dir.path());
+    let expected_count = utils::count_processable_files(temp_input_dir.path());
 
     // Run vex2pdf on the directory
     let output = Command::new(paths::PATH_TO_EXE)
@@ -351,7 +292,7 @@ fn test_batch_run_test_xml_directory() {
     );
 
     // Verify correct number of PDFs created
-    assert_pdf_count(temp_output_dir.path(), expected_count);
+    utils::assert_pdf_count(temp_output_dir.path(), expected_count);
 
     // Verify each PDF matches expected output
     for entry in std::fs::read_dir(temp_output_dir.path()).unwrap() {
@@ -407,7 +348,7 @@ fn test_batch_no_args_current_directory() {
     );
 
     // Verify PDFs were created in the same directory
-    assert_pdf_count(temp_work_dir.path(), expected_count);
+    utils::assert_pdf_count(temp_work_dir.path(), expected_count);
 
     // Verify specific PDFs exist
     utils::assert_pdf_created(&temp_work_dir.path().join("test1.pdf"));
@@ -452,7 +393,7 @@ fn test_batch_non_recursive_scanning() {
     assert!(output.status.success());
 
     // Only top-level files should be processed (2 files)
-    assert_pdf_count(temp_output_dir.path(), 2);
+    utils::assert_pdf_count(temp_output_dir.path(), 2);
 
     // Verify top-level PDFs created
     utils::assert_pdf_created(&temp_output_dir.path().join("top_level1.pdf"));
@@ -485,7 +426,7 @@ fn test_batch_empty_directory() {
     );
 
     // Verify no PDFs created
-    assert_pdf_count(temp_output_dir.path(), 0);
+    utils::assert_pdf_count(temp_output_dir.path(), 0);
 
     let stdout = utils::bytes_to_str(&output.stdout);
     assert!(
@@ -564,7 +505,10 @@ fn test_json_with_analysis_renders_correctly() {
     );
 
     // Compare with expected PDF
-    utils::assert_pdf_content_similar(&pdf_path, Path::new(paths::EXPECTED_BOM_VDR_WITH_ANALYSIS_PDF));
+    utils::assert_pdf_content_similar(
+        &pdf_path,
+        Path::new(paths::EXPECTED_BOM_VDR_WITH_ANALYSIS_PDF),
+    );
 }
 
 #[test]
@@ -583,5 +527,8 @@ fn test_xml_with_analysis_renders_correctly() {
     );
 
     // Compare with expected PDF
-    utils::assert_pdf_content_similar(&pdf_path, Path::new(paths::EXPECTED_BOM_VDR_WITH_ANALYSIS_XML_PDF));
+    utils::assert_pdf_content_similar(
+        &pdf_path,
+        Path::new(paths::EXPECTED_BOM_VDR_WITH_ANALYSIS_XML_PDF),
+    );
 }

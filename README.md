@@ -225,6 +225,10 @@ Options:
           [possible values: true, false]
   -d, --output-dir <OUTPUT_DIR>
           Sets the directory where the parser should output the files [env: VEX2PDF_OUTPUT_DIR=]
+  -j, --max-jobs <MAX_JOBS>
+          Sets the maximum number of jobs for concurrent generation tasks, when not set or set to `0`
+          this defaults to using the maximum available parallelism on the system which is given by
+          [`std::thread::available_parallelism`] [env: VEX2PDF_MAX_JOBS=]
   -h, --help
           Print help
   -V, --version
@@ -248,6 +252,12 @@ vex2pdf -c false
 
 # Custom report title
 vex2pdf -t "Security Vulnerability Assessment"
+
+# Process with single-threaded mode (no concurrency)
+vex2pdf --max-jobs 1 my-bom.json
+
+# Process with 4 concurrent jobs
+vex2pdf --max-jobs 4 /path/to/bom/files/
 
 # Combine multiple options
 vex2pdf my-bom.json -d ./reports/ -t "Q4 Security Report"
@@ -308,7 +318,8 @@ The following environment variables can be used to customize behavior:
 | VEX2PDF_REPORT_TITLE      | Overrides the default report title                                            | Not set (uses default title)          |
 | VEX2PDF_PDF_META_NAME     | Overrides the PDF metadata title                                              | Not set (uses default metadata title) |
 | VEX2PDF_PURE_BOM_NOVULNS  | Whether to treat the file as a component list instead of a vulnerability list | false                                 |
-| VEX2PDF_SHOW_COMPONENTS   | Whether to additionally show the component list after the vulnerability list  | true                                  |                             
+| VEX2PDF_SHOW_COMPONENTS   | Whether to additionally show the component list after the vulnerability list  | true                                  |
+| VEX2PDF_MAX_JOBS          | Controls the maximum number of concurrent processing jobs                     | Not set (uses max parallelism)        |                             
 
 #### VEX2PDF_NOVULNS_MSG
 
@@ -356,6 +367,28 @@ Example : `VEX2PDF_PURE_BOM_NOVULNS=true vex2pdf`
 Whether to show the complete list of components after the vulnerabilities section. The default behaviour is `true` but this can be overridden
 
 Example: `VEX2PDF_SHOW_COMPONENTS=false vex2pdf`
+
+#### VEX2PDF_MAX_JOBS
+
+Controls the maximum number of concurrent jobs for processing multiple BOM files:
+- When not set or set to `0` (default): Uses all available CPU cores for maximum parallelism
+- When set to `1`: Runs in single-threaded mode (sequential processing in main thread)
+- When set to `2-255`: Uses the specified number of concurrent jobs
+
+**Single-threaded mode** is useful for:
+- Debugging and troubleshooting
+- Systems with limited resources
+- Reproducible processing order
+
+**Multi-threaded mode** (default) provides:
+- Faster processing of multiple files
+- Better resource utilization on multi-core systems
+
+Example (single-threaded): `VEX2PDF_MAX_JOBS=1 vex2pdf`
+
+Example (4 concurrent jobs): `VEX2PDF_MAX_JOBS=4 vex2pdf`
+
+Example (default parallelism): `VEX2PDF_MAX_JOBS=0 vex2pdf` or simply `vex2pdf`
 
 ## Logging
 

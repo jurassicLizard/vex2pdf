@@ -40,6 +40,11 @@ pub enum EnvVarNames {
     WorkingPath,
     /// Overrides the output directory for the generated files, by default they get generated in the working directory
     OutputDir,
+    /// Max Number of Jobs:
+    /// - NOT SET or `0`: runs in default mode which is maximum parallelism
+    /// - 1 runs in single-threaded mode which means no threads are spawned and the jobs are run in the main thread
+    /// - Any integer `N` would be the number of threads the tool runs with, this saturates at [`std::thread::available_parallelism`] which is the default number of jobs if no Job number is passed or set
+    MaxJobs,
 }
 
 #[allow(deprecated)]
@@ -58,6 +63,7 @@ impl EnvVarNames {
             EnvVarNames::ShowComponentList => "VEX2PDF_SHOW_COMPONENTS",
             EnvVarNames::OutputDir => "VEX2PDF_OUTPUT_DIR",
             EnvVarNames::WorkingPath => "VEX2PDF_WORKING_PATH",
+            EnvVarNames::MaxJobs => "VEX2PDF_MAX_JOBS",
         }
     }
     /// this is useful for environment variables which should be on by default

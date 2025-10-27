@@ -19,6 +19,7 @@ pub struct Config {
     pub show_components: bool,
     pub report_title: Option<String>,
     pub pdf_meta_name: Option<String>,
+    pub max_jobs: Option<u8>,
 }
 
 #[allow(deprecated)]
@@ -44,6 +45,8 @@ impl Config {
         let show_comps = args
             .show_components
             .unwrap_or(EnvVarNames::ShowComponentList.is_on_or_unset());
+        // set number of jobs
+        let max_jobs = args.max_jobs;
         // print version info if requested
         if EnvVarNames::VersionInfo.is_on() {
             print_copyright();
@@ -77,6 +80,7 @@ impl Config {
             show_components: show_comps,
             report_title: EnvVarNames::ReportTitle.get_value(),
             pdf_meta_name: EnvVarNames::PdfName.get_value(),
+            max_jobs,
         };
 
         Ok(config)
@@ -158,6 +162,7 @@ impl Default for Config {
             show_components: true,
             report_title: Some(Self::get_default_report_title().to_string()),
             pdf_meta_name: Some(Self::get_default_pdf_meta_name().to_string()),
+            max_jobs: None,
         }
     }
 }

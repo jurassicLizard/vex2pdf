@@ -13,11 +13,20 @@ The project has comprehensive test coverage across multiple levels:
   - Compare generated PDFs against expected outputs (timestamps stripped)
   - Cover various scenarios: VEX, VDR, analysis states, XML/JSON formats, edge cases
 
+- **Threading Integration Tests**: Located in `tests/threading_integration_tests.rs`
+  - Test concurrency modes via CLI (user perspective)
+  - Verify `--max-jobs` argument and `VEX2PDF_MAX_JOBS` env var
+  - Test single-threaded mode (`--max-jobs 1`), multi-threaded (2, 4 jobs), and default parallelism
+  - Check log output messages about concurrency mode
+
 - **Unit Tests**: Embedded across multiple modules:
   - `src/pdf/generator.rs` - utility functions, analysis formatting
   - `src/lib_utils/run_utils.rs`
   - `src/lib_utils/cli_args.rs`
   - `src/lib_utils/env_vars.rs`
+  - `src/lib_utils/concurrency/threadpool.rs` - threadpool creation, execution, shutdown
+  - `src/lib_utils/concurrency/worker.rs` - worker creation, job execution
+  - `src/files_proc/processor.rs` - processor creation and state management
   - `src/files_proc/model/file_ident.rs`
   - `src/files_proc/model/input_file_type.rs`
   - `src/files_proc/model/files_pending_proc.rs`
@@ -254,9 +263,13 @@ Use `release-optimized` for production binaries (smaller size, better performanc
    - Works for BOMs without 1.6-specific fields
    - Logs warnings when downgrading
 
-2. **PDF comparison in tests**: Strips timestamps/IDs but still compares raw PDF content
-   - Can be fragile if genpdf internal format changes
-   - Consider extracting text-only comparison in the future
+2. **PDF comparison differs between debug and release builds**:
+   - PDF libraries (genpdf, printpdf) apply different optimizations in release mode
+   - This causes binary differences in generated PDFs that don't indicate test failures
+   - **Solution**: Content comparison is skipped in release mode (`#[cfg(not(debug_assertions))]`)
+   - Tests in release mode only verify PDF creation, not byte-for-byte content
+   - **Recommendation**: Run `cargo test` (debug mode) for full validation
+   - Running `cargo test --release` will show: "Release mode: Skipping PDF content comparison"
 
 3. **Embedded fonts**: Liberation Sans bundled in binary (no runtime dependency)
    - License displayed via `VEX2PDF_SHOW_OSS_LICENSES=true`

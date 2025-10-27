@@ -119,16 +119,14 @@ impl<P: AsRef<Path> + Eq + Hash + Send + 'static> SingleFileProcProvider<P>
         info!("Processing {}", file.get_path().as_ref().display());
 
         // Get BoM Object
-        let bom = match file.get_type() {
-            InputFileType::XML => {
-                parse_vex_xml(file.get_path()).map_err(|e| Vex2PdfError::Parse(e.to_string()))?
-            },
-            InputFileType::JSON => {
-                parse_vex_json(file.get_path())
-                    .map_err(|e| Vex2PdfError::Parse(e.to_string()))?
-            },
-            InputFileType::UNSUPPORTED => return Err(Vex2PdfError::UnsupportedFileType)
-        };
+        let bom =
+            match file.get_type() {
+                InputFileType::XML => parse_vex_xml(file.get_path())
+                    .map_err(|e| Vex2PdfError::Parse(e.to_string()))?,
+                InputFileType::JSON => parse_vex_json(file.get_path())
+                    .map_err(|e| Vex2PdfError::Parse(e.to_string()))?,
+                InputFileType::UNSUPPORTED => return Err(Vex2PdfError::UnsupportedFileType),
+            };
 
         // Generate output PDF path with same base name
         let generator = PdfGenerator::new(Arc::clone(&config));
@@ -165,7 +163,13 @@ impl<P: AsRef<Path> + Eq + Hash + Send + 'static> MultipleFilesProcProvider<P>
     type ErrType = Vex2PdfError;
 
     fn process(self) -> Result<Self::OkType, Self::ErrType> {
-        let pool = ThreadPool::default();
+        let pool = if let Some(num_jobs) = self.config.max_jobs {
+            ThreadPool::new(num_jobs)
+        } else {
+            ThreadPool::default()
+        };
+
+        info!("{pool}");
 
         let config = self.config;
         let file_count = self.files.get_file_count();
@@ -181,7 +185,7 @@ impl<P: AsRef<Path> + Eq + Hash + Send + 'static> MultipleFilesProcProvider<P>
             })
             .expect(
                 "Failed to send job to pool. Consider disabling Multithreading if issues persist",
-            );
+            ); // we do not want to immediatly return an error if one of the jobs failed hence why we did not propagate
         }
 
         drop(pool); // dropping here to show information message after worker status messages
@@ -190,5 +194,44 @@ impl<P: AsRef<Path> + Eq + Hash + Send + 'static> MultipleFilesProcProvider<P>
         info!("Processed {file_count} files");
 
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::PathBuf;
+
+    #[test]
+    fn test_default_files_processor_new() {
+        let config = Config::default();
+        let processor = DefaultFilesProcessor::new(config);
+
+        // Verify processor created with config (working_path should be set)
+        assert!(processor.config.working_path.exists());
+    }
+
+    #[test]
+    fn test_processor_ready_holds_state() {
+        let config = Arc::new(Config::default());
+        let files: FilesPendingProc<PathBuf> = FilesPendingProc::new();
+
+        let processor_ready = ProcessorReady {
+            config: Arc::clone(&config),
+            files,
+        };
+
+        // Verify state is accessible
+        assert_eq!(processor_ready.files.get_file_count(), 0);
+        assert!(processor_ready.config.working_path.exists());
+    }
+
+    #[test]
+    fn test_single_file_processor_creation() {
+        let _processor = DefaultSingleFileProcessor::default();
+
+        // Verify it can be created and is Send
+        fn assert_send<T: Send>() {}
+        assert_send::<DefaultSingleFileProcessor>();
     }
 }

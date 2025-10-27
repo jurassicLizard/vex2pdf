@@ -38,6 +38,11 @@ pub struct CliArgs {
     /// Sets the directory where the parser should output the files
     #[arg(short='d', long="output-dir", env=EnvVarNames::OutputDir.as_str())]
     pub output_dir: Option<PathBuf>,
+
+    /// Sets the maximum number of jobs for concurrent generation tasks, when not set or set to `0` this defaults to
+    /// using the maximum available parallelism on the system which is given by [`std::thread::available_parallelism`]
+    #[arg(short='j', long, env=EnvVarNames::MaxJobs.as_str())]
+    pub max_jobs: Option<u8>,
 }
 
 impl CliArgs {
@@ -88,6 +93,7 @@ mod tests {
             pure_bom_novulns: None,
             show_components: None,
             output_dir: None,
+            max_jobs: None,
         };
         assert!(args.validate().is_ok());
     }
@@ -103,6 +109,7 @@ mod tests {
             pure_bom_novulns: None,
             show_components: None,
             output_dir: Some(temp_dir.path().to_path_buf()),
+            max_jobs: None,
         };
         assert!(args.validate().is_ok());
     }
@@ -121,6 +128,7 @@ mod tests {
             pure_bom_novulns: None,
             show_components: None,
             output_dir: Some(file),
+            max_jobs: None,
         };
         let err = args.validate().unwrap_err();
         assert_eq!(err.kind(), io::ErrorKind::InvalidInput);
@@ -136,6 +144,7 @@ mod tests {
             pure_bom_novulns: None,
             show_components: None,
             output_dir: Some(PathBuf::from("/nonexistent/path/that/does/not/exist")),
+            max_jobs: None,
         };
         let err = args.validate().unwrap_err();
         assert_eq!(err.kind(), io::ErrorKind::InvalidInput);
@@ -160,6 +169,7 @@ mod tests {
             pure_bom_novulns: None,
             show_components: None,
             output_dir: Some(readonly_dir.clone()),
+            max_jobs: None,
         };
 
         let err = args.validate().unwrap_err();
@@ -182,6 +192,7 @@ mod tests {
             pure_bom_novulns: None,
             show_components: None,
             output_dir: Some(temp_dir.path().to_path_buf()),
+            max_jobs: None,
         };
 
         // This validates write + delete permissions
