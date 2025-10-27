@@ -8,6 +8,8 @@
 //! for version 1.6 documents that only use 1.5 fields. Documents using 1.6-specific
 //! fields may not process correctly.
 //!
+
+#![forbid(unsafe_code)]
 //! ## Features
 //!
 //! This library provides:
