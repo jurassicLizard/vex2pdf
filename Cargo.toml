@@ -11,11 +11,15 @@ readme = "README.md"
 keywords = ["vex", "pdf", "security", "cyclonedx", "vulnerability"]
 categories = ["command-line-utilities", "parsing"]
 
+# Tests and test artifacts (42MB of expected PDFs) are excluded from the
+# published package to keep download size reasonable.
+# To run tests, clone the repository: https://gitlab.com/jurassicLizard/vex2pdf
 exclude = [
     ".github/",
     ".gitlab/",
     ".gitignore",
-    ".gitlab-ci.yml"
+    ".gitlab-ci.yml",
+    "tests/"
 ]
 
 [dependencies]

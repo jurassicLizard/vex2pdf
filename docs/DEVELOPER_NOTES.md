@@ -48,6 +48,41 @@ tests/test_artifacts/
 
 When integration tests fail, the generated PDFs are copied to `err_pdfs/` along with stripped content dumps (`*_generated_raw_dump.txt` and `*_expected_raw_dump.txt`) for easy diffing.
 
+### Test Artifacts and Package Size
+
+The integration tests use ~42MB of reference PDFs (in `tests/test_artifacts/expected_pdfs/`) to verify PDF generation accuracy byte-by-byte. These artifacts are:
+
+- ✅ **Included in git repository** - Available for CI/CD and developers cloning the repo
+- ❌ **Excluded from crates.io package** - Keeps published package size reasonable (~1-2MB vs ~45MB)
+
+This is configured in `Cargo.toml`:
+
+```toml
+[package]
+# ...
+exclude = [
+    "tests/",  # All tests + ~42MB of PDF artifacts
+    ".gitlab-ci.yml",
+    "docs/DEVELOPER_NOTES.md",
+]
+```
+
+**Why exclude tests from crates.io?**
+
+1. **Size**: 42MB of test PDFs would make downloads prohibitively slow
+2. **Use case**: Users downloading from crates.io typically want to use the library, not run tests
+3. **CI/CD**: Our GitLab CI runs tests from the git repository, not from crates.io
+4. **Developer workflow**: Contributors clone from git anyway, which includes all test artifacts
+5. **Standard practice**: Many Rust crates with large test fixtures follow this pattern
+
+**Impact**: Users who download the package from crates.io cannot run the full integration test suite. This is expected and documented in the README. To run tests, clone the repository:
+
+```bash
+git clone https://gitlab.com/jurassicLizard/vex2pdf.git
+cd vex2pdf
+cargo test
+```
+
 ### Code Coverage
 
 Using `cargo-llvm-cov` for coverage analysis:

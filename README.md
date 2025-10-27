@@ -43,6 +43,7 @@ A command-line tool to convert CycloneDX (VEX/VDR/(S)BoM) Documents in JSON or X
     * [Log Levels](#log-levels)
     * [Controlling Log Output](#controlling-log-output)
   * [Documentation](#documentation)
+  * [Testing](#testing)
   * [CycloneDX Document Format](#cyclonedx-document-format)
     * [Version 1.6 Compatibility Mode](#version-16-compatibility-mode)
   * [Security Considerations](#security-considerations)
@@ -453,6 +454,27 @@ cargo doc --open
 
 For information about testing, code coverage, architecture, and the traits system, see [Developer Notes](docs/DEVELOPER_NOTES.md).
 
+## Testing
+
+The test suite includes integration tests with ~42MB of reference PDFs for verifying PDF generation accuracy. These test artifacts are not included in the crates.io package to keep download size reasonable.
+
+To run the full test suite:
+
+```bash
+# Clone the repository (tests require test artifacts from git)
+git clone https://gitlab.com/jurassicLizard/vex2pdf.git
+cd vex2pdf
+
+# Run all tests
+cargo test
+
+# Run with coverage report
+cargo install cargo-llvm-cov
+cargo llvm-cov --html
+# Opens coverage report in browser at target/llvm-cov/html/index.html
+```
+
+**Note**: Running `cargo test` on a package downloaded from crates.io will not work as test artifacts are excluded from the published package.
 
 ## CycloneDX Document Format
 This tool fully supports CycloneDX schema version 1.5 and provides compatibility for version 1.6 documents that only use 1.5 fields. Documents using 1.6-specific fields may not process correctly. For more information about the CycloneDX format, see:
