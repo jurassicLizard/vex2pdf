@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.9.0] - 2025-10-27
 
 ### Added
 - Added cli arguments without changing the default behaviour of the application which is to automatically scan the current directory upon execution and work in one depth
@@ -15,11 +15,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added re-export paths for some crate paths to simplify things for consumers
 - Added `VEX2PDF_OUTPUT_DIR` environment variable to override destination directory
 - Added Processor and Renderer trait system for improved extensibility
-- Added support for parallel processing of files
+- Added `--max-jobs` CLI argument to control concurrent processing (1 for single-threaded, 2-255 for specific job count, 0 or unset for max parallelism)
+- Added `VEX2PDF_MAX_JOBS` environment variable to configure concurrency (CLI argument takes precedence)
+- Added custom threadpool implementation for fine-grained control over worker lifecycle, logging, and error handling
+- Added single-threaded mode (`--max-jobs 1`) for debugging and sequential processing with graceful fallback
+- Added graceful threadpool shutdown that waits for all jobs to complete
 - Added handling for working with single files
 - Added handling for a distinct working directory definition
-- Added handling for passing an input path or file which is optional and the tool reverts to default behaviour
-- Added integration tests
+- Added handling for passing an input path or file whichever is needed. This is optional and the tool reverts to default behaviour if this option is not used
+- Added integration tests for PDF generation covering JSON/XML inputs, VEX/VDR formats, analysis states, and edge cases
+- Added threading integration tests (`tests/threading_integration_tests.rs`) to verify concurrency modes from user perspective via CLI
+- Added unit tests for threadpool module (creation modes, single/multi-threaded execution, graceful shutdown)
+- Added unit tests for worker module (creation, job execution, shutdown on channel close)
+- Added unit tests for processor module (creation, state management, Send trait verification)
+- Added test helper utilities in `tests/common.rs` to reduce code duplication across test files
+- Added conditional PDF content comparison in tests using `#[cfg(debug_assertions)]` to handle binary differences between debug and release builds
+- Added `#![forbid(unsafe_code)]` to library code to enforce memory safety
 - Added a vulnerability analysis section to PDF reports displaying CycloneDX analysis data with color-coded states and responses
 - Added color-coded analysis state indicators (Exploitable=red, Resolved=green, In Triage=orange, False Positive=blue, Not Affected=green, Resolved With Pedigree=dark green)
 - Added color-coded response action indicators (Update/Rollback=blue, Workaround Available=orange, Can Not Fix/Will Not Fix=red)
@@ -31,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed GitLab CI not able to test due to missing rustup dependencies
+- Fixed GitLab CI test failures when running as root by skipping readonly directory permission test in gitlab-ci environments
 - Fixed the rendering issue for the newline character
 
 ### Changed
@@ -40,6 +52,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed signature of `vex2pdf::utils::get_output_pdf_path` to return a `Result<T,E>`
 - Migrated from `println!`/`eprintln!` statements to structured logging with log levels (error, warn, info, debug)
 - Changed log output routing: informational logs now go to stdout, errors and warnings to stderr for better Unix compatibility
+- Updated README.md with `--max-jobs` CLI argument documentation, usage examples, and `VEX2PDF_MAX_JOBS` environment variable details
+- Updated DEVELOPER_NOTES.md with threading implementation details, test structure documentation, and debug vs release testing behavior
 
 ### Deprecated
 - `VEX2PDF_VERSION_INFO` is now replaced with a cli argument and has entered a deprecation phase (will be removed by the next minor release)
