@@ -31,6 +31,7 @@ A command-line tool to convert CycloneDX (VEX/VDR/(S)BoM) Documents in JSON or X
   * [Usage](#usage)
     * [Command-Line Arguments](#command-line-arguments)
   * [Example](#example)
+  * [Example Output](#example-output)
   * [Configuration](#configuration)
     * [Environment Variables](#environment-variables)
       * [VEX2PDF_NOVULNS_MSG](#vex2pdf_novulns_msg)
@@ -171,7 +172,7 @@ Users can either:
 ### Mac Users
 Currently, No Mac Binaries are provided however Mac Users can build and install with cargo. Please check the [From Source Section](#from-source) 
 
-> :note: If Mac release binaries are needed please [create an issue](https://gitlab.com/jurassicLizard/vex2pdf/-/issues)
+>  If Mac release binaries are needed please [create an issue](https://gitlab.com/jurassicLizard/vex2pdf/-/issues)
 
 
 
@@ -299,6 +300,19 @@ Copyright (c) 2025 Salem B. - MIT Or Apache 2.0 License
 [2025-10-24T18:00:01Z INFO] Successfully generated PDF: ./documents/example3.pdf
 [2025-10-24T18:00:01Z INFO] Processed 7 files
 ```
+
+## Example Output
+
+See sample generated PDFs from various CycloneDX documents in the repository:
+
+- **[VDR with Vulnerability Analysis](tests/test_artifacts/expected_pdfs/bom_vdr_with_analysis.pdf)** - Demonstrates color-coded analysis states (Exploitable, In Triage, Resolved) and response actions
+- **[VDR with Multiple Vulnerabilities](tests/test_artifacts/expected_pdfs/bom_vdr_with_many_vulns.pdf)** - Complex report showing multiple CVEs and affected components
+- **[Simple VEX Report](tests/test_artifacts/expected_pdfs/bom_vex_simple_one_vuln.pdf)** - Basic VEX document with single vulnerability
+- **[XML-based VDR](tests/test_artifacts/expected_pdfs/bom_xml_vdr_simple.pdf)** - Shows XML input processing
+- **[VDR with GHSA Entries](tests/test_artifacts/expected_pdfs/bom_vdr_with_ghsa_entries.pdf)** - GitHub Security Advisory integration example
+
+All PDFs include embedded Liberation Sans fonts and require no additional dependencies to view.
+
 ## Configuration
 
 No configuration files are required. However the application has some customization options available via Environment variables.
