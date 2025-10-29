@@ -558,11 +558,12 @@ fn test_license_output() {
 
     // Verify content
     let stderr_str = String::from_utf8_lossy(&output.stdout);
-    assert!(stderr_str.contains("VEX2PDF is licensed under either MIT or Apache License, Version 2.0 at your option."));
+    assert!(stderr_str.contains(
+        "VEX2PDF is licensed under either MIT or Apache License, Version 2.0 at your option."
+    ));
     assert!(stderr_str.contains("license text can be found under: https://gitlab.com/jurassicLizard/vex2pdf/-/blob/master/README.md#license"));
     assert!(stderr_str.contains("SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007"));
     assert!(stderr_str.contains("DEALINGS IN THE FONT SOFTWARE"));
-
 }
 
 #[test]

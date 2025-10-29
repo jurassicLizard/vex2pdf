@@ -12,7 +12,9 @@ use std::path::{Path, PathBuf};
 /// version information at startup.
 pub const fn get_version_info() -> &'static str {
     concat!(
-        "vex2pdf ", env!("CARGO_PKG_VERSION"), " - CycloneDX (VEX) to PDF Converter\n",
+        "vex2pdf ",
+        env!("CARGO_PKG_VERSION"),
+        " - CycloneDX (VEX) to PDF Converter\n",
         "Copyright (c) 2025 Salem B. - MIT Or Apache 2.0 License"
     )
 }
