@@ -121,8 +121,11 @@ This tool uses Liberation Sans fonts to render PDFs. The fonts are embedded dire
 ### Font Licensing
 
 The embedded Liberation Sans fonts are licensed under the SIL Open Font License (OFL).
-Set the environment variable `VEX2PDF_SHOW_OSS_LICENSES=true` to display full license details at runtime. 
-Check [VEX2PDF_SHOW_OSS_LICENSES](#VEX2PDF_SHOW_OSS_LICENSES) for more Information.
+Use the `--license` flag to display full license details:
+
+```bash
+vex2pdf --license
+```
 
 The font license file is also available at [Liberation fonts License file](external/fonts/liberation-fonts/LICENSE) in the current repository.
 
@@ -234,6 +237,8 @@ Options:
           Sets the maximum number of jobs for concurrent generation tasks, when not set or set to `0`
           this defaults to using the maximum available parallelism on the system which is given by
           [`std::thread::available_parallelism`] [env: VEX2PDF_MAX_JOBS=]
+  -L, --license
+          Dumps the open-source software license text to the terminal and exits
   -h, --help
           Print help
   -V, --version
@@ -272,10 +277,10 @@ vex2pdf my-bom.json -d ./reports/ -t "Q4 Security Report"
 ## Example
 ```
 $ ./vex2pdf
-vex2pdf v0.9.0 - CycloneDX (VEX) to PDF Converter
-Copyright (c) 2025 Salem B. - MIT Or Apache 2.0 License
-
-[2025-10-24T18:00:00Z INFO] Active font path: <embedded liberationSans fonts> -- the env variable VEX2PDF_SHOW_OSS_LICENSES=true shows Font license details
+[2025-10-24T18:00:00Z INFO] vex2pdf 0.9.0 - CycloneDX (VEX) to PDF Converter
+[2025-10-24T18:00:00Z INFO] Copyright (c) 2025 Salem B. - MIT Or Apache 2.0 License
+[2025-10-24T18:00:00Z INFO]
+[2025-10-24T18:00:00Z INFO] Active font path: <embedded liberationSans fonts> -- use --license to show Font license details
 [2025-10-24T18:00:00Z INFO]
 [2025-10-24T18:00:00Z INFO] Using default report title
 [2025-10-24T18:00:00Z INFO] Using default pdf metadata title
@@ -331,8 +336,6 @@ The following environment variables can be used to customize behavior:
 | Variable                  | Purpose                                                                       | Default                               |
 |---------------------------|-------------------------------------------------------------------------------|---------------------------------------|
 | VEX2PDF_NOVULNS_MSG       | Controls the "No Vulnerabilities reported" message display                    | true                                  |
-| VEX2PDF_SHOW_OSS_LICENSES | Shows all relevant licenses and exits                                         | off                                   |
-| VEX2PDF_VERSION_INFO      | Shows version information before executing normally                           | off                                   |
 | VEX2PDF_REPORT_TITLE      | Overrides the default report title                                            | Not set (uses default title)          |
 | VEX2PDF_PDF_META_NAME     | Overrides the PDF metadata title                                              | Not set (uses default metadata title) |
 | VEX2PDF_PURE_BOM_NOVULNS  | Whether to treat the file as a component list instead of a vulnerability list | false                                 |
@@ -346,20 +349,6 @@ This variable controls how the Vulnerabilities section appears when no vulnerabi
 - When set to "false": The Vulnerabilities section will be completely omitted from the PDF
 
 Example : `VEX2PDF_NOVULNS_MSG=false vex2pdf`
-
-#### VEX2PDF_SHOW_OSS_LICENSES
-
-Shows all relevant OSS licenses:
-- When set to "true" or "on": Show license texts and exit
-  - MIT License for the current software
-  - SIL License for the liberation-fonts
-- When set to "false" or "off" or when it is unset: Run the software normally
-
-Example : `VEX2PDF_SHOW_OSS_LICENSES=true vex2pdf`
-
-#### VEX2PDF_VERSION_INFO
-
-Shows version information prior to running software normally
 
 #### VEX2PDF_REPORT_TITLE
 
@@ -491,7 +480,8 @@ cargo llvm-cov --html
 # Opens coverage report in browser at target/llvm-cov/html/index.html
 ```
 
-**Note**: Running `cargo test` on a package downloaded from crates.io will not work as test artifacts are excluded from the published package.
+**Note**: Running `cargo test` on a package downloaded from crates.io will only trigger the unit tests and not the integration tests due to the large size of PDF test artifacts which could not be incorporated inside the crate
+          Please clone the repo entirely for a full testing experience.
 
 ## CycloneDX Document Format
 This tool fully supports CycloneDX schema version 1.5 and provides compatibility for version 1.6 documents that only use 1.5 fields. Documents using 1.6-specific fields may not process correctly. For more information about the CycloneDX format, see:

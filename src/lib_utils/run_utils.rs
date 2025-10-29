@@ -6,6 +6,17 @@ use std::error::Error;
 use std::fs;
 use std::path::{Path, PathBuf};
 
+/// Returns the application version and copyright text.
+///
+/// This is used both for clap's `long_version` output and for displaying
+/// version information at startup.
+pub const fn get_version_info() -> &'static str {
+    concat!(
+        "vex2pdf ", env!("CARGO_PKG_VERSION"), " - CycloneDX (VEX) to PDF Converter\n",
+        "Copyright (c) 2025 Salem B. - MIT Or Apache 2.0 License"
+    )
+}
+
 /// Parses an XML file into a CycloneDX Bom object.
 ///
 /// Reads the file content and attempts to parse it as a CycloneDX 1.5 XML document.
@@ -154,16 +165,6 @@ pub fn get_output_pdf_path(
         }
         Some(out_dir) => Ok(out_dir.join(&pdf_name)),
     }
-}
-
-/// Prints the application version, copyright, and license information.
-pub fn print_copyright() {
-    println!(
-        "vex2pdf v{} - CycloneDX (VEX) to PDF Converter",
-        env!("CARGO_PKG_VERSION")
-    );
-    println!("Copyright (c) 2025 Salem B. - MIT Or Apache 2.0 License");
-    println!();
 }
 
 #[cfg(test)]

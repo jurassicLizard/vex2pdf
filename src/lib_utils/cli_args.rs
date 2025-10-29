@@ -4,11 +4,17 @@
 //!
 
 use super::env_vars::EnvVarNames;
+use super::run_utils::get_version_info;
 use clap::Parser;
 use std::path::PathBuf;
 use std::{fs, io};
-#[derive(Parser)]
-#[command(version,about,long_about = None)]
+#[derive(Parser, Default)]
+#[command(
+    version,
+    about,
+    long_about = None,
+    long_version = get_version_info()
+)]
 pub struct CliArgs {
     /// File to process (JSON or XML) or Folder containing said file types. Please note that
     /// this tool is designed for batch processing. So If this is not set the tool scans the current directory for all parseable files and converts them.
@@ -43,6 +49,10 @@ pub struct CliArgs {
     /// using the maximum available parallelism on the system which is given by [`std::thread::available_parallelism`]
     #[arg(short='j', long, env=EnvVarNames::MaxJobs.as_str())]
     pub max_jobs: Option<u8>,
+
+    /// Dumps the open-source software license text to the terminal and exits
+    #[arg(short = 'L', long)]
+    pub license: bool,
 }
 
 impl CliArgs {
@@ -85,32 +95,15 @@ mod tests {
 
     #[test]
     fn test_validate_no_output_dir() {
-        let args = CliArgs {
-            input: None,
-            show_novulns_msg: None,
-            report_title: None,
-            meta_name: None,
-            pure_bom_novulns: None,
-            show_components: None,
-            output_dir: None,
-            max_jobs: None,
-        };
+        let args = CliArgs::default();
         assert!(args.validate().is_ok());
     }
 
     #[test]
     fn test_validate_valid_directory() {
         let temp_dir = TempDir::new().unwrap();
-        let args = CliArgs {
-            input: None,
-            show_novulns_msg: None,
-            report_title: None,
-            meta_name: None,
-            pure_bom_novulns: None,
-            show_components: None,
-            output_dir: Some(temp_dir.path().to_path_buf()),
-            max_jobs: None,
-        };
+        let mut args = CliArgs::default();
+        args.output_dir = Some(temp_dir.path().to_path_buf());
         assert!(args.validate().is_ok());
     }
 
@@ -120,16 +113,8 @@ mod tests {
         let file = temp_dir.path().join("test.json");
         fs::write(&file, r#"{"test": "data"}"#).unwrap();
 
-        let args = CliArgs {
-            input: None,
-            show_novulns_msg: None,
-            report_title: None,
-            meta_name: None,
-            pure_bom_novulns: None,
-            show_components: None,
-            output_dir: Some(file),
-            max_jobs: None,
-        };
+        let mut args = CliArgs::default();
+        args.output_dir = Some(file);
         let err = args.validate().unwrap_err();
         assert_eq!(err.kind(), io::ErrorKind::InvalidInput);
     }
@@ -137,15 +122,10 @@ mod tests {
     #[test]
     fn test_validate_nonexistent_directory() {
         let args = CliArgs {
-            input: None,
-            show_novulns_msg: None,
-            report_title: None,
-            meta_name: None,
-            pure_bom_novulns: None,
-            show_components: None,
             output_dir: Some(PathBuf::from("/nonexistent/path/that/does/not/exist")),
-            max_jobs: None,
+            ..CliArgs::default()
         };
+
         let err = args.validate().unwrap_err();
         assert_eq!(err.kind(), io::ErrorKind::InvalidInput);
     }
@@ -162,14 +142,8 @@ mod tests {
         fs::set_permissions(&readonly_dir, perms).unwrap();
 
         let args = CliArgs {
-            input: None,
-            show_novulns_msg: None,
-            report_title: None,
-            meta_name: None,
-            pure_bom_novulns: None,
-            show_components: None,
             output_dir: Some(readonly_dir.clone()),
-            max_jobs: None,
+            ..CliArgs::default()
         };
 
         let err = args.validate().unwrap_err();
@@ -185,14 +159,8 @@ mod tests {
     fn test_validate_can_create_and_delete_test_file() {
         let temp_dir = TempDir::new().unwrap();
         let args = CliArgs {
-            input: None,
-            show_novulns_msg: None,
-            report_title: None,
-            meta_name: None,
-            pure_bom_novulns: None,
-            show_components: None,
             output_dir: Some(temp_dir.path().to_path_buf()),
-            max_jobs: None,
+            ..CliArgs::default()
         };
 
         // This validates write + delete permissions

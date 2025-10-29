@@ -532,3 +532,67 @@ fn test_xml_with_analysis_renders_correctly() {
         Path::new(paths::EXPECTED_BOM_VDR_WITH_ANALYSIS_XML_PDF),
     );
 }
+
+#[test]
+fn test_err_output() {
+    // trigger error path
+    let output = Command::new(paths::PATH_TO_EXE)
+        .arg("-d")
+        .arg("/path/to/unknown")
+        .output()
+        .expect("failed to run executable");
+
+    // verify error output
+    let stderr_str = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr_str.contains("Problem setting up working environment"));
+}
+
+#[test]
+fn test_license_output() {
+    // trigger license output
+
+    let output = Command::new(paths::PATH_TO_EXE)
+        .arg("--license")
+        .output()
+        .expect("failed to run executable");
+
+    // Verify content
+    let stderr_str = String::from_utf8_lossy(&output.stdout);
+    assert!(stderr_str.contains("VEX2PDF is licensed under either MIT or Apache License, Version 2.0 at your option."));
+    assert!(stderr_str.contains("license text can be found under: https://gitlab.com/jurassicLizard/vex2pdf/-/blob/master/README.md#license"));
+    assert!(stderr_str.contains("SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007"));
+    assert!(stderr_str.contains("DEALINGS IN THE FONT SOFTWARE"));
+
+}
+
+#[test]
+fn test_version_long_output() {
+    // Test --version flag output
+    let output = Command::new(paths::PATH_TO_EXE)
+        .arg("--version")
+        .output()
+        .expect("failed to run executable");
+
+    // Verify version output contains copyright info
+    let stdout_str = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout_str.contains("vex2pdf"));
+    assert!(stdout_str.contains("CycloneDX (VEX) to PDF Converter"));
+    assert!(stdout_str.contains("Copyright (c) 2025 Salem B. - MIT Or Apache 2.0 License"));
+}
+
+#[test]
+fn test_version_info_on_startup() {
+    // Test that version info appears in logs when software runs normally
+    let temp_dir = TempDir::new().expect("Failed to create temp dir");
+
+    let output = Command::new(paths::PATH_TO_EXE)
+        .current_dir(temp_dir.path())
+        .output()
+        .expect("failed to run executable");
+
+    // Verify version info appears in stdout logs
+    let stdout_str = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout_str.contains("vex2pdf"));
+    assert!(stdout_str.contains("CycloneDX (VEX) to PDF Converter"));
+    assert!(stdout_str.contains("Copyright (c) 2025 Salem B. - MIT Or Apache 2.0 License"));
+}

@@ -18,6 +18,9 @@ pub enum Vex2PdfError {
     UnsupportedFileType,
     /// File was ignored explicitly through user input
     IgnoredByUser,
+    /// When interupting processing voluntarily for example to show license details
+    /// this is used by [`crate::run`] to signal main that we are not completing processing
+    VoluntaryLicenseDisplayInterruption,
     /// Concurrency error
     ConcurrencyError(String),
 }
@@ -37,6 +40,10 @@ impl Display for Vex2PdfError {
             Vex2PdfError::Parse(message) => write!(f, "{message}"),
             Vex2PdfError::UnsupportedFileType => write!(f, "Unsupported file type for parsing"),
             Vex2PdfError::IgnoredByUser => write!(f, "file ignored explicitly by user"),
+            Vex2PdfError::VoluntaryLicenseDisplayInterruption => write!(
+                f,
+                "Voluntary interrupted execution for license display by user"
+            ),
             Vex2PdfError::ConcurrencyError(s) => write!(f, "Concurrency error : {s}"),
         }
     }

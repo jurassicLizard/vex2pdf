@@ -1,6 +1,8 @@
-//! # vex2pdf library
+//! # vex2pdf - CycloneDX to PDF Converter
 //!
-//! Core functionality for converting CycloneDX VEX documents to PDF format.
+//! A Rust library for converting CycloneDX VEX/VDR/SBOM documents (JSON and XML formats)
+//! to professional PDF reports with embedded fonts, color-coded vulnerability analysis,
+//! and concurrent processing support.
 //!
 //! ## CycloneDX Compatibility
 //!
@@ -8,40 +10,95 @@
 //! for version 1.6 documents that only use 1.5 fields. Documents using 1.6-specific
 //! fields may not process correctly.
 //!
-
-#![forbid(unsafe_code)]
+//! ## Quick Start
+//!
+//! ```rust
+//! use vex2pdf::lib_utils::config::Config;
+//! use vex2pdf::run;
+//!
+//! let config = Config::default()
+//!     .working_path("./input")
+//!     .output_dir("./output")
+//!     .max_jobs(Some(4));
+//!
+//! run(config).expect("Failed to process files");
+//! ```
+//!
+//! ## Configuration
+//!
+//! Configuration is managed through the [`Config`](lib_utils::config::Config) struct
+//! using the builder pattern for flexibility.
+//!
+//! ### Builder Pattern (Recommended)
+//!
+//! Use method chaining to configure exactly what you need:
+//!
+//! ```rust
+//! use vex2pdf::lib_utils::config::Config;
+//!
+//! let config = Config::default()
+//!     .working_path("./input")
+//!     .output_dir("./output")
+//!     .max_jobs(Some(4))
+//!     .report_title("Q4 2024 Security Report")
+//!     .show_components(true);
+//! ```
+//!
+//! ### Available Builder Methods
+//!
+//! - [`working_path()`](lib_utils::config::Config::working_path) - Set input directory
+//! - [`output_dir()`](lib_utils::config::Config::output_dir) - Set output directory
+//! - [`max_jobs()`](lib_utils::config::Config::max_jobs) - Control concurrent processing
+//! - [`report_title()`](lib_utils::config::Config::report_title) - Custom report title
+//! - [`pdf_meta_name()`](lib_utils::config::Config::pdf_meta_name) - Custom PDF metadata
+//! - [`show_novulns_msg()`](lib_utils::config::Config::show_novulns_msg) - Show/hide "no vulnerabilities" message
+//! - [`show_components()`](lib_utils::config::Config::show_components) - Show/hide components list
+//! - [`pure_bom_novulns()`](lib_utils::config::Config::pure_bom_novulns) - Treat as pure BOM
+//! - And more...
+//!
+//! See [`Config`](lib_utils::config::Config) documentation for the complete list.
+//!
+//! ### For CLI Applications
+//!
+//! CLI applications should use `Config::build_from_env_cli()` to parse
+//! command-line arguments and environment variables.
+//!
+//! For detailed CLI documentation:
+//! - [Configuration Guide](https://gitlab.com/jurassicLizard/vex2pdf/-/blob/master/README.md#configuration)
+//! - [Environment Variables Reference](https://gitlab.com/jurassicLizard/vex2pdf/-/blob/master/README.md#environment-variables)
+//!
 //! ## Features
 //!
-//! This library provides:
-//! - PDF generation capabilities for CycloneDX VEX documents
-//! - Support for various VEX elements including vulnerabilities, components, and metadata
-//! - Flexible font configuration with environment variable support
+//! - **Multi-format support**: JSON and XML CycloneDX documents
+//! - **Document types**: VEX, VDR, and SBOM/BOM
+//! - **Vulnerability analysis rendering**: Color-coded states (Exploitable, Resolved, In Triage, etc.) and response actions
+//! - **Concurrent processing**: Custom threadpool with configurable job limits (single-threaded to max parallelism)
+//! - **Embedded fonts**: Liberation Sans fonts built-in, no external dependencies
+//! - **Structured logging**: Info/debug to stdout, warnings/errors to stderr
+//! - **Memory safe**: Unsafe code forbidden at compile-time
+//! - **CLI and library**: Use as standalone tool or integrate into your application
 //!
-//! ## Vulnerabilities Section Behavior
+//! ## Documentation
 //!
-//! By default, the library will:
-//! - Display a "Vulnerabilities" section with vulnerability details when vulnerabilities exist
-//! - Display a "Vulnerabilities" section with a "No Vulnerabilities reported" message when no vulnerabilities exist
-//! - The "No Vulnerabilities" message display can be controlled with the `VEX2PDF_NOVULNS_MSG` environment variable
-//!   (set to "false" to hide the section entirely when no vulnerabilities exist)
-
+//! - **[README](https://gitlab.com/jurassicLizard/vex2pdf/-/blob/master/README.md)** - Installation instructions, CLI usage, environment variables, and configuration
+//! - **[Developer Notes](https://gitlab.com/jurassicLizard/vex2pdf/-/blob/master/docs/DEVELOPER_NOTES.md)** - Testing, code coverage, architecture details, and trait system
+//! - **[API Documentation](https://docs.rs/vex2pdf)** - Full API reference on docs.rs
+//! - **[Changelog](https://gitlab.com/jurassicLizard/vex2pdf/-/blob/master/CHANGELOG.md)** - Version history and release notes
 //!
-//! ## Font Configuration
-//!
-//! Liberation Sans Fonts are embedded and no extra configuration is needed for fonts
-//!
-//! ## Architecture
+//! ## Library Architecture
 //!
 //! The library is organized into modules:
 //! - `pdf`: PDF generation functionality
-//!   - `font_config`: Font configuration and discovery
-//!   - `generator`: PDF document generation
-//! - `lib_utils`: Utilities and data models used in this library and accompanying runnable
-//! - `files_proc`: File processing logic is all bundled here
+//!   - `font_config`: Embedded font management
+//!   - `generator`: PDF document generation with analysis rendering
+//! - `lib_utils`: Configuration, CLI arguments, environment variables, and concurrency
+//!   - `concurrency`: Custom threadpool and worker implementation
+//! - `files_proc`: File discovery, processing pipeline, and trait system
+//!   - `processor`: Main processing logic with trait abstractions
+//!   - `model`: File identification and processing state
 //!
-//! For installation instructions, usage examples, and project overview,
-//! see the [project README](https://github.com/jurassicLizard/vex2pdf/blob/master/README.md).
-//!
+
+#![forbid(unsafe_code)]
 // Re-export and simplify paths for consumers of this library
 pub use crate::lib_utils::run_utils as utils;
 // re-export upstream cyclondx bom path
@@ -78,7 +135,6 @@ pub mod lib_utils {
 use crate::files_proc::processor::DefaultFilesProcessor;
 use crate::files_proc::traits::{FileSearchProvider, MultipleFilesProcProvider};
 use crate::lib_utils::errors::Vex2PdfError;
-use crate::lib_utils::run_utils::print_copyright;
 use lib_utils::config::Config;
 
 /// Processes CycloneDX VEX documents according to the provided configuration.
@@ -139,23 +195,13 @@ use lib_utils::config::Config;
 /// }
 /// ```
 pub fn run(config: Config) -> Result<(), Vex2PdfError> {
-    // FIXME validate output dir definition if it exists
-    if config.show_oss_licenses {
-        // show OSS licenses and return
-        show_full_licenses();
-
-        // abort any processing
-        return Ok(());
-    }
-
     let _ = DefaultFilesProcessor::new(config).find_files()?.process();
 
     Ok(())
 }
 
 /// Helper to show OSS License information
-fn show_full_licenses() {
-    print_copyright();
+pub fn show_full_licenses() {
     let main_license_text = r#"VEX2PDF is licensed under either MIT or Apache License, Version 2.0 at your option.
 license text can be found under: https://gitlab.com/jurassicLizard/vex2pdf/-/blob/master/README.md#license"#;
 

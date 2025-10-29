@@ -5,6 +5,53 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Added builder pattern methods to `Config` struct for flexible configuration:
+  - `working_path()` - Set input directory
+  - `output_dir()` - Set output directory
+  - `show_novulns_msg()` - Control "no vulnerabilities" message display
+  - `file_types_to_process()` - Control JSON/XML processing
+  - `pure_bom_novulns()` - Treat as pure BOM
+  - `show_components()` - Show/hide components list
+  - `report_title()` - Set custom report title
+  - `pdf_meta_name()` - Set custom PDF metadata
+  - `max_jobs()` - Set concurrent job limit
+- Added `Config::build_from_env_cli()` method for CLI applications to parse arguments and environment variables
+- Added comprehensive documentation for builder pattern usage with examples
+- Added unit tests for `Config` builder pattern methods
+- Added PDF examples section to [README](README.md)
+- Added `--license` / `-L` CLI argument to display OSS licenses and exit, replacing `VEX2PDF_SHOW_OSS_LICENSES` environment variable
+- Added `long_version` text to clap showing copyright notice on `--version`
+- Added `Default` derive to `CliArgs` struct for simplified test setup
+- Added `VoluntaryLicenseDisplayInterruption` error variant to signal voluntary execution interruption (e.g., for license display)
+- Added `show_full_licenses()` as public function in lib.rs for CLI use
+- Added `get_version_info()` const function in `run_utils` to provide shared version/copyright text for both CLI and startup logs
+- Added integration tests for `--license` flag output and error handling
+- Added integration tests for `--version` output and version info display on startup
+
+### Removed
+- Removed `show_oss_licenses` field from `Config` struct (deprecated in 0.8.2, now replaced with `--license` CLI flag)
+- Removed `show_oss_licenses()` builder method from `Config` (deprecated in 0.8.2, now replaced with `--license` CLI flag)
+- Removed `print_copyright()` function from `run_utils` (replaced with clap's `long_version` text)
+- Removed `VEX2PDF_SHOW_OSS_LICENSES` environment variable support (deprecated in 0.8.2, now replaced with `--license` CLI flag)
+- Removed `VEX2PDF_VERSION_INFO` environment variable support (deprecated in 0.8.2, use `--version` flag instead)
+- Removed automatic version/copyright printing on startup 
+
+### Changed
+- Updated `Config` module documentation to feature builder pattern as primary API for library users
+- Updated `lib.rs` Quick Start example to demonstrate builder pattern
+- Updated documentation to clarify separation between CLI and library usage patterns
+- Changed `Config::build()` to delegate to new `build_from_env_cli()` implementation
+- Simplified test code in `cli_args.rs` using `CliArgs::default()` with struct update syntax
+
+### Deprecated
+- Deprecated `Config::build()` in favor of builder pattern and `Config::build_from_env_cli()` to avoid forcing CLI behavior on library users (will be removed in a future release)
+
+### Fixed
+- Fixed integration tests note in [README](README.md)
+
 ## [0.9.0] - 2025-10-27
 
 ### Added

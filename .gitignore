@@ -14,3 +14,6 @@
 
 # Prevent generated PDFs in test source directories
 tests/test_artifacts/bom_src/**/*.pdf
+
+# Our TODO.md scratch file should not be tracked
+/TODO.md

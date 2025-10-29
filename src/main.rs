@@ -29,6 +29,8 @@ use log::error;
 use std::io::Write;
 use std::process;
 use vex2pdf::lib_utils::config::Config;
+use vex2pdf::lib_utils::errors::Vex2PdfError;
+use vex2pdf::show_full_licenses;
 
 fn main() {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info"))
@@ -58,9 +60,15 @@ fn main() {
         .target(env_logger::Target::Stdout)
         .init();
 
-    let config = Config::build().unwrap_or_else(|err| {
-        error!("Problem setting up working environment:");
-        error!("{}", { err });
+    let config = Config::build_with_env_cli().unwrap_or_else(|err| {
+        match err {
+            Vex2PdfError::VoluntaryLicenseDisplayInterruption => show_full_licenses(),
+            _ => {
+                error!("Problem setting up working environment:");
+                error!("{}", { err });
+            }
+        }
+
         process::exit(1);
     });
 
