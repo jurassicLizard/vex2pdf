@@ -10,7 +10,7 @@
 //!
 //! Use the builder pattern for flexible configuration:
 //!
-//! ```rust
+//! ```rust,no_run
 //! use vex2pdf::lib_utils::config::Config;
 //! use vex2pdf::run;
 //!
@@ -20,7 +20,7 @@
 //!     .max_jobs(Some(4))
 //!     .report_title("Q4 2024 Security Report");
 //!
-//! run(config).expect("Failed to process files");
+//! let res = run(config).expect("something bad happened");
 //! ```
 //!
 //! ## Using Defaults
@@ -47,7 +47,6 @@
 //!     output_dir: PathBuf::from("./output"),
 //!     show_novulns_msg: true,
 //!     file_types_to_process: None,
-//!     show_oss_licenses: false,
 //!     pure_bom_novulns: false,
 //!     show_components: true,
 //!     report_title: Some("Custom Report".to_string()),
@@ -79,7 +78,6 @@
 //! - [`output_dir()`](Config::output_dir) - Set output directory
 //! - [`show_novulns_msg()`](Config::show_novulns_msg) - Show/hide "no vulnerabilities" message
 //! - [`file_types_to_process()`](Config::file_types_to_process) - Control JSON/XML processing
-//! - [`show_oss_licenses()`](Config::show_oss_licenses) - Show OSS licenses
 //! - [`pure_bom_novulns()`](Config::pure_bom_novulns) - Treat as pure BOM
 //! - [`show_components()`](Config::show_components) - Show/hide components list
 //! - [`report_title()`](Config::report_title) - Custom report title

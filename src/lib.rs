@@ -12,7 +12,7 @@
 //!
 //! ## Quick Start
 //!
-//! ```rust
+//! ```rust,no_run
 //! use vex2pdf::lib_utils::config::Config;
 //! use vex2pdf::run;
 //!
@@ -26,7 +26,7 @@
 //!
 //! ## Configuration
 //!
-//! Configuration is managed through the [`Config`](lib_utils::config::Config) struct
+//! Configuration is managed through the [`Config`] struct
 //! using the builder pattern for flexibility.
 //!
 //! ### Builder Pattern (Recommended)
@@ -56,7 +56,7 @@
 //! - [`pure_bom_novulns()`](lib_utils::config::Config::pure_bom_novulns) - Treat as pure BOM
 //! - And more...
 //!
-//! See [`Config`](lib_utils::config::Config) documentation for the complete list.
+//! See [`Config`] documentation for the complete list.
 //!
 //! ### For CLI Applications
 //!

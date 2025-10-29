@@ -105,7 +105,7 @@ impl InputFileType {
         }
     }
 
-    /// parses an extension Option<OsStr> and returns the corresponding object
+    /// parses an extension `Option<OsStr>` and returns the corresponding object
     pub fn with_extension(ext: Option<&OsStr>) -> Self {
         let ext = if let Some(os_str) = ext {
             os_str

@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed integration tests note in [README](README.md)
+- Fixed minor documentation and linting issues
 
 ## [0.9.0] - 2025-10-27
 
