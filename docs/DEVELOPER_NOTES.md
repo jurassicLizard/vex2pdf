@@ -81,6 +81,41 @@ To regenerate checksums after updating reference PDFs:
 cargo run --example generate_checksums
 ```
 
+### Testing with Feature Flags
+
+The project uses a `cli` feature flag (enabled by default) to make CLI dependencies optional. This allows library users to depend on vex2pdf without pulling in command-line-specific dependencies like `clap` and `env_logger`.
+
+**Feature configuration:**
+- `cli` feature (default): Includes CLI dependencies (`clap`, `env_logger`) and enables CLI-specific code
+- Without `cli` feature: Library-only mode with minimal dependencies
+
+**What's conditional on the `cli` feature:**
+- `cli_args` module - CLI argument parsing
+- `Config::build_with_env_cli()` - CLI-based configuration
+- Binary target (`src/main.rs`) - requires `cli` feature
+- Integration tests - require the binary, so need `cli` feature
+
+**Testing strategies:**
+
+```bash
+# Test with CLI feature (default, full test suite)
+cargo test
+
+# Test library-only (unit tests without CLI dependencies)
+cargo test --lib --no-default-features
+
+# Build library-only (verify no CLI dependencies needed)
+cargo build --no-default-features
+
+# Test specific components
+cargo test --lib
+cargo test --test integration_tests
+```
+
+**Expected test counts:**
+- With CLI feature: 71 unit tests + 25 integration tests
+- Without CLI feature: 65 unit tests (6 CLI-specific tests skipped, integration tests not built)
+
 ### Code Coverage
 
 Using `cargo-llvm-cov` for coverage analysis:

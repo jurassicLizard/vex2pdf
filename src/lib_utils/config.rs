@@ -117,16 +117,24 @@
 //! - [README - Configuration](https://gitlab.com/jurassicLizard/vex2pdf/-/blob/master/README.md#configuration)
 //! - [README - Environment Variables](https://gitlab.com/jurassicLizard/vex2pdf/-/blob/master/README.md#environment-variables)
 
-use super::super::pdf::font_config::FontsDir;
-use super::env_vars::EnvVarNames;
-use super::run_utils::get_version_info;
 use crate::files_proc::model::input_file_type::InputFileType;
-use crate::lib_utils::cli_args::CliArgs;
-use crate::lib_utils::errors::Vex2PdfError;
-use clap::Parser;
-use log::{info, warn};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
+
+#[cfg(feature = "cli")]
+use super::super::pdf::font_config::FontsDir;
+#[cfg(feature = "cli")]
+use super::env_vars::EnvVarNames;
+#[cfg(feature = "cli")]
+use super::run_utils::get_version_info;
+#[cfg(feature = "cli")]
+use crate::lib_utils::cli_args::CliArgs;
+#[cfg(feature = "cli")]
+use crate::lib_utils::errors::Vex2PdfError;
+#[cfg(feature = "cli")]
+use clap::Parser;
+#[cfg(feature = "cli")]
+use log::{info, warn};
 
 pub struct Config {
     pub working_path: PathBuf,
@@ -143,17 +151,7 @@ pub struct Config {
 impl Config {
     /// This is the legacy build function. has been replaced with [`Self::build_with_env_cli`] and is functially identical
     ///
-    /// # Deprecation Notice
-    ///
-    /// > This function has been deprecated and will be removed at the latest by version `0.10.x`
-    #[deprecated(
-        since = "0.9.1",
-        note = "replaced with builder pattern and build_with_env_cli to not annoy pure library users"
-    )]
-    pub fn build() -> Result<Self, Vex2PdfError> {
-        Self::build_with_env_cli()
-    }
-
+    #[cfg(feature = "cli")]
     /// Builds a `Config` instance by parsing CLI arguments and environment variables.
     ///
     /// This is the recommended way to create configuration for CLI applications.
@@ -175,11 +173,11 @@ impl Config {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,no_run
     /// use vex2pdf::lib_utils::config::Config;
     ///
     /// // Parse configuration from CLI args and environment
-    /// let config = Config::build().expect("Failed to build config");
+    /// let config = Config::build_with_env_cli().expect("Failed to build config");
     ///
     /// // Config now contains values from CLI/env vars with proper precedence
     /// println!("Working directory: {:?}", config.working_path);

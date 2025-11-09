@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Added `blake3` crate as dev-dependency for checksum-based testing
+- Added checksum-based PDF validation using BLAKE3 hashing of normalized content
+- Added `normalize_pdf_content()` utility function to strip dynamic PDF elements (timestamps, IDs, UUIDs)
+- Added `calculate_normalized_checksum()` utility function for BLAKE3 hash computation
+- Added `assert_pdf_checksum_matches()` test utility for checksum validation
+- Added `generate_checksums` example program to regenerate checksums from reference PDFs
+- Added `tests/test_artifacts/expected_pdfs_chksums.txt` with BLAKE3 checksums of all 17 reference PDFs
+- Added `cli` feature flag (enabled by default) to make CLI dependencies optional for library users
+- Added `required-features = ["cli"]` to binary target and integration tests in Cargo.toml
+
+### Changed
+- Changed integration tests from binary PDF comparison to checksum-based validation
+- Changed `Cargo.toml` exclude to only exclude `tests/test_artifacts/expected_pdfs/` instead of entire `tests/` directory
+- Changed `clap` and `env_logger` to optional dependencies, only included when `cli` feature is enabled
+- Changed `cli_args` module to be conditional on `cli` feature
+- Changed `Config::build_with_env_cli()` to be conditional on `cli` feature
+- Updated [README.md](README.md) Testing section to describe checksum-based approach and feature flag testing
+- Updated [DEVELOPER_NOTES.md](docs/DEVELOPER_NOTES.md) to document checksum-based testing and feature flag methodology
+- Updated [.gitlab-ci.yml](.gitlab-ci.yml) to test both with and without CLI feature
+- Tests now work seamlessly from both git repository and crates.io packages without requiring reference PDFs
+- Library can now be used without CLI dependencies via `default-features = false`
+
+### Removed
+- Removed debug vs release build testing caveat from [DEVELOPER_NOTES.md](docs/DEVELOPER_NOTES.md)
+- Removed crates.io testing limitations from documentation
+- Removed deprecated `Config::build()` function (use builder pattern or `Config::build_with_env_cli()` instead)
+
+### Fixed
+- Fixed test inconsistencies between debug and release builds by using normalized checksums instead of binary comparison
+- Fixed package size issue by excluding 42MB of reference PDFs while keeping full test functionality
+
 ## [0.9.1] - 2025-10-29
 
 ### Added

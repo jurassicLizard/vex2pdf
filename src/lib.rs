@@ -121,6 +121,7 @@ pub mod pdf {
 pub mod lib_utils {
     pub mod errors;
 
+    #[cfg(feature = "cli")]
     pub mod cli_args;
     pub mod config;
     pub mod env_vars;
@@ -179,19 +180,17 @@ use lib_utils::config::Config;
 /// # Example
 ///
 /// ```
-/// use std::process;
 /// use vex2pdf::lib_utils::config::Config;
 /// use vex2pdf::run;
+/// use std::env;
 ///
-/// let config = Config::build().unwrap_or_else(|err| {
-///     eprintln!("Problem setting up working environment:");
-///     eprintln!("{}", { err });
-///     process::exit(1);
-/// });
+/// // Create config using builder pattern
+/// let config = Config::default()
+///     .working_path(env::current_dir().unwrap())
+///     .output_dir(env::current_dir().unwrap());
 ///
 /// if let Err(e) = vex2pdf::run(config) {
 ///     eprintln!("Application error: {e}");
-///     process::exit(1);
 /// }
 /// ```
 pub fn run(config: Config) -> Result<(), Vex2PdfError> {

@@ -464,14 +464,31 @@ For information about testing, code coverage, architecture, and the traits syste
 
 The test suite includes comprehensive integration tests that validate PDF generation accuracy using BLAKE3 checksums of normalized content (with timestamps and dynamic IDs stripped).
 
-To run the test suite:
+### Running Tests
 
 ```bash
-# Run all tests
+# Run all tests (with CLI feature, default)
 cargo test
 
-# Run with coverage report
+# Run only library unit tests
+cargo test --lib
+
+# Run library tests without CLI dependencies
+cargo test --lib --no-default-features
+
+# Build library-only (no CLI dependencies)
+cargo build --no-default-features
+```
+
+**Note:** Integration tests require the `cli` feature and will be skipped when testing with `--no-default-features`.
+
+### Code Coverage
+
+```bash
+# Install coverage tool
 cargo install cargo-llvm-cov
+
+# Generate HTML coverage report
 cargo llvm-cov --html
 # Opens coverage report in browser at target/llvm-cov/html/index.html
 ```

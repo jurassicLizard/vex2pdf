@@ -287,8 +287,8 @@ pub mod utils {
             "/tests/test_artifacts/expected_pdfs_chksums.txt"
         ));
 
-        let checksums_content = fs::read_to_string(checksums_path)
-            .expect("Failed to read checksums file");
+        let checksums_content =
+            fs::read_to_string(checksums_path).expect("Failed to read checksums file");
 
         let pdf_filename = generated_pdf
             .file_name()
@@ -301,12 +301,7 @@ pub mod utils {
             .lines()
             .find(|line| line.ends_with(pdf_filename))
             .map(|line| line.split_whitespace().next().unwrap())
-            .unwrap_or_else(|| {
-                panic!(
-                    "No checksum found for {} in checksums file",
-                    pdf_filename
-                )
-            });
+            .unwrap_or_else(|| panic!("No checksum found for {} in checksums file", pdf_filename));
 
         // Calculate the checksum of the generated PDF
         let actual_checksum = calculate_normalized_checksum(generated_pdf);

@@ -25,6 +25,17 @@ test:
     - cargo clippy -- -D warnings
     - cargo test -- --skip test_validate_readonly_directory # that one test must be skipped because gitlab-ci tasks run as root making that test fail (root can write to readonly dirs in linux)
 
+# Test library without CLI dependencies
+test-no-cli-feature:
+  stage: test
+  image: rust:latest
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != "master"
+  script:
+    - cargo test --lib --no-default-features
+    - cargo build --no-default-features
+
 # Build binaries ONLY on tag pushes
 linux-build:
   stage: build

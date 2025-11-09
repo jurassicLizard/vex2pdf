@@ -6,7 +6,6 @@
 /// without needing to include the full 42MB of reference PDFs in the crate.
 ///
 /// Run with: cargo run --example generate_checksums
-
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -35,7 +34,9 @@ fn main() {
         .expect("Failed to read PDFs directory")
         .filter_map(|entry| entry.ok())
         .filter(|entry| {
-            entry.path().extension()
+            entry
+                .path()
+                .extension()
                 .and_then(|ext| ext.to_str())
                 .map(|ext| ext == "pdf")
                 .unwrap_or(false)
@@ -58,8 +59,7 @@ fn main() {
     }
 
     let output = checksums.join("\n") + "\n";
-    fs::write(&checksums_file, output)
-        .expect("Failed to write checksums file");
+    fs::write(&checksums_file, output).expect("Failed to write checksums file");
 
     println!();
     println!("✓ Generated {} checksums", checksums.len());
