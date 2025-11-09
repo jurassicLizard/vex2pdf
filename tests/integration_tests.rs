@@ -1,4 +1,4 @@
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::Command;
 use tempfile::TempDir;
 
@@ -53,10 +53,9 @@ fn test_simple_bom_with_one_vuln() {
 
     let pdf_name = get_expected_pdf_name(paths::SIMPLE_BOM_PATH);
     let generated_pdf = temp_dir.path().join(&pdf_name);
-    let expected_pdf = PathBuf::from(paths::REFERENCE_PDFS_DIR).join(&pdf_name);
 
     utils::assert_pdf_created(&generated_pdf);
-    utils::assert_pdf_content_similar(&generated_pdf, &expected_pdf);
+    utils::assert_pdf_checksum_matches(&generated_pdf);
 }
 
 #[test]
@@ -67,10 +66,9 @@ fn test_vdr_minimal_with_vulns() {
 
     let pdf_name = get_expected_pdf_name(paths::BOM_VDR_MINIMAL_WITH_VULNS);
     let generated_pdf = temp_dir.path().join(&pdf_name);
-    let expected_pdf = PathBuf::from(paths::REFERENCE_PDFS_DIR).join(&pdf_name);
 
     utils::assert_pdf_created(&generated_pdf);
-    utils::assert_pdf_content_similar(&generated_pdf, &expected_pdf);
+    utils::assert_pdf_checksum_matches(&generated_pdf);
 }
 
 #[test]
@@ -81,10 +79,9 @@ fn test_vdr_with_ghsa_entries() {
 
     let pdf_name = get_expected_pdf_name(paths::BOM_VDR_WITH_GHSA_ENTRIES);
     let generated_pdf = temp_dir.path().join(&pdf_name);
-    let expected_pdf = PathBuf::from(paths::REFERENCE_PDFS_DIR).join(&pdf_name);
 
     utils::assert_pdf_created(&generated_pdf);
-    utils::assert_pdf_content_similar(&generated_pdf, &expected_pdf);
+    utils::assert_pdf_checksum_matches(&generated_pdf);
 }
 
 #[test]
@@ -95,10 +92,9 @@ fn test_vdr_with_many_vulns() {
 
     let pdf_name = get_expected_pdf_name(paths::BOM_VDR_WITH_MANY_VULNS);
     let generated_pdf = temp_dir.path().join(&pdf_name);
-    let expected_pdf = PathBuf::from(paths::REFERENCE_PDFS_DIR).join(&pdf_name);
 
     utils::assert_pdf_created(&generated_pdf);
-    utils::assert_pdf_content_similar(&generated_pdf, &expected_pdf);
+    utils::assert_pdf_checksum_matches(&generated_pdf);
 }
 
 #[test]
@@ -109,10 +105,9 @@ fn test_vdr_with_no_vulns() {
 
     let pdf_name = get_expected_pdf_name(paths::BOM_VDR_WITH_NO_VULNS);
     let generated_pdf = temp_dir.path().join(&pdf_name);
-    let expected_pdf = PathBuf::from(paths::REFERENCE_PDFS_DIR).join(&pdf_name);
 
     utils::assert_pdf_created(&generated_pdf);
-    utils::assert_pdf_content_similar(&generated_pdf, &expected_pdf);
+    utils::assert_pdf_checksum_matches(&generated_pdf);
 }
 
 #[test]
@@ -123,10 +118,9 @@ fn test_vdr_with_links_as_versions() {
 
     let pdf_name = get_expected_pdf_name(paths::BOM_VDR_WITH_LINKS_AS_VERSIONS);
     let generated_pdf = temp_dir.path().join(&pdf_name);
-    let expected_pdf = PathBuf::from(paths::REFERENCE_PDFS_DIR).join(&pdf_name);
 
     utils::assert_pdf_created(&generated_pdf);
-    utils::assert_pdf_content_similar(&generated_pdf, &expected_pdf);
+    utils::assert_pdf_checksum_matches(&generated_pdf);
 }
 
 #[test]
@@ -137,10 +131,9 @@ fn test_vex_with_links_as_versions() {
 
     let pdf_name = get_expected_pdf_name(paths::BOM_VEX_WITH_LINKS_AS_VERSIONS);
     let generated_pdf = temp_dir.path().join(&pdf_name);
-    let expected_pdf = PathBuf::from(paths::REFERENCE_PDFS_DIR).join(&pdf_name);
 
     utils::assert_pdf_created(&generated_pdf);
-    utils::assert_pdf_content_similar(&generated_pdf, &expected_pdf);
+    utils::assert_pdf_checksum_matches(&generated_pdf);
 }
 
 #[test]
@@ -151,10 +144,9 @@ fn test_novulns_directory() {
 
     let pdf_name = get_expected_pdf_name(paths::BOM_NOVULNS);
     let generated_pdf = temp_dir.path().join(&pdf_name);
-    let expected_pdf = PathBuf::from(paths::REFERENCE_PDFS_DIR).join(&pdf_name);
 
     utils::assert_pdf_created(&generated_pdf);
-    utils::assert_pdf_content_similar(&generated_pdf, &expected_pdf);
+    utils::assert_pdf_checksum_matches(&generated_pdf);
 }
 
 // ============================================================================
@@ -169,10 +161,9 @@ fn test_vdr_simple_xml() {
 
     let pdf_name = get_expected_pdf_name(paths::BOM_VDR_SIMPLE_XML);
     let generated_pdf = temp_dir.path().join(&pdf_name);
-    let expected_pdf = PathBuf::from(paths::REFERENCE_PDFS_DIR).join(&pdf_name);
 
     utils::assert_pdf_created(&generated_pdf);
-    utils::assert_pdf_content_similar(&generated_pdf, &expected_pdf);
+    utils::assert_pdf_checksum_matches(&generated_pdf);
 }
 
 #[test]
@@ -183,10 +174,9 @@ fn test_vex_simple_xml() {
 
     let pdf_name = get_expected_pdf_name(paths::BOM_VEX_SIMPLE_XML);
     let generated_pdf = temp_dir.path().join(&pdf_name);
-    let expected_pdf = PathBuf::from(paths::REFERENCE_PDFS_DIR).join(&pdf_name);
 
     utils::assert_pdf_created(&generated_pdf);
-    utils::assert_pdf_content_similar(&generated_pdf, &expected_pdf);
+    utils::assert_pdf_checksum_matches(&generated_pdf);
 }
 
 #[test]
@@ -197,10 +187,9 @@ fn test_sample_vex_xml() {
 
     let pdf_name = get_expected_pdf_name(paths::SAMPLE_VEX_XML);
     let generated_pdf = temp_dir.path().join(&pdf_name);
-    let expected_pdf = PathBuf::from(paths::REFERENCE_PDFS_DIR).join(&pdf_name);
 
     utils::assert_pdf_created(&generated_pdf);
-    utils::assert_pdf_content_similar(&generated_pdf, &expected_pdf);
+    utils::assert_pdf_checksum_matches(&generated_pdf);
 }
 
 // ============================================================================
@@ -248,12 +237,7 @@ fn test_batch_run_test_directory() {
         let entry = entry.unwrap();
         let generated_pdf = entry.path();
         if generated_pdf.extension().and_then(|e| e.to_str()) == Some("pdf") {
-            let pdf_name = generated_pdf.file_name().unwrap();
-            let expected_pdf = PathBuf::from(paths::REFERENCE_PDFS_DIR).join(pdf_name);
-
-            if expected_pdf.exists() {
-                utils::assert_pdf_content_similar(&generated_pdf, &expected_pdf);
-            }
+            utils::assert_pdf_checksum_matches(&generated_pdf);
         }
     }
 }
@@ -299,12 +283,7 @@ fn test_batch_run_test_xml_directory() {
         let entry = entry.unwrap();
         let generated_pdf = entry.path();
         if generated_pdf.extension().and_then(|e| e.to_str()) == Some("pdf") {
-            let pdf_name = generated_pdf.file_name().unwrap();
-            let expected_pdf = PathBuf::from(paths::REFERENCE_PDFS_DIR).join(pdf_name);
-
-            if expected_pdf.exists() {
-                utils::assert_pdf_content_similar(&generated_pdf, &expected_pdf);
-            }
+            utils::assert_pdf_checksum_matches(&generated_pdf);
         }
     }
 }
@@ -504,11 +483,8 @@ fn test_json_with_analysis_renders_correctly() {
         pdf_path.display()
     );
 
-    // Compare with expected PDF
-    utils::assert_pdf_content_similar(
-        &pdf_path,
-        Path::new(paths::EXPECTED_BOM_VDR_WITH_ANALYSIS_PDF),
-    );
+    // Verify PDF content with checksum
+    utils::assert_pdf_checksum_matches(&pdf_path);
 }
 
 #[test]
@@ -526,11 +502,8 @@ fn test_xml_with_analysis_renders_correctly() {
         pdf_path.display()
     );
 
-    // Compare with expected PDF
-    utils::assert_pdf_content_similar(
-        &pdf_path,
-        Path::new(paths::EXPECTED_BOM_VDR_WITH_ANALYSIS_XML_PDF),
-    );
+    // Verify PDF content with checksum
+    utils::assert_pdf_checksum_matches(&pdf_path);
 }
 
 #[test]

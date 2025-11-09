@@ -264,6 +264,84 @@ pub mod utils {
         }
     }
 
+    /// Normalize PDF content by stripping dynamic elements (timestamps, IDs)
+    /// This is the same normalization used by assert_pdf_content_similar
+    pub fn normalize_pdf_content(pdf_path: &Path) -> String {
+        let content = fs::read(pdf_path).expect("Failed to read PDF file");
+        let content_str = String::from_utf8_lossy(&content);
+        strip_pdf_timestamps(&content_str)
+    }
+
+    /// Calculate BLAKE3 checksum of normalized PDF content
+    pub fn calculate_normalized_checksum(pdf_path: &Path) -> String {
+        let normalized = normalize_pdf_content(pdf_path);
+        let hash = blake3::hash(normalized.as_bytes());
+        hash.to_hex().to_string()
+    }
+
+    /// Assert that a generated PDF's normalized checksum matches the expected checksum
+    /// from the checksums file. This validates PDF content while ignoring dynamic elements.
+    pub fn assert_pdf_checksum_matches(generated_pdf: &Path) {
+        let checksums_path = Path::new(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/test_artifacts/expected_pdfs_chksums.txt"
+        ));
+
+        let checksums_content = fs::read_to_string(checksums_path)
+            .expect("Failed to read checksums file");
+
+        let pdf_filename = generated_pdf
+            .file_name()
+            .expect("Failed to get PDF filename")
+            .to_str()
+            .expect("Invalid filename");
+
+        // Find the expected checksum for this PDF
+        let expected_checksum = checksums_content
+            .lines()
+            .find(|line| line.ends_with(pdf_filename))
+            .map(|line| line.split_whitespace().next().unwrap())
+            .unwrap_or_else(|| {
+                panic!(
+                    "No checksum found for {} in checksums file",
+                    pdf_filename
+                )
+            });
+
+        // Calculate the checksum of the generated PDF
+        let actual_checksum = calculate_normalized_checksum(generated_pdf);
+
+        if actual_checksum != expected_checksum {
+            // Copy failed PDF to err_pdfs for debugging
+            let err_dir = Path::new(super::paths::ERRONEOUS_PDFS_DIR);
+            if let Err(e) = fs::create_dir_all(err_dir) {
+                eprintln!("Warning: Failed to create err_pdfs directory: {}", e);
+            }
+
+            if let Some(filename) = generated_pdf.file_name() {
+                let err_pdf_path = err_dir.join(filename);
+                if let Err(e) = fs::copy(generated_pdf, &err_pdf_path) {
+                    eprintln!("Warning: Failed to copy failed PDF to err_pdfs: {}", e);
+                } else {
+                    eprintln!("\n⚠️  Failed PDF copied to: {:?}", err_pdf_path);
+                }
+            }
+
+            panic!(
+                "\n\nPDF checksum mismatch for: {}\n\
+                 Expected: {}\n\
+                 Actual:   {}\n\
+                 \n\
+                 The generated PDF differs from the expected content.\n\
+                 Failed PDF copied to {:?} for inspection.\n",
+                pdf_filename,
+                expected_checksum,
+                actual_checksum,
+                super::paths::ERRONEOUS_PDFS_DIR
+            );
+        }
+    }
+
     /// Helper function to count PDF files in a directory
     pub fn count_pdf_files(dir: &Path) -> usize {
         std::fs::read_dir(dir)

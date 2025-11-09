@@ -48,12 +48,14 @@ tests/test_artifacts/
 
 When integration tests fail, the generated PDFs are copied to `err_pdfs/` along with stripped content dumps (`*_generated_raw_dump.txt` and `*_expected_raw_dump.txt`) for easy diffing.
 
-### Test Artifacts and Package Size
+### Checksum-Based Testing
 
-The integration tests use ~42MB of reference PDFs (in `tests/test_artifacts/expected_pdfs/`) to verify PDF generation accuracy byte-by-byte. These artifacts are:
+The integration tests validate PDF generation accuracy using BLAKE3 checksums of normalized content. This approach:
 
-- ✅ **Included in git repository** - Available for CI/CD and developers cloning the repo
-- ❌ **Excluded from crates.io package** - Keeps published package size reasonable (~1-2MB vs ~45MB)
+- **Normalizes PDFs** by stripping dynamic elements (timestamps, document IDs, UUIDs)
+- **Calculates checksums** on the normalized content for consistent validation
+- **Stores checksums** in `tests/test_artifacts/expected_pdfs_chksums.txt` (included in crates.io package)
+- **Excludes reference PDFs** (~42MB) from the published package to keep download size reasonable
 
 This is configured in `Cargo.toml`:
 
@@ -61,25 +63,22 @@ This is configured in `Cargo.toml`:
 [package]
 # ...
 exclude = [
-    "tests/",  # All integration tests + ~42MB of PDF artifacts
+    "tests/test_artifacts/expected_pdfs/",  # ~42MB of reference PDFs
     ".gitlab-ci.yml",
 ]
 ```
 
-**Why exclude tests from crates.io?**
+**Benefits of checksum-based testing:**
 
-1. **Size**: 42MB of test PDFs would make downloads prohibitively slow
-2. **Use case**: Users downloading from crates.io typically want to use the library, not run tests
-3. **CI/CD**: Our GitLab CI runs tests from the git repository, not from crates.io
-4. **Developer workflow**: Contributors clone from git anyway, which includes all test artifacts
-5. **Standard practice**: Many Rust crates with large test fixtures follow this pattern
+1. **Works everywhere**: Tests run identically from git repository or crates.io package
+2. **Small package size**: Checksums file is <1KB vs 42MB of reference PDFs
+3. **Consistent validation**: Ignores dynamic content (timestamps, IDs) that changes on every build
+4. **Debug and release**: No behavioral differences between build modes
 
-**Impact**: Users who download the package from crates.io cannot run the full integration test suite. This is expected and documented in the README. To run tests, clone the repository:
+To regenerate checksums after updating reference PDFs:
 
 ```bash
-git clone https://gitlab.com/jurassicLizard/vex2pdf.git
-cd vex2pdf
-cargo test
+cargo run --example generate_checksums
 ```
 
 ### Code Coverage
@@ -297,17 +296,9 @@ Use `release-optimized` for production binaries (smaller size, better performanc
    - Works for BOMs without 1.6-specific fields
    - Logs warnings when downgrading
 
-2. **PDF comparison differs between debug and release builds**:
-   - PDF libraries (genpdf, printpdf) apply different optimizations in release mode
-   - This causes binary differences in generated PDFs that don't indicate test failures
-   - **Solution**: Content comparison is skipped in release mode (`#[cfg(not(debug_assertions))]`)
-   - Tests in release mode only verify PDF creation, not byte-for-byte content
-   - **Recommendation**: Run `cargo test` (debug mode) for full validation
-   - Running `cargo test --release` will show: "Release mode: Skipping PDF content comparison"
-
-3. **Embedded fonts**: Liberation Sans bundled in binary (no runtime dependency)
+2. **Embedded fonts**: Liberation Sans bundled in binary (no runtime dependency)
    - License displayed via `VEX2PDF_SHOW_OSS_LICENSES=true`
 
-4. **Logging in tests**: Integration tests expect info logs on stdout
+3. **Logging in tests**: Integration tests expect info logs on stdout
    - Custom formatter routes ERROR/WARN → stderr, INFO/DEBUG → stdout
    - Debug logs stripped in release builds
