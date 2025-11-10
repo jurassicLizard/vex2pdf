@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [1.0.1] - 2025-11-10
+
+### Added
+- Added warning to README.md and DEVELOPER_NOTES.md about PDF checksum differences between debug and release builds
+- Added integration tests for new CLI argument parsing and title override functionality
+
+### Fixed
+- Fixed CLI arguments not being parsed correctly in `config.rs` (`Config::build_from_env_cli()` method)
+- Fixed logic bug in `tests/common.rs::copy_directory_files()` where ignore patterns were not properly skipping files (inner loop `continue` did not break outer loop)
+
+### Changed
+- Updated README.md installation section with separate instructions for CLI tool vs library usage
+- Added library installation documentation with `cargo add --no-default-features` for pure library use without CLI dependencies
+
 ## [1.0.0] - 2025-11-10
 
 ### Added

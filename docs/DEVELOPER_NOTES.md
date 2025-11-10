@@ -81,6 +81,8 @@ To regenerate checksums after updating reference PDFs:
 cargo run --example generate_checksums
 ```
 
+**Important Note:** The checksums stored in `expected_pdfs_chksums.txt` are generated from debug builds. While checksums should be consistent across builds, differences in compiler optimizations between debug and release modes may occasionally cause checksum mismatches. If you encounter checksum failures in release builds, this is expected behavior and does not indicate a test failure. The integration tests are designed to work with debug builds.
+
 ### Testing with Feature Flags
 
 The project uses a `cli` feature flag (enabled by default) to make CLI dependencies optional. This allows library users to depend on vex2pdf without pulling in command-line-specific dependencies like `clap` and `env_logger`.

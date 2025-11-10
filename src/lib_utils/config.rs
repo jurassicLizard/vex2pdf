@@ -217,6 +217,14 @@ impl Config {
         let show_comps = args
             .show_components
             .unwrap_or(EnvVarNames::ShowComponentList.is_on_or_unset());
+        let report_title_override = args
+            .report_title
+            .map(Some)
+            .unwrap_or(EnvVarNames::ReportTitle.get_value());
+        let pdf_meta_name_override = args
+            .meta_name
+            .map(Some)
+            .unwrap_or(EnvVarNames::PdfName.get_value());
         // set number of jobs
         let max_jobs = args.max_jobs;
 
@@ -243,8 +251,8 @@ impl Config {
             file_types_to_process: Some(file_types_to_process),
             pure_bom_novulns: show_pure_bom_novulns,
             show_components: show_comps,
-            report_title: EnvVarNames::ReportTitle.get_value(),
-            pdf_meta_name: EnvVarNames::PdfName.get_value(),
+            report_title: report_title_override,
+            pdf_meta_name: pdf_meta_name_override,
             max_jobs,
         };
 

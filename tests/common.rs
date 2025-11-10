@@ -51,6 +51,10 @@ pub mod paths {
         "/tests/test_artifacts/bom_src/run_test/bom_vdr_with_many_vulns.json"
     );
 
+    pub const BOM_VDR_WITH_MANY_VULNS_TITLES_OVERRIDE: &str = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/test_artifacts/bom_src/run_test/bom_vdr_with_many_vulns_titles_override_cli.json"
+    );
     pub const BOM_VDR_WITH_NO_VULNS: &str = concat!(
         env!("CARGO_MANIFEST_DIR"),
         "/tests/test_artifacts/bom_src/run_test/bom_vdr_with_no_vulns.json"
@@ -382,13 +386,29 @@ pub mod utils {
     }
 
     /// Helper function to copy all files from source directory to destination directory
-    pub fn copy_directory_files(src_dir: &Path, dest_dir: &Path) -> std::io::Result<usize> {
+    pub fn copy_directory_files(
+        src_dir: &Path,
+        dest_dir: &Path,
+        ignore_file_names_containing: Option<Vec<&str>>,
+    ) -> std::io::Result<usize> {
         let mut count = 0;
         for entry in std::fs::read_dir(src_dir)? {
             let entry = entry?;
             let path = entry.path();
             if path.is_file() {
                 let file_name = path.file_name().unwrap();
+                let file_name_str = file_name.to_str().unwrap_or_default();
+
+                // Check if file should be ignored
+                let should_ignore = ignore_file_names_containing
+                    .as_ref()
+                    .map(|patterns| patterns.iter().any(|pat| file_name_str.contains(pat)))
+                    .unwrap_or(false);
+
+                if should_ignore {
+                    continue; // Skip this file
+                }
+
                 std::fs::copy(&path, dest_dir.join(file_name))?;
                 count += 1;
             }

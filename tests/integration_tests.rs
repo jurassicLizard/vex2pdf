@@ -8,14 +8,20 @@ use common::paths;
 use common::utils;
 
 /// Helper function to run the vex2pdf command and verify success
-fn run_vex2pdf(input_path: &str, output_dir: &Path) -> std::process::Output {
+fn run_vex2pdf(
+    input_path: &str,
+    output_dir: &Path,
+    extra_args: Option<Vec<&str>>,
+) -> std::process::Output {
     let output = Command::new(paths::PATH_TO_EXE)
         .arg("-d")
         .arg(output_dir)
+        .args(extra_args.unwrap_or(vec![]))
         .arg(input_path)
         .output()
         .expect("Failed to execute command");
 
+    let output = output;
     // Print stderr for debugging if not empty
     if !output.stderr.is_empty() {
         eprintln!("stderr: {}", utils::bytes_to_str(&output.stderr));
@@ -49,7 +55,7 @@ fn get_expected_pdf_name(input_path: &str) -> String {
 fn test_simple_bom_with_one_vuln() {
     let temp_dir = TempDir::new().expect("Failed to create temporary directory");
 
-    run_vex2pdf(paths::SIMPLE_BOM_PATH, temp_dir.path());
+    run_vex2pdf(paths::SIMPLE_BOM_PATH, temp_dir.path(), None);
 
     let pdf_name = get_expected_pdf_name(paths::SIMPLE_BOM_PATH);
     let generated_pdf = temp_dir.path().join(&pdf_name);
@@ -62,7 +68,7 @@ fn test_simple_bom_with_one_vuln() {
 fn test_vdr_minimal_with_vulns() {
     let temp_dir = TempDir::new().expect("Failed to create temporary directory");
 
-    run_vex2pdf(paths::BOM_VDR_MINIMAL_WITH_VULNS, temp_dir.path());
+    run_vex2pdf(paths::BOM_VDR_MINIMAL_WITH_VULNS, temp_dir.path(), None);
 
     let pdf_name = get_expected_pdf_name(paths::BOM_VDR_MINIMAL_WITH_VULNS);
     let generated_pdf = temp_dir.path().join(&pdf_name);
@@ -75,7 +81,7 @@ fn test_vdr_minimal_with_vulns() {
 fn test_vdr_with_ghsa_entries() {
     let temp_dir = TempDir::new().expect("Failed to create temporary directory");
 
-    run_vex2pdf(paths::BOM_VDR_WITH_GHSA_ENTRIES, temp_dir.path());
+    run_vex2pdf(paths::BOM_VDR_WITH_GHSA_ENTRIES, temp_dir.path(), None);
 
     let pdf_name = get_expected_pdf_name(paths::BOM_VDR_WITH_GHSA_ENTRIES);
     let generated_pdf = temp_dir.path().join(&pdf_name);
@@ -88,7 +94,7 @@ fn test_vdr_with_ghsa_entries() {
 fn test_vdr_with_many_vulns() {
     let temp_dir = TempDir::new().expect("Failed to create temporary directory");
 
-    run_vex2pdf(paths::BOM_VDR_WITH_MANY_VULNS, temp_dir.path());
+    run_vex2pdf(paths::BOM_VDR_WITH_MANY_VULNS, temp_dir.path(), None);
 
     let pdf_name = get_expected_pdf_name(paths::BOM_VDR_WITH_MANY_VULNS);
     let generated_pdf = temp_dir.path().join(&pdf_name);
@@ -101,7 +107,7 @@ fn test_vdr_with_many_vulns() {
 fn test_vdr_with_no_vulns() {
     let temp_dir = TempDir::new().expect("Failed to create temporary directory");
 
-    run_vex2pdf(paths::BOM_VDR_WITH_NO_VULNS, temp_dir.path());
+    run_vex2pdf(paths::BOM_VDR_WITH_NO_VULNS, temp_dir.path(), None);
 
     let pdf_name = get_expected_pdf_name(paths::BOM_VDR_WITH_NO_VULNS);
     let generated_pdf = temp_dir.path().join(&pdf_name);
@@ -114,7 +120,7 @@ fn test_vdr_with_no_vulns() {
 fn test_vdr_with_links_as_versions() {
     let temp_dir = TempDir::new().expect("Failed to create temporary directory");
 
-    run_vex2pdf(paths::BOM_VDR_WITH_LINKS_AS_VERSIONS, temp_dir.path());
+    run_vex2pdf(paths::BOM_VDR_WITH_LINKS_AS_VERSIONS, temp_dir.path(), None);
 
     let pdf_name = get_expected_pdf_name(paths::BOM_VDR_WITH_LINKS_AS_VERSIONS);
     let generated_pdf = temp_dir.path().join(&pdf_name);
@@ -127,7 +133,7 @@ fn test_vdr_with_links_as_versions() {
 fn test_vex_with_links_as_versions() {
     let temp_dir = TempDir::new().expect("Failed to create temporary directory");
 
-    run_vex2pdf(paths::BOM_VEX_WITH_LINKS_AS_VERSIONS, temp_dir.path());
+    run_vex2pdf(paths::BOM_VEX_WITH_LINKS_AS_VERSIONS, temp_dir.path(), None);
 
     let pdf_name = get_expected_pdf_name(paths::BOM_VEX_WITH_LINKS_AS_VERSIONS);
     let generated_pdf = temp_dir.path().join(&pdf_name);
@@ -140,7 +146,7 @@ fn test_vex_with_links_as_versions() {
 fn test_novulns_directory() {
     let temp_dir = TempDir::new().expect("Failed to create temporary directory");
 
-    run_vex2pdf(paths::BOM_NOVULNS, temp_dir.path());
+    run_vex2pdf(paths::BOM_NOVULNS, temp_dir.path(), None);
 
     let pdf_name = get_expected_pdf_name(paths::BOM_NOVULNS);
     let generated_pdf = temp_dir.path().join(&pdf_name);
@@ -157,7 +163,7 @@ fn test_novulns_directory() {
 fn test_vdr_simple_xml() {
     let temp_dir = TempDir::new().expect("Failed to create temporary directory");
 
-    run_vex2pdf(paths::BOM_VDR_SIMPLE_XML, temp_dir.path());
+    run_vex2pdf(paths::BOM_VDR_SIMPLE_XML, temp_dir.path(), None);
 
     let pdf_name = get_expected_pdf_name(paths::BOM_VDR_SIMPLE_XML);
     let generated_pdf = temp_dir.path().join(&pdf_name);
@@ -170,7 +176,7 @@ fn test_vdr_simple_xml() {
 fn test_vex_simple_xml() {
     let temp_dir = TempDir::new().expect("Failed to create temporary directory");
 
-    run_vex2pdf(paths::BOM_VEX_SIMPLE_XML, temp_dir.path());
+    run_vex2pdf(paths::BOM_VEX_SIMPLE_XML, temp_dir.path(), None);
 
     let pdf_name = get_expected_pdf_name(paths::BOM_VEX_SIMPLE_XML);
     let generated_pdf = temp_dir.path().join(&pdf_name);
@@ -183,7 +189,7 @@ fn test_vex_simple_xml() {
 fn test_sample_vex_xml() {
     let temp_dir = TempDir::new().expect("Failed to create temporary directory");
 
-    run_vex2pdf(paths::SAMPLE_VEX_XML, temp_dir.path());
+    run_vex2pdf(paths::SAMPLE_VEX_XML, temp_dir.path(), None);
 
     let pdf_name = get_expected_pdf_name(paths::SAMPLE_VEX_XML);
     let generated_pdf = temp_dir.path().join(&pdf_name);
@@ -204,8 +210,12 @@ fn test_batch_run_test_directory() {
 
     // Copy all test files from run_test directory
     let src_dir = Path::new(paths::SOURCE_BOMS_BASE_ARTIFACTS_DIR);
-    let files_copied =
-        utils::copy_directory_files(src_dir, temp_input_dir.path()).expect("Failed to copy files");
+    let files_copied = utils::copy_directory_files(
+        src_dir,
+        temp_input_dir.path(),
+        Some(vec!["_titles_override"]),
+    )
+    .expect("Failed to copy files");
 
     assert!(
         files_copied > 0,
@@ -250,8 +260,12 @@ fn test_batch_run_test_xml_directory() {
 
     // Copy all test files from run_test_xml directory
     let src_dir = Path::new(paths::SOURCE_BOMS_XML_ARTIFACTS_DIR);
-    let files_copied =
-        utils::copy_directory_files(src_dir, temp_input_dir.path()).expect("Failed to copy files");
+    let files_copied = utils::copy_directory_files(
+        src_dir,
+        temp_input_dir.path(),
+        Some(vec!["_titles_override"]),
+    )
+    .expect("Failed to copy files");
 
     assert!(
         files_copied > 0,
@@ -472,7 +486,7 @@ fn test_nonexistent_input_file_fails() {
 fn test_json_with_analysis_renders_correctly() {
     let temp_dir = TempDir::new().expect("Failed to create temporary directory");
 
-    let _ = run_vex2pdf(paths::BOM_VDR_WITH_ANALYSIS, temp_dir.path());
+    let _ = run_vex2pdf(paths::BOM_VDR_WITH_ANALYSIS, temp_dir.path(), None);
 
     // Verify PDF was created
     let pdf_name = get_expected_pdf_name(paths::BOM_VDR_WITH_ANALYSIS);
@@ -491,7 +505,7 @@ fn test_json_with_analysis_renders_correctly() {
 fn test_xml_with_analysis_renders_correctly() {
     let temp_dir = TempDir::new().expect("Failed to create temporary directory");
 
-    let _ = run_vex2pdf(paths::BOM_VDR_WITH_ANALYSIS_XML, temp_dir.path());
+    let _ = run_vex2pdf(paths::BOM_VDR_WITH_ANALYSIS_XML, temp_dir.path(), None);
 
     // Verify PDF was created
     let pdf_name = get_expected_pdf_name(paths::BOM_VDR_WITH_ANALYSIS_XML);
@@ -569,4 +583,27 @@ fn test_version_info_on_startup() {
     assert!(stdout_str.contains("vex2pdf"));
     assert!(stdout_str.contains("CycloneDX (VEX) to PDF Converter"));
     assert!(stdout_str.contains("Copyright (c) 2025 Salem B. - MIT Or Apache 2.0 License"));
+}
+
+#[test]
+fn test_report_title_override_via_cli() {
+    let temp_dir = TempDir::new().expect("Failed to create temporary directory");
+
+    let _ = run_vex2pdf(
+        paths::BOM_VDR_WITH_MANY_VULNS_TITLES_OVERRIDE,
+        temp_dir.path(),
+        Some(vec!["-t", "Title override", "-n", "Meta name override"]),
+    );
+
+    // Verify PDF was created
+    let pdf_name = get_expected_pdf_name(paths::BOM_VDR_WITH_MANY_VULNS_TITLES_OVERRIDE);
+    let pdf_path = temp_dir.path().join(&pdf_name);
+    assert!(
+        pdf_path.exists(),
+        "Expected PDF not found: {}",
+        pdf_path.display()
+    );
+
+    // Verify PDF content with checksum
+    utils::assert_pdf_checksum_matches(&pdf_path);
 }

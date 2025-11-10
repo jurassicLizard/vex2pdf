@@ -528,6 +528,8 @@ cargo build --no-default-features
 
 **Note:** Integration tests require the `cli` feature and will be skipped when testing with `--no-default-features`.
 
+**Warning:** PDF checksums used in integration tests are generated from debug builds. While checksums should be consistent across builds, differences in compiler optimizations between debug and release modes may occasionally cause checksum mismatches. If you encounter checksum failures in release builds, this is expected behavior and does not indicate a test failure.
+
 ### Code Coverage
 
 ```bash
