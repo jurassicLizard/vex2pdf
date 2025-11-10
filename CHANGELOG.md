@@ -15,7 +15,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed CLI arguments not being parsed correctly in `config.rs` (`Config::build_from_env_cli()` method)
-- Fixed logic bug in `tests/common.rs::copy_directory_files()` where ignore patterns were not properly skipping files (inner loop `continue` did not break outer loop)
 
 ### Changed
 - Updated README.md installation section with separate instructions for CLI tool vs library usage
