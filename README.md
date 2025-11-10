@@ -8,8 +8,21 @@
 
 A command-line tool to convert CycloneDX (VEX/VDR/(S)BoM) Documents in JSON or XML format to PDF reports.
 
+## Why vex2pdf?
+
+- **Blazing Fast**: Rust performance processes large BOMs in milliseconds with efficient concurrent processing
+- **Zero Dependencies**: Single static binary with embedded fonts—no runtime dependencies, no package managers, no system libraries
+- **Minimal Footprint**: ~10MB binary perfect for slim Docker images and resource-constrained environments
+- **True Parallelism**: Thread-safe concurrent batch processing with configurable job limits
+- **Memory Safe**: 100% safe Rust code (forbids unsafe)—no runtime crashes or memory issues
+- **Cross-Platform**: Same binary works on Linux, Windows, macOS—compile once, run anywhere
+- **Air-Gap Friendly**: Fully self-contained with embedded Liberation Sans fonts—works completely offline
+
+Perfect for automated security reporting in containerized workflows, CI/CD pipelines, and production environments where reliability, speed, and minimal dependencies are critical.
+
 <!-- TOC -->
 * [CycloneDX (VEX/VDR/(S)BoM) to PDF Converter](#cyclonedx-vexvdrsbom-to-pdf-converter)
+  * [Why vex2pdf?](#why-vex2pdf)
   * [Overview](#overview)
   * [Supported Document Types](#supported-document-types)
     * [VEX (Vulnerability Exploitability eXchange)](#vex-vulnerability-exploitability-exchange)
@@ -24,7 +37,8 @@ A command-line tool to convert CycloneDX (VEX/VDR/(S)BoM) Documents in JSON or X
   * [Features](#features)
   * [Installation](#installation)
     * [Prerequisites](#prerequisites)
-    * [Via Cargo](#via-cargo)
+    * [As a Command-Line Tool](#as-a-command-line-tool)
+    * [As a Library](#as-a-library)
     * [From Source](#from-source)
     * [Linux and Windows Users](#linux-and-windows-users)
     * [Mac Users](#mac-users)
@@ -35,8 +49,6 @@ A command-line tool to convert CycloneDX (VEX/VDR/(S)BoM) Documents in JSON or X
   * [Configuration](#configuration)
     * [Environment Variables](#environment-variables)
       * [VEX2PDF_NOVULNS_MSG](#vex2pdf_novulns_msg)
-      * [VEX2PDF_SHOW_OSS_LICENSES](#vex2pdf_show_oss_licenses)
-      * [VEX2PDF_VERSION_INFO](#vex2pdf_version_info)
       * [VEX2PDF_REPORT_TITLE](#vex2pdf_report_title)
       * [VEX2PDF_PDF_META_NAME](#vex2pdf_pdf_meta_name)
       * [VEX2PDF_PURE_BOM_NOVULNS](#vex2pdf_pure_bom_novulns)
@@ -48,6 +60,8 @@ A command-line tool to convert CycloneDX (VEX/VDR/(S)BoM) Documents in JSON or X
   * [Documentation](#documentation)
     * [Developer Notes](#developer-notes)
   * [Testing](#testing)
+    * [Running Tests](#running-tests)
+    * [Code Coverage](#code-coverage)
   * [CycloneDX Document Format](#cyclonedx-document-format)
     * [Version 1.6 Compatibility Mode](#version-16-compatibility-mode)
   * [Security Considerations](#security-considerations)
@@ -151,14 +165,46 @@ The font license file is also available at [Liberation fonts License file](exter
 ### Prerequisites
 - Rust and Cargo (latest stable version)
 
-### Via Cargo
-The easiest way to install VEX2PDF is directly from crates.io:
+### As a Command-Line Tool
+
+Install VEX2PDF directly from crates.io:
 
 ```bash
 cargo install vex2pdf
 ```
 
 After installation, the `vex2pdf` binary will be available in your Cargo bin directory.
+
+### As a Library
+
+To use VEX2PDF as a library in your Rust project:
+
+```bash
+# For library use only (without CLI dependencies)
+cargo add vex2pdf --no-default-features
+
+# Or with CLI features enabled (if you need build_from_env_cli())
+cargo add vex2pdf
+```
+
+**Library Usage Example:**
+
+```rust
+use vex2pdf::lib_utils::config::Config;
+use vex2pdf::run;
+
+fn main() {
+  let config = Config::default()
+          .working_path("./input")
+          .output_dir("./output")
+          .max_jobs(Some(4));
+
+  run(config).expect("Failed to process files");
+}
+
+```
+
+For complete API documentation, visit [docs.rs/vex2pdf](https://docs.rs/vex2pdf).
 
 > Notice: As of v0.6.1 no extra font configuration is needed. Fonts have been embedded in the software binary. Check [Fonts handling and license](#fonts-handling) for further information
 
