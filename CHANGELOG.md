@@ -5,7 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+
+## [1.0.2] - 2025-11-28
+
+### Added 
+- added MSRV afuter testing with `cargo-msrv`. This is **NOT** a breaking change as installs with incompatible compilers would fail with or without this setting
+
+### Changed
+- Updated dependencies
+- Improved CHANGELOG.md readability by adding horizontal rules between version sections
+
+### Fixed
+- Fixed test failing due to title override fix
+
+---
 
 ## [1.0.1] - 2025-11-10
 
@@ -19,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated README.md installation section with separate instructions for CLI tool vs library usage
 - Added library installation documentation with `cargo add --no-default-features` for pure library use without CLI dependencies
+
+---
 
 ## [1.0.0] - 2025-11-10
 
@@ -102,6 +117,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed integration tests note in [README](README.md)
 - Fixed minor documentation and linting issues
 
+---
+
 ## [0.9.0] - 2025-10-27
 
 ### Added
@@ -156,6 +173,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `VEX2PDF_VERSION_INFO` is now replaced with a cli argument and has entered a deprecation phase (will be removed by the next minor release)
 - `VEX2PDF_SHOW_OSS_LICENSES` is now replaced with a cli argument and has entered a deprecation phase (will be removed by the next minor release)
 
+---
 
 ## [0.8.2] - 2025-09-10
 
@@ -165,6 +183,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added version string rendering for Metadata Tools
 - Added version string rendering for Metadata Component
 - Added various updates and fixes to the README.md
+
+---
 
 ## [0.8.1] - 2025-09-10
 
@@ -176,6 +196,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed wrong default value in [Readme](README.md) for the `VEX2PDF_PURE_BOM_NOVULNS` to `false`
 - Fixed Regression where it is no longer possible to show components as well as vulnerabilities. It is now possible
 to show both through the `VEX2PDF_SHOW_COMPONENTS` environment variable which is set by default to true
+
+---
 
 ## [0.8.0] - 2025-09-09
 
@@ -192,6 +214,8 @@ to show both through the `VEX2PDF_SHOW_COMPONENTS` environment variable which is
 - Changed Readme.md with new notice on Binary releases
 - Changed Vulnerability section handling to deal with the new component handling
 - Updated styles of some sections of the PDF to enhance visibility
+
+---
 
 ## [0.7.1] - 2025-06-11
 
@@ -210,6 +234,7 @@ to show both through the `VEX2PDF_SHOW_COMPONENTS` environment variable which is
 - Fixed minor typo and missing date in Changelog.md
 - Fixed `VEX2PDF_SHOW_OSS_LICENSES` env variable handlers to show updated license information
 
+---
 
 ## [0.7.0] - 2025-05-28
 
@@ -225,10 +250,14 @@ to show both through the `VEX2PDF_SHOW_COMPONENTS` environment variable which is
 ### Changed
 - Upgraded license from MIT to `MIT OR Apache 2.0` at the user's discretion
 
+---
+
 ## [0.6.2] - 2025-05-22
 
 ### Fixed
 - Fixed minor documentation issue that is causing some tests to fail
+
+---
 
 ## [0.6.1] - 2025-05-22
 
@@ -245,6 +274,8 @@ to show both through the `VEX2PDF_SHOW_COMPONENTS` environment variable which is
 the software more portable and simplify the code
 - Old fonts handling is now deprecated, and in the future only embedded fonts will be used
 
+---
+
 ## [0.6.0] - 2025-05-20
 
 ### Changed
@@ -252,6 +283,8 @@ the software more portable and simplify the code
 - Added XML parsing capability
 - Added centralized configuration in preperation for extending environment variables to provide further options
 - No changes to the public API
+
+---
 
 ## [0.5.0] - 2025-05-15
 
@@ -267,6 +300,8 @@ the software more portable and simplify the code
 ### Documentation
 - Documented all environment variables in configuration section
 
+---
+
 ## [0.4.0] - 2025-04-24
 
 ### Changed
@@ -277,6 +312,8 @@ the software more portable and simplify the code
 - Added support for 1.6 BOMs until upstream adds it
 - Added verbose error output for font failures
 
+---
+
 ## [0.3.0] - 2025-04-23
 
 ### Fixed
@@ -284,10 +321,14 @@ the software more portable and simplify the code
 - Tools field under metadata to be fully compliant with 1.5 or 1.6 specs of CycloneDX
 - Various formatting issues
 
+---
+
 ## [0.2.0] - 2025-04-23
 
 ### Fixed
 - Advisory fields marked as optional to not fail when they do not exist (as per the CycloneDX spec)
+
+---
 
 ## [0.1.0] - 2025-04-22
 
