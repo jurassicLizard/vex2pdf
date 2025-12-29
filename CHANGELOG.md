@@ -43,6 +43,8 @@ This release is exactly the same as the, now yanked, v2.0.0 with a major bugfix 
 - Expanded CI test coverage to test all feature flag combinations (no-default, cli-only, concurrency-only, all features)
 - Changed CI to run tests on all branch pushes including master (previously skipped master)
 
+### Fixed
+- Fixed `Gitlab CI` jobs to ignore the readonly test which is problematic on CI containers running as root
 
 
 ---

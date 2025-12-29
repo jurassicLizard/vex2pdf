@@ -33,7 +33,7 @@ test-no-default-features:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH
   script:
-    - cargo test --lib --no-default-features
+    - cargo test --lib --no-default-features -- --skip test_validate_readonly_directory
     - cargo build --no-default-features
 
 # Test with CLI feature only (CLI but sequential processing)
@@ -44,7 +44,7 @@ test-cli-only:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH
   script:
-    - cargo test --no-default-features --features cli
+    - cargo test --no-default-features --features cli -- --skip test_validate_readonly_directory
     - cargo build --no-default-features --features cli
 
 # Test with concurrency feature only (library with concurrent processing)
@@ -55,7 +55,7 @@ test-concurrency-only:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH
   script:
-    - cargo test --lib --no-default-features --features concurrency
+    - cargo test --lib --no-default-features --features concurrency -- --skip test_validate_readonly_directory
     - cargo build --no-default-features --features concurrency
 
 # Build binaries ONLY on tag pushes
