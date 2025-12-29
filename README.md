@@ -180,12 +180,25 @@ After installation, the `vex2pdf` binary will be available in your Cargo bin dir
 To use VEX2PDF as a library in your Rust project:
 
 ```bash
-# For library use only (without CLI dependencies)
+# Default: CLI + concurrent processing (recommended for most use cases)
+cargo add vex2pdf
+
+# Library with concurrent processing (no CLI dependencies)
+cargo add vex2pdf --no-default-features --features concurrency
+
+# Library with sequential processing (minimal dependencies)
 cargo add vex2pdf --no-default-features
 
-# Or with CLI features enabled (if you need build_from_env_cli())
-cargo add vex2pdf
+# CLI with sequential processing
+cargo add vex2pdf --no-default-features --features cli
 ```
+
+**Feature Flags:**
+
+| Feature | Description | Default |
+|---------|-------------|---------|
+| `cli` | Command-line interface and argument parsing (requires `clap`, `env_logger`) | ✓ Yes |
+| `concurrency` | Concurrent file processing using threadpool (requires `jlizard-simple-threadpool`) | ✓ Yes |
 
 **Library Usage Example:**
 
@@ -197,11 +210,10 @@ fn main() {
   let config = Config::default()
           .working_path("./input")
           .output_dir("./output")
-          .max_jobs(Some(4));
+          .max_jobs(Some(4));  // Only available with 'concurrency' feature
 
   run(config).expect("Failed to process files");
 }
-
 ```
 
 For complete API documentation, visit [docs.rs/vex2pdf](https://docs.rs/vex2pdf).
@@ -219,11 +231,68 @@ Users can either:
 3. Use a pre-built binary under the [Release Binaries section](https://gitlab.com/jurassicLizard/vex2pdf/-/releases) 
 
 ### Mac Users
-Currently, No Mac Binaries are provided however Mac Users can build and install with cargo. Please check the [From Source Section](#from-source) 
+Currently, No Mac Binaries are provided however Mac Users can build and install with cargo. Please check the [From Source Section](#from-source)
 
 >  If Mac release binaries are needed please [create an issue](https://gitlab.com/jurassicLizard/vex2pdf/-/issues)
 
+## Migrating to 2.0
 
+Version 2.0.0 introduces breaking changes to improve the library architecture and provide more flexibility. Most users won't need to make any changes.
+
+### For CLI Users
+
+**No changes required!** The CLI interface remains unchanged. All default features (CLI + concurrency) are enabled by default.
+
+### For Library Users
+
+#### If you're using default features
+**No changes required!** Your code will continue to work as-is.
+
+#### If you're using `--no-default-features`
+Version 2.0 introduces a new `concurrency` feature that's enabled by default. If you're using `--no-default-features`, you now have two options:
+
+**Option 1: Add concurrency back** (recommended for most use cases)
+```bash
+# Update your Cargo.toml or installation command
+cargo add vex2pdf --no-default-features --features concurrency
+```
+
+**Option 2: Use sequential processing** (simpler, no threading)
+```bash
+# No changes needed - files will now process sequentially
+cargo add vex2pdf --no-default-features
+```
+
+#### If you're using the `PdfGenerator` API directly
+The `PdfGenerator` struct no longer has a lifetime parameter:
+
+**Before (v1.x):**
+```rust
+let generator: PdfGenerator<'_> = PdfGenerator::new(config);
+```
+
+**After (v2.0):**
+```rust
+let generator: PdfGenerator = PdfGenerator::new(config);
+// Or simply let type inference handle it:
+let generator = PdfGenerator::new(config);
+```
+
+#### Environment Variable Changes
+If you were using these deprecated environment variables, switch to CLI flags:
+
+| Removed Variable | Replacement |
+|------------------|-------------|
+| `VEX2PDF_SHOW_OSS_LICENSES=true` | `vex2pdf --license` |
+| `VEX2PDF_VERSION_INFO=true` | `vex2pdf --version` |
+
+### What Changed Internally
+
+- **Concurrency is now optional**: The `concurrency` feature flag allows you to choose between concurrent (faster) or sequential (simpler) processing
+- **External threadpool**: Replaced internal implementation with `jlizard-simple-threadpool` for better maintainability
+- **Cleaner API**: Removed deprecated fields from `PdfGenerator` struct (deprecated since v0.9.0)
+
+For a complete list of changes, see the [CHANGELOG.md](CHANGELOG.md#200---2025-12-29).
 
 ## Usage
 

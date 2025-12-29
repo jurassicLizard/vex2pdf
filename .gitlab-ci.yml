@@ -12,29 +12,51 @@ cache:
     - .cargo/
     - target/
 
-# Quick tests on every push (but not master to avoid duplicates with MR)
+# Quick tests on every push (including master)
 test:
   stage: test
   image: rust:latest
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != "master"
+    - if: $CI_COMMIT_BRANCH
   script:
     - rustup component add clippy rustfmt
     - cargo fmt -- --check
     - cargo clippy -- -D warnings
     - cargo test -- --skip test_validate_readonly_directory # that one test must be skipped because gitlab-ci tasks run as root making that test fail (root can write to readonly dirs in linux)
 
-# Test library without CLI dependencies
-test-no-cli-feature:
+# Test library with no default features (minimal dependencies, sequential processing)
+test-no-default-features:
   stage: test
   image: rust:latest
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != "master"
+    - if: $CI_COMMIT_BRANCH
   script:
     - cargo test --lib --no-default-features
     - cargo build --no-default-features
+
+# Test with CLI feature only (CLI but sequential processing)
+test-cli-only:
+  stage: test
+  image: rust:latest
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+  script:
+    - cargo test --no-default-features --features cli
+    - cargo build --no-default-features --features cli
+
+# Test with concurrency feature only (library with concurrent processing)
+test-concurrency-only:
+  stage: test
+  image: rust:latest
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+  script:
+    - cargo test --lib --no-default-features --features concurrency
+    - cargo build --no-default-features --features concurrency
 
 # Build binaries ONLY on tag pushes
 linux-build:

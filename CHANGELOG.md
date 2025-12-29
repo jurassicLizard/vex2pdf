@@ -6,10 +6,49 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.0.0] - 2025-12-29
+
+### Breaking Changes
+- **BREAKING**: Removed deprecated fields from `PdfGenerator` struct that were deprecated in v0.9.0:
+  - Removed `_report_title`, `_pdf_meta_name`, `_show_novulns_msg`, `_pure_bom_novulns`, `_show_components`
+  - All configuration now exclusively through `Config` struct
+- **BREAKING**: Removed lifetime parameter from `PdfGenerator` (changed from `PdfGenerator<'a>` to `PdfGenerator`)
+- **BREAKING**: Removed internal concurrency module (`src/lib_utils/concurrency/`)
+  - Concurrency now requires explicit `concurrency` feature flag (enabled by default)
+  - Users relying on `--no-default-features` will now get sequential processing
+- **BREAKING**: Changed default features from `["cli"]` to `["cli", "concurrency"]`
+- **BREAKING**: Removed deprecated environment variables (both were deprecated in v0.9.0):
+  - Removed `VEX2PDF_SHOW_OSS_LICENSES` environment variable (use `--license` CLI flag instead)
+  - Removed `VEX2PDF_VERSION_INFO` environment variable (use `--version` CLI flag instead)
+
+### Added
+- Added `concurrency` feature flag to make concurrent processing optional
+- Added `jlizard-simple-threadpool` crate as external dependency for thread pool management
+- Added sequential processing fallback when `concurrency` feature is disabled
+- Added feature gating to `max_jobs` CLI argument (requires `concurrency` feature)
+- Added `cargo-deny` configuration file for auditing purposes 
+
+### Changed
+- Replaced internal threadpool implementation with external `jlizard-simple-threadpool` crate
+- Updated `log` dependency from 0.4.28 to 0.4.29
+- Moved `opt-level = 3` from `release-optimized` profile to base `release` profile for better default performance
+- Updated README.md with clearer installation instructions for different feature combinations
+- Simplified library architecture by removing internal concurrency code
+- Expanded CI test coverage to test all feature flag combinations (no-default, cli-only, concurrency-only, all features)
+- Changed CI to run tests on all branch pushes including master (previously skipped master)
+
+### Removed
+- Removed internal threadpool, worker, and concurrency common modules
+- Removed all deprecated `PdfGenerator` struct fields (deprecated since v0.9.0)
+- Removed lifetime parameter from `PdfGenerator` struct
+- Removed deprecated environment variable enum variants: `ShowOssLicenses` and `VersionInfo`
+
+---
+
 ## [1.0.2] - 2025-11-28
 
 ### Added 
-- added MSRV afuter testing with `cargo-msrv`. This is **NOT** a breaking change as installs with incompatible compilers would fail with or without this setting
+- added MSRV after testing with `cargo-msrv`. This is **NOT** a breaking change as installs with incompatible compilers would fail with or without this setting
 
 ### Changed
 - Updated dependencies

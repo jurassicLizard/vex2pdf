@@ -14,18 +14,6 @@ pub enum EnvVarNames {
     ProcessJson,
     /// USER CANNOT YET OVERRIDE THIS OPTION
     ProcessXml,
-    /// Shows OSS License Information if set to true
-    #[deprecated(
-        since = "0.9.0",
-        note = "replaced with argument variable. will be removed at a future minor release"
-    )]
-    ShowOssLicenses,
-    /// Shows Software version and copyright Information if set to true
-    #[deprecated(
-        since = "0.9.0",
-        note = "replaced with argument variable. will be removed at a future minor release"
-    )]
-    VersionInfo,
     /// Controls the title shown in the PDF when it is generated
     ReportTitle,
     /// Controls the metadata name which is usually displayed in window headers of readers
@@ -47,7 +35,6 @@ pub enum EnvVarNames {
     MaxJobs,
 }
 
-#[allow(deprecated)]
 impl EnvVarNames {
     pub const fn as_str(&self) -> &'static str {
         match self {
@@ -55,8 +42,6 @@ impl EnvVarNames {
             EnvVarNames::NoVulnsMsg => "VEX2PDF_NOVULNS_MSG",
             EnvVarNames::ProcessJson => "VEX2PDF_JSON",
             EnvVarNames::ProcessXml => "VEX2PDF_XML",
-            EnvVarNames::ShowOssLicenses => "VEX2PDF_SHOW_OSS_LICENSES",
-            EnvVarNames::VersionInfo => "VEX2PDF_VERSION_INFO",
             EnvVarNames::ReportTitle => "VEX2PDF_REPORT_TITLE",
             EnvVarNames::PdfName => "VEX2PDF_PDF_META_NAME",
             EnvVarNames::PureBomNoVulns => "VEX2PDF_PURE_BOM_NOVULNS",

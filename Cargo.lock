@@ -585,6 +585,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "jlizard-simple-threadpool"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "46e63c3f44f4a797ce34c692a8060762113929e914f810120cc645f55a2edc6a"
+dependencies = [
+ "log",
+]
+
+[[package]]
 name = "js-sys"
 version = "0.3.82"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -614,9 +623,9 @@ checksum = "df1d3c3b53da64cf5760482273a98e575c651a67eec7f77df96b5b642de8f039"
 
 [[package]]
 name = "log"
-version = "0.4.28"
+version = "0.4.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34080505efa8e45a4b816c349525ebe327ceaa8559756f0356cba97ef3bf7432"
+checksum = "5e5032e24019045c762d3c0f28f5b6b8bbf38563a65908389bf7978758920897"
 
 [[package]]
 name = "lopdf"
@@ -1236,13 +1245,14 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
 name = "vex2pdf"
-version = "1.0.2"
+version = "2.0.0"
 dependencies = [
  "blake3",
  "clap",
  "cyclonedx-bom",
  "env_logger",
  "genpdf",
+ "jlizard-simple-threadpool",
  "log",
  "serde_json",
  "tempfile",

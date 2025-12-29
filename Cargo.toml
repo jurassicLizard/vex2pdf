@@ -1,6 +1,6 @@
 [package]
 name = "vex2pdf"
-version = "1.0.2"
+version = "2.0.0"
 edition = "2021"
 authors = ["Salem B. <jurassic.lizard@protonmail.com>"]
 license = "MIT OR Apache-2.0"
@@ -22,8 +22,9 @@ exclude = [
 ]
 
 [features]
-default = ["cli"]
+default = ["cli","concurrency"]
 cli = ["dep:clap", "dep:env_logger"]
+concurrency = ["dep:jlizard-simple-threadpool"]
 
 [[bin]]
 name = "vex2pdf"
@@ -38,7 +39,8 @@ clap = { version = "4.5.53", features = ["derive", "env"], optional = true }
 cyclonedx-bom = "0.8.0"
 env_logger = { version = "0.11.8", optional = true }
 genpdf = "0.2.0"
-log = { version = "0.4.28", features = ["max_level_debug", "release_max_level_info"] }
+jlizard-simple-threadpool = { version = "0.3.0", optional = true, features = ["log"] }
+log = { version = "0.4.29", features = ["max_level_debug", "release_max_level_info"] }
 serde_json = "1.0.145"
 
 
@@ -48,9 +50,9 @@ blake3 = "1.8.2"
 
 [profile.release]
 strip = true
+opt-level = 3
 
 [profile.release-optimized]
 inherits = "release"
-opt-level = 3
 lto = "fat"
 codegen-units = 1

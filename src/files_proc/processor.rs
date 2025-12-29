@@ -4,11 +4,12 @@ use crate::files_proc::model::input_file_type::InputFileType;
 use crate::files_proc::traits::{
     FileSearchProvider, MultipleFilesProcProvider, SingleFileProcProvider,
 };
-use crate::lib_utils::concurrency::threadpool::ThreadPool;
 use crate::lib_utils::config::Config;
 use crate::lib_utils::errors::Vex2PdfError;
 use crate::pdf::generator::PdfGenerator;
 use crate::utils::{get_output_pdf_path, parse_vex_json, parse_vex_xml};
+#[cfg(feature = "concurrency")]
+use jlizard_simple_threadpool::threadpool::ThreadPool;
 use log::{error, info, warn};
 use std::collections::HashSet;
 use std::fs;
@@ -163,12 +164,14 @@ impl<P: AsRef<Path> + Eq + Hash + Send + 'static> MultipleFilesProcProvider<P>
     type ErrType = Vex2PdfError;
 
     fn process(self) -> Result<Self::OkType, Self::ErrType> {
+        #[cfg(feature = "concurrency")]
         let pool = if let Some(num_jobs) = self.config.max_jobs {
             ThreadPool::new(num_jobs)
         } else {
             ThreadPool::default()
         };
 
+        #[cfg(feature = "concurrency")]
         info!("{pool}");
 
         let config = self.config;
@@ -176,18 +179,28 @@ impl<P: AsRef<Path> + Eq + Hash + Send + 'static> MultipleFilesProcProvider<P>
 
         for file in self.files {
             let single_file_proc = DefaultSingleFileProcessor;
-
             let config_clone = Arc::clone(&config);
-            pool.execute(move || {
-                if let Err(e) = single_file_proc.process_single_file(file, config_clone) {
-                    error!("{e}");
-                }
-            })
-            .expect(
-                "Failed to send job to pool. Consider disabling Multithreading if issues persist",
-            ); // we do not want to immediatly return an error if one of the jobs failed hence why we did not propagate
+            #[cfg(feature = "concurrency")]
+            {
+                pool.execute(move || {
+                    if let Err(e) = single_file_proc.process_single_file(file, config_clone) {
+                        error!("{e}");
+                    }
+                })
+                    .expect(
+                        "Failed to send job to pool. Consider disabling Multithreading if issues persist",
+                    ); // we do not want to immediatly return an error if one of the jobs failed hence why we did not propagate
+            }
+
+            #[cfg(not(feature = "concurrency"))]
+            {
+                single_file_proc
+                    .process_single_file(file, config_clone)
+                    .unwrap_or_else(|e| error!("{e}"));
+            }
         }
 
+        #[cfg(feature = "concurrency")]
         drop(pool); // dropping here to show information message after worker status messages
                     // pool drops gracefully and cleans up here blocking until all jobs are finished
 

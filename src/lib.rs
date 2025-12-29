@@ -72,11 +72,12 @@
 //! - **Multi-format support**: JSON and XML CycloneDX documents
 //! - **Document types**: VEX, VDR, and SBOM/BOM
 //! - **Vulnerability analysis rendering**: Color-coded states (Exploitable, Resolved, In Triage, etc.) and response actions
-//! - **Concurrent processing**: Custom threadpool with configurable job limits (single-threaded to max parallelism)
+//! - **Optional concurrent processing**: Feature flag enables threadpool with configurable job limits (single-threaded to max parallelism)
 //! - **Embedded fonts**: Liberation Sans fonts built-in, no external dependencies
 //! - **Structured logging**: Info/debug to stdout, warnings/errors to stderr
 //! - **Memory safe**: Unsafe code forbidden at compile-time
 //! - **CLI and library**: Use as standalone tool or integrate into your application
+//! - **Flexible feature flags**: Choose exactly the dependencies you need (`cli`, `concurrency`, or both)
 //!
 //! ## Documentation
 //!
@@ -91,11 +92,14 @@
 //! - `pdf`: PDF generation functionality
 //!   - `font_config`: Embedded font management
 //!   - `generator`: PDF document generation with analysis rendering
-//! - `lib_utils`: Configuration, CLI arguments, environment variables, and concurrency
-//!   - `concurrency`: Custom threadpool and worker implementation
+//! - `lib_utils`: Configuration, CLI arguments, environment variables, and utility functions
 //! - `files_proc`: File discovery, processing pipeline, and trait system
-//!   - `processor`: Main processing logic with trait abstractions
+//!   - `processor`: Main processing logic with trait abstractions (uses optional concurrency)
 //!   - `model`: File identification and processing state
+//!
+//! **Concurrency**: When the `concurrency` feature is enabled (default), the library uses
+//! `jlizard-simple-threadpool` for concurrent file processing. Without this feature, files
+//! are processed sequentially in the main thread.
 //!
 
 #![forbid(unsafe_code)]
@@ -119,18 +123,12 @@ pub mod pdf {
 }
 
 pub mod lib_utils {
-    pub mod errors;
-
     #[cfg(feature = "cli")]
     pub mod cli_args;
     pub mod config;
     pub mod env_vars;
+    pub mod errors;
     pub mod run_utils;
-    pub(crate) mod concurrency {
-        pub(crate) mod common;
-        pub(crate) mod threadpool;
-        pub(crate) mod worker;
-    }
 }
 
 use crate::files_proc::processor::DefaultFilesProcessor;
@@ -150,19 +148,19 @@ use lib_utils::config::Config;
 ///
 /// # Returns
 ///
-/// * `Result<(), Box<dyn Error>>` - Success (`Ok`) if processing completes without errors,
+/// * `Result<(), Vex2PdfError>` - Success (`Ok`) if processing completes without errors,
 ///   or an error (`Err`) if something goes wrong
 ///
 /// # Behavior
 ///
-/// When `show_oss_licenses` is enabled in the configuration, this function displays
-/// license information and exits without processing any files.
+/// The function performs these operations in sequence:
+/// 1. Finds JSON and XML files according to the configuration
+/// 2. Processes found files to generate PDFs
 ///
-/// Otherwise, it performs these operations in sequence:
-/// 1. Finds JSON files according to the configuration
-/// 2. Processes found JSON files to generate PDFs
-/// 3. Finds XML files according to the configuration
-/// 4. Processes found XML files to generate PDFs
+/// **Processing Mode:**
+/// - With `concurrency` feature (default): Files are processed concurrently using a threadpool.
+///   The number of concurrent jobs is controlled by `Config::max_jobs` (defaults to system CPU count).
+/// - Without `concurrency` feature: Files are processed sequentially in the main thread.
 ///
 /// # Fonts
 ///
@@ -175,7 +173,9 @@ use lib_utils::config::Config;
 /// - `VEX2PDF_NOVULNS_MSG`: Controls whether to show a message when no vulnerabilities exist
 /// - `VEX2PDF_REPORT_TITLE`: Sets a custom title for the report
 /// - `VEX2PDF_PDF_META_NAME`: Sets the PDF metadata name
-/// - `VEX2PDF_VERSION_INFO`: Shows version information before executing normally
+/// - `VEX2PDF_MAX_JOBS`: Controls concurrent processing (requires `concurrency` feature)
+///
+/// For CLI usage, see `Config::build_from_env_cli()` which parses command-line arguments.
 ///
 /// # Example
 ///

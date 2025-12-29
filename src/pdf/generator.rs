@@ -199,7 +199,7 @@ impl Utils {
 
 /// ComponentTuple is a type that should hold a reference to component_name and component_version respectively
 type ComponentTuple<'b> = (&'b str, &'b str);
-pub struct PdfGenerator<'a> {
+pub struct PdfGenerator {
     title_style: Style,
     header_style: Style,
     normal_style: Style,
@@ -207,43 +207,6 @@ pub struct PdfGenerator<'a> {
     comp_name_style: Style,
     version_style: Style,
     cve_id_style: Style,
-    /// This is the title of the report; which is the first heading
-    /// in the first page if no value is given a default title is used.
-    #[deprecated(
-        since = "0.9.0",
-        note = "this will be removed at the future minor release, new implementation uses `crate::lib_utils::config::Config` instead"
-    )]
-    _report_title: Option<&'a str>,
-    /// Sets the PDF document's metadata title that appears in PDF reader applications.
-    /// This is distinct from the filename on disk (which typically matches the original file with a .pdf extension).
-    /// If not specified, a default title will be used.
-    #[deprecated(
-        since = "0.9.0",
-        note = "this will be removed at the future minor release, new implementation uses `crate::lib_utils::config::Config` instead"
-    )]
-    _pdf_meta_name: Option<&'a str>,
-    /// Controls whether a `No Vulnerabilities` message is shown if there are no vulnerabilities
-    #[deprecated(
-        since = "0.9.0",
-        note = "this will be removed at the future minor release, new implementation uses `crate::lib_utils::config::Config` instead"
-    )]
-    _show_novulns_msg: bool,
-    /// Controls whether to treat the BoM as a CycloneDX or a CycloneDX-VEX
-    /// when set to `true` only a list of components is shown ignoring
-    /// the vulnerabilities section completely
-    #[deprecated(
-        since = "0.9.0",
-        note = "this will be removed at the future minor release, new implementation uses `crate::lib_utils::config::Config` instead"
-    )]
-    _pure_bom_novulns: bool,
-    /// Shows the component list even with vulnerabilities. The difference to [`pure_bom_novulns`] is that show_components
-    /// dumps the component list after the Vulnerabilities whereas [`pure_bom_novulns`] controls
-    /// showing either the vulnerabilities OR the components but not both
-    #[deprecated(
-        since = "0.9.0",
-        note = "this will be removed at the future minor release, new implementation uses [`crate::lib_utils::config::Config`] instead"
-    )]
-    _show_components: bool,
     /// This is the full configuration passed to the generator, including the `show_components`, `show_novulns_msg` and more
     /// this replaces the old behaviour of individually listing the properties as members of this struct
     /// this is an Arc for cases where the pdfgenerator is used by multiple threads to avoid copying
@@ -251,7 +214,7 @@ pub struct PdfGenerator<'a> {
     config: Arc<Config>,
 }
 
-impl Default for PdfGenerator<'_> {
+impl Default for PdfGenerator {
     /// Creates a new PDF generator with default report and PDF titles.
     ///
     /// This implementation of the `Default` trait provides a convenient way to create a
@@ -281,7 +244,7 @@ impl Default for PdfGenerator<'_> {
     }
 }
 
-impl<'a, 'b> PdfGenerator<'a> {
+impl<'b> PdfGenerator {
     ///
     /// # Arguments
     ///
@@ -345,7 +308,6 @@ impl<'a, 'b> PdfGenerator<'a> {
             .with_font_size(11)
             .with_color(Color::Rgb(139, 0, 0))
             .bold();
-        #[allow(deprecated)]
         Self {
             title_style,
             header_style,
@@ -354,11 +316,6 @@ impl<'a, 'b> PdfGenerator<'a> {
             comp_name_style,
             version_style,
             cve_id_style,
-            _report_title: Some(Self::get_default_report_title()),
-            _pdf_meta_name: Some(Self::get_default_pdf_meta_name()),
-            _show_novulns_msg: config.show_novulns_msg,
-            _show_components: config.show_components,
-            _pure_bom_novulns: config.pure_bom_novulns,
             config,
         }
     }

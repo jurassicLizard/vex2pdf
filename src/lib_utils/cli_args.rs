@@ -47,6 +47,7 @@ pub struct CliArgs {
 
     /// Sets the maximum number of jobs for concurrent generation tasks, when not set or set to `0` this defaults to
     /// using the maximum available parallelism on the system which is given by [`std::thread::available_parallelism`]
+    #[cfg(feature = "concurrency")]
     #[arg(short='j', long, env=EnvVarNames::MaxJobs.as_str())]
     pub max_jobs: Option<u8>,
 

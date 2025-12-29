@@ -1,3 +1,5 @@
+#![cfg(feature = "concurrency")]
+
 use std::path::Path;
 use std::process::Command;
 use tempfile::TempDir;
