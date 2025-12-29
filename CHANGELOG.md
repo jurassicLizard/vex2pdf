@@ -5,10 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2025-12-29 
 
-## [2.0.0] - 2025-12-29
+### Note
+This release is exactly the same as the, now yanked, v2.0.0 with a major bugfix  that prevented compilation with certain compile-time features
 
-### Breaking Changes
+### Removed
 - **BREAKING**: Removed deprecated fields from `PdfGenerator` struct that were deprecated in v0.9.0:
   - Removed `_report_title`, `_pdf_meta_name`, `_show_novulns_msg`, `_pure_bom_novulns`, `_show_components`
   - All configuration now exclusively through `Config` struct
@@ -20,13 +22,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **BREAKING**: Removed deprecated environment variables (both were deprecated in v0.9.0):
   - Removed `VEX2PDF_SHOW_OSS_LICENSES` environment variable (use `--license` CLI flag instead)
   - Removed `VEX2PDF_VERSION_INFO` environment variable (use `--version` CLI flag instead)
+- Removed internal threadpool, worker, and concurrency common modules
+- Removed all deprecated `PdfGenerator` struct fields (deprecated since v0.9.0)
+- Removed lifetime parameter from `PdfGenerator` struct
+- Removed deprecated environment variable enum variants: `ShowOssLicenses` and `VersionInfo`
 
 ### Added
 - Added `concurrency` feature flag to make concurrent processing optional
 - Added `jlizard-simple-threadpool` crate as external dependency for thread pool management
 - Added sequential processing fallback when `concurrency` feature is disabled
 - Added feature gating to `max_jobs` CLI argument (requires `concurrency` feature)
-- Added `cargo-deny` configuration file for auditing purposes 
+- Added `cargo-deny` configuration file for auditing purposes
 
 ### Changed
 - Replaced internal threadpool implementation with external `jlizard-simple-threadpool` crate
@@ -37,11 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expanded CI test coverage to test all feature flag combinations (no-default, cli-only, concurrency-only, all features)
 - Changed CI to run tests on all branch pushes including master (previously skipped master)
 
-### Removed
-- Removed internal threadpool, worker, and concurrency common modules
-- Removed all deprecated `PdfGenerator` struct fields (deprecated since v0.9.0)
-- Removed lifetime parameter from `PdfGenerator` struct
-- Removed deprecated environment variable enum variants: `ShowOssLicenses` and `VersionInfo`
+
 
 ---
 

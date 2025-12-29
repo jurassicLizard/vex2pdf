@@ -226,7 +226,10 @@ impl Config {
             .map(Some)
             .unwrap_or(EnvVarNames::PdfName.get_value());
         // set number of jobs
+        #[cfg(feature = "concurrency")]
         let max_jobs = args.max_jobs;
+        #[cfg(not(feature = "concurrency"))]
+        let max_jobs = None;
 
         // print init information
         FontsDir::print_fonts_info();
