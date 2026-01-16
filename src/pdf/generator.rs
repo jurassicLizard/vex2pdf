@@ -207,6 +207,7 @@ pub struct PdfGenerator {
     comp_name_style: Style,
     version_style: Style,
     cve_id_style: Style,
+    cve_published_style: Style,
     /// This is the full configuration passed to the generator, including the `show_components`, `show_novulns_msg` and more
     /// this replaces the old behaviour of individually listing the properties as members of this struct
     /// this is an Arc for cases where the pdfgenerator is used by multiple threads to avoid copying
@@ -303,6 +304,7 @@ impl<'b> PdfGenerator {
         let version_style = Style::new()
             .with_font_size(10)
             .with_color(Color::Rgb(128, 128, 128));
+        let cve_published_style = version_style.with_font_size(6).italic();
 
         let cve_id_style = Style::new()
             .with_font_size(11)
@@ -316,6 +318,7 @@ impl<'b> PdfGenerator {
             comp_name_style,
             version_style,
             cve_id_style,
+            cve_published_style,
             config,
         }
     }
@@ -590,26 +593,40 @@ impl<'b> PdfGenerator {
             for vuln in &vulnerabilities.0 {
                 let mut vuln_layout = genpdf::elements::LinearLayout::vertical();
 
+                let published_date = vuln
+                    .published
+                    .as_ref()
+                    .map(|e| format!(" -- Published: {}", e));
                 let id_paragraph = if let Some(vuln_id) = &vuln.id {
-                    Paragraph::default()
+                    // do we have a published date if yes append it to the cve
+                    let mut para = Paragraph::default()
                         .styled_string("ID: ", self.normal_style)
-                        .styled_string(format!("{vuln_id}"), self.cve_id_style)
+                        .styled_string(format!("{vuln_id} "), self.cve_id_style);
+
+                    if let Some(date) = published_date {
+                        para.push_styled(date, self.cve_published_style);
+                    }
+
+                    para
                 } else {
                     Paragraph::default().styled_string("ID: N/A", self.normal_style)
                 };
 
                 vuln_layout.push(id_paragraph);
+                macro_rules! add_named_para {
+    ($name:expr,$content:ident,$b_show_if_empty:expr) => {
 
-                let vuln_description_unpacked_ref =
-                    vuln.description.as_ref().filter(|e| !e.is_empty());
+                let content_unpacked_ref =
+                    $content.as_ref().filter(|e| !e.is_empty());
+                let name = format!("{}: ",$name);
 
-                if let Some(desc) = vuln_description_unpacked_ref {
+                if let Some(desc) = content_unpacked_ref {
                     // we need to split around \n new line characters if they exist else they will be rendered as gibberish
                     let mut lines = desc.split('\n');
                     let first_line = lines.next().unwrap_or_default().trim(); // it is safe to unwrap here as we mapped the reference to return None when empty thus moving into the else branch and not here
                     vuln_layout.push(
                         Paragraph::default()
-                            .styled_string("Description: ", self.indent_style.bold())
+                            .styled_string(name, self.indent_style.bold())
                             .styled_string(first_line, self.indent_style),
                     );
 
@@ -618,13 +635,24 @@ impl<'b> PdfGenerator {
                             Paragraph::default().styled_string(line.trim(), self.indent_style),
                         )
                     }
-                } else {
+                } else if $b_show_if_empty {
                     vuln_layout.push(
                         Paragraph::default()
-                            .styled_string("Description: ", self.indent_style.bold())
+                            .styled_string(name, self.indent_style.bold())
                             .styled_string("N/A", self.indent_style),
                     );
                 };
+    };
+}
+                let desc_ref = vuln.description.as_ref();
+                add_named_para!("Description", desc_ref, true);
+                // add recommendation
+                let rec_ref = vuln.recommendation.as_ref();
+                if rec_ref.is_some() {
+                    vuln_layout.push(genpdf::elements::Break::new(0.25))
+                };
+                add_named_para!("Recommendation", rec_ref, false);
+
                 // Line break after the CVE entry section
                 vuln_layout.push(genpdf::elements::Break::new(0.5));
 
