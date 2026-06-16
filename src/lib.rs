@@ -194,9 +194,7 @@ use lib_utils::config::Config;
 /// }
 /// ```
 pub fn run(config: Config) -> Result<(), Vex2PdfError> {
-    let _ = DefaultFilesProcessor::new(config).find_files()?.process();
-
-    Ok(())
+    DefaultFilesProcessor::new(config).find_files()?.process()
 }
 
 /// Helper to show OSS License information

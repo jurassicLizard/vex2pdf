@@ -23,6 +23,12 @@ pub enum Vex2PdfError {
     VoluntaryLicenseDisplayInterruption,
     /// Concurrency error
     ConcurrencyError(String),
+    /// One or more files failed to be processed. The wrapped value is the
+    /// number of failed files. Per-file errors are logged at error level as
+    /// they occur; this aggregate variant exists so the process can exit with
+    /// a non-zero code instead of silently succeeding when individual files
+    /// fail.
+    ProcessingFailures(usize),
 }
 
 impl Display for Vex2PdfError {
@@ -45,6 +51,9 @@ impl Display for Vex2PdfError {
                 "Voluntary interrupted execution for license display by user"
             ),
             Vex2PdfError::ConcurrencyError(s) => write!(f, "Concurrency error : {s}"),
+            Vex2PdfError::ProcessingFailures(n) => {
+                write!(f, "{n} file(s) failed to process. See log for details")
+            }
         }
     }
 }

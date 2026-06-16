@@ -30,6 +30,11 @@ pub mod paths {
         "/tests/test_artifacts/bom_src/run_test_xml"
     );
 
+    pub const BOM_VDR_WITH_INVALID_PROPERTY: &str = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/test_artifacts/bom_src/run_test_invalid/bom_vdr_with_invalid_property.json"
+    );
+
     // Individual test file paths - JSON
     pub const SIMPLE_BOM_PATH: &str = concat!(
         env!("CARGO_MANIFEST_DIR"),

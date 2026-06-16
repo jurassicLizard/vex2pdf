@@ -468,6 +468,45 @@ fn test_invalid_output_directory_fails() {
 }
 
 #[test]
+fn test_invalid_property_missing_value_returns_nonzero_exit() {
+    // A CycloneDX file with a component property where the `name` field is
+    // present but `value` is missing is spec non-compliant and must cause the
+    // tool to exit with a non-zero status so calling scripts notice the
+    // failure instead of silently succeeding. Regression seen with VDRs
+    // exported from OWASP Dependency-Track, which strips empty-string property
+    // values.
+    let temp_dir = TempDir::new().expect("Failed to create temporary directory");
+
+    let output = Command::new(paths::PATH_TO_EXE)
+        .arg("-d")
+        .arg(temp_dir.path())
+        .arg(paths::BOM_VDR_WITH_INVALID_PROPERTY)
+        .output()
+        .expect("Failed to execute command");
+
+    assert!(
+        !output.status.success(),
+        "Expected non-zero exit on malformed BoM, got: {}\nstdout: {}\nstderr: {}",
+        output.status,
+        utils::bytes_to_str(&output.stdout),
+        utils::bytes_to_str(&output.stderr),
+    );
+
+    let stderr = utils::bytes_to_str(&output.stderr);
+    assert!(
+        stderr.contains("missing field `value`"),
+        "Expected per-file parse error in stderr, got: {stderr}"
+    );
+    assert!(
+        stderr.contains("failed to process"),
+        "Expected aggregate processing-failure message in stderr, got: {stderr}"
+    );
+
+    // No PDF should have been produced
+    utils::assert_pdf_count(temp_dir.path(), 0);
+}
+
+#[test]
 fn test_nonexistent_input_file_fails() {
     let temp_dir = TempDir::new().expect("Failed to create temporary directory");
 

@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] - 2026-06-16
+
+### Security
+- Refreshed `Cargo.lock` to clear **RUSTSEC-2026-0009** (`time` crate, DoS via stack exhaustion, medium severity 6.8). `time` upgraded from `0.3.44` to `0.3.49` transitively via `cyclonedx-bom`. `cargo audit` now reports zero hard vulnerabilities. Five pre-existing "unmaintained" warnings remain (`encoding`, `lzw`, `rusttype`, `stb_truetype`, `stdweb`); they all originate from the `genpdf → printpdf → lopdf` chain and cannot be cleared without replacing the PDF stack, which is out of scope for this release.
+
+### Fixed
+- Fixed silent-success bug where per-file processing failures (e.g. CycloneDX parse errors) were logged but the process still exited with status `0`, causing calling scripts and CI pipelines to treat failed runs as successful. The tool now exits with a non-zero status whenever one or more input files fail to process. This was first observed with VDRs exported from OWASP Dependency-Track, which strips empty-string property values and produces spec non-compliant files (a component property with `name` but no `value`) that `vex2pdf` rightfully rejects.
+
+### Added
+- Added `Vex2PdfError::ProcessingFailures(usize)` variant. After all input files have been processed, this variant is returned from `run()` / `ProcessorReady::process()` carrying the number of files that failed. Per-file errors continue to be logged at error level as they occur.
+- Added integration test `test_invalid_property_missing_value_returns_nonzero_exit` covering the regression path.
+- Added test fixture directory `tests/test_artifacts/bom_src/run_test_invalid/` with `bom_vdr_with_invalid_property.json` reproducing a CycloneDX component property entry whose `value` field is missing.
+
+### Changed
+- **BREAKING**: `vex2pdf::run()` now returns `Err(Vex2PdfError::ProcessingFailures(n))` when any input file fails to process, instead of swallowing the result and returning `Ok(())`. Library users who relied on the previous "always Ok unless setup failed" behaviour must update their error handling.
+- **BREAKING (CLI)**: The CLI binary now exits with status `1` when any input file fails to process. Scripts that previously depended on the silent-success behaviour will start surfacing these failures.
+- Per-file failures are now tallied across worker threads using an `AtomicUsize` so the aggregate count is correct under both the `concurrency` feature and sequential mode.
+- Refreshed transitive dependencies via `cargo update`. Notable transitive bumps: `cyclonedx-bom 0.8.0 → 0.8.1`, `time 0.3.44 → 0.3.49`, `uuid 1.18.1 → 1.23.3`, `tempfile 3.23.0 → 3.27.0`, `thiserror 1/2 mixed → 2.0.18`, `strum 0.26 → 0.28`. No direct dependency declarations in `Cargo.toml` were changed.
+
+---
+
 ## [3.0.0] - 2026-01-16
 
 ### Added

@@ -15,6 +15,7 @@ use std::collections::HashSet;
 use std::fs;
 use std::hash::Hash;
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 
 /// The default processor implementation for this crate
@@ -176,27 +177,31 @@ impl<P: AsRef<Path> + Eq + Hash + Send + 'static> MultipleFilesProcProvider<P>
 
         let config = self.config;
         let file_count = self.files.get_file_count();
+        let failure_count = Arc::new(AtomicUsize::new(0));
 
         for file in self.files {
             let single_file_proc = DefaultSingleFileProcessor;
             let config_clone = Arc::clone(&config);
+            let failure_count_clone = Arc::clone(&failure_count);
             #[cfg(feature = "concurrency")]
             {
                 pool.execute(move || {
                     if let Err(e) = single_file_proc.process_single_file(file, config_clone) {
                         error!("{e}");
+                        failure_count_clone.fetch_add(1, Ordering::Relaxed);
                     }
                 })
                     .expect(
                         "Failed to send job to pool. Consider disabling Multithreading if issues persist",
-                    ); // we do not want to immediatly return an error if one of the jobs failed hence why we did not propagate
+                    ); // we do not want to immediately return an error if one of the jobs failed; we tally failures and surface them after all jobs complete
             }
 
             #[cfg(not(feature = "concurrency"))]
             {
-                single_file_proc
-                    .process_single_file(file, config_clone)
-                    .unwrap_or_else(|e| error!("{e}"));
+                if let Err(e) = single_file_proc.process_single_file(file, config_clone) {
+                    error!("{e}");
+                    failure_count_clone.fetch_add(1, Ordering::Relaxed);
+                }
             }
         }
 
@@ -205,6 +210,11 @@ impl<P: AsRef<Path> + Eq + Hash + Send + 'static> MultipleFilesProcProvider<P>
                     // pool drops gracefully and cleans up here blocking until all jobs are finished
 
         info!("Processed {file_count} files");
+
+        let failures = failure_count.load(Ordering::Relaxed);
+        if failures > 0 {
+            return Err(Vex2PdfError::ProcessingFailures(failures));
+        }
 
         Ok(())
     }
