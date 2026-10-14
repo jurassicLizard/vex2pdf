@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.0] - 2026-10-14
+
+### Added
+- Nested CycloneDX components are now rendered. CycloneDX allows a component to contain components (`component.components`), a hierarchical representation of a component assembly, and because bom-refs are document-wide a vulnerability's `affects[].ref` may target a component at any depth. Previously only top-level components were indexed, so such a vulnerability rendered `Affected Document Components : [ ]` and nested components never appeared in the components section at all.
+  - The affected-components line now names the nested component together with its ancestry, outermost first: `openssl: 3.6.3 (via platform-x: 0.55.2)`, and `zlib: 1.3.1 (via platform-x: 0.55.2 > sdk-y: 8.0)` for deeper nesting. An ancestor without a version renders as its name alone: `libgamma: 1.0 (via platform-z)`.
+  - The components section lists nested components immediately after their parent, with the same `(via ...)` marker on the `Name:` line. `Version:` lines are unchanged.
+  - Both JSON and XML inputs are covered; the two formats render byte-identically.
+- Added test fixtures `bom_vdr_with_nested_components.json` / `.xml` (a three-level assembly plus vulnerabilities targeting a top-level, a nested and a doubly nested component) and `bom_vdr_with_nested_edge_cases.json` / `.xml` (version-less parent, parent without a bom-ref, unresolved reference) under `tests/test_artifacts/bom_src/run_test/` and `run_test_xml/`.
+- Added 18 unit tests in `src/pdf/generator.rs` covering the recursive walk, the bom-ref index and the `(via ...)` wording, including fixture-driven tests that assert the exact rendered wording for both formats.
+- Added integration test `test_components_section_suppressed_when_show_components_is_off`, the first end-to-end coverage of `-c/--show-components`. The components section is shown by default, so the batch tests already gate the nested rendering; this test covers the opposite direction.
+
+### Changed
+- Components are indexed recursively by bom-ref instead of only at the top level. A component without a bom-ref still cannot be referenced, but it is now named as an ancestor of its children. On a duplicate bom-ref the later component continues to win.
+- Documents without nesting render exactly as in 4.0.0: all pre-existing entries in `tests/test_artifacts/expected_pdfs_chksums.txt` are unchanged by this release.
+- Corrected the stale test counts and the non-existent `run_test_novulns/` fixture directory in `docs/DEVELOPER_NOTES.md`.
+
+### Security
+- `cargo audit` reports **RUSTSEC-2026-0187** (`lopdf 0.26.0`, stack overflow via deeply nested PDF objects, severity 7.5 high, published 2026-06-21, five days after the 4.0.0 release). The fix requires `lopdf >= 0.42.0`, but `lopdf` is pinned through the `genpdf 0.2.0 → printpdf 0.3.4` chain and cannot be upgraded without replacing the PDF stack, which remains out of scope. The vulnerable code path is PDF *parsing*: vex2pdf only ever writes PDFs and neither `genpdf` nor `printpdf` invokes lopdf's document parser, so the advisory is not believed to be reachable from any vex2pdf functionality.
+- The five pre-existing "unmaintained" warnings (`encoding`, `lzw`, `rusttype`, `stb_truetype`, `stdweb`) remain, all from the same chain. A sixth warning, **RUSTSEC-2026-0190** (`anyhow`, unsound `Error::downcast_mut()`), is a `Cargo.lock`-only artifact: `anyhow` is reachable only through wasm-target `wit-bindgen` crates and is never compiled for any target vex2pdf supports.
+
+---
+
 ## [4.0.0] - 2026-06-16
 
 ### Security

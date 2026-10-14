@@ -41,7 +41,7 @@ tests/test_artifacts/
 ├── bom_src/
 │   ├── run_test/           # JSON test inputs
 │   ├── run_test_xml/        # XML test inputs
-│   └── run_test_novulns/    # BOM-only (no vulns) inputs
+│   └── run_test_invalid/    # Inputs that must fail to parse
 ├── expected_pdfs/           # Reference PDFs for comparison
 └── err_pdfs/               # Failed test outputs for debugging
 ```
@@ -115,8 +115,8 @@ cargo test --test integration_tests
 ```
 
 **Expected test counts:**
-- With CLI feature: 71 unit tests + 25 integration tests
-- Without CLI feature: 65 unit tests (6 CLI-specific tests skipped, integration tests not built)
+- With CLI feature: 80 unit tests + 28 integration tests + 7 threading tests
+- Without CLI feature: 74 unit tests (6 CLI-specific tests skipped, integration tests not built)
 
 ### Code Coverage
 

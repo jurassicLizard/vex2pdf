@@ -91,6 +91,29 @@ VEX2PDF is a Rust application that scans the current directory for CycloneDX (VE
 - **Purpose**: Inventories software components and dependencies
 - **Focus**: Component listing and supply chain transparency
 
+## Nested Components (Assemblies)
+
+CycloneDX lets a component contain components (`component.components`), a hierarchical representation of
+a component assembly. Since bom-refs are document-wide, a vulnerability may target a component at any
+depth. vex2pdf walks the whole tree and shows where a nested component sits, outermost ancestor first:
+
+```
+Affected Document Components : [ openssl: 3.6.3 (via platform-x: 0.55.2) ]
+Affected Document Components : [ zlib: 1.3.1 (via platform-x: 0.55.2 > sdk-y: 8.0) ]
+```
+
+The components section lists nested components right after their parent, carrying the same marker:
+
+```
+Name: platform-x
+Version: 0.55.2
+Name: openssl (via platform-x: 0.55.2)
+Version: 3.6.3
+```
+
+An ancestor without a version is shown as its name alone (`libgamma: 1.0 (via platform-z)`). Documents
+without nesting are unaffected.
+
 ## Vulnerability Analysis Display
 
 VEX2PDF renders CycloneDX vulnerability analysis information with visual enhancements to improve readability and quick risk assessment:
@@ -430,6 +453,7 @@ See sample generated PDFs from various CycloneDX documents in the repository:
 - **[Simple VEX Report](tests/test_artifacts/expected_pdfs/bom_vex_simple_one_vuln.pdf)** - Basic VEX document with single vulnerability
 - **[XML-based VDR](tests/test_artifacts/expected_pdfs/bom_xml_vdr_simple.pdf)** - Shows XML input processing
 - **[VDR with GHSA Entries](tests/test_artifacts/expected_pdfs/bom_vdr_with_ghsa_entries.pdf)** - GitHub Security Advisory integration example
+- **[VDR with Nested Components](tests/test_artifacts/expected_pdfs/bom_vdr_with_nested_components.pdf)** - Component assembly rendered with the `(via ...)` ancestry marker
 
 All PDFs include embedded Liberation Sans fonts and require no additional dependencies to view.
 
