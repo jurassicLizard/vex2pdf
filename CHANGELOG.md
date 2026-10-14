@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.1] - 2026-10-14
+
+Documentation-only patch release. No functional change over 4.1.0: no code, test or rendering
+difference, and all reference PDF checksums are identical.
+
+**4.1.0 was tagged but never published to crates.io**, so this is the first published release carrying
+the nested CycloneDX component support described under [4.1.0](#410---2026-10-14). Users upgrading from
+4.0.0 should read that entry for the behavioural change.
+
+### Added
+- `README.md` now discloses the known dependency advisory under `## Security Considerations`: **RUSTSEC-2026-0187** (`lopdf 0.26.0`, stack overflow via deeply nested PDF objects, severity 7.5), why `lopdf` cannot be upgraded (pinned through the `genpdf → printpdf` chain) and why it is assessed as unreachable (the vulnerable path is PDF parsing; vex2pdf only ever writes PDFs). Previously this was recorded only in the changelog, so it was not visible to anyone reading the README or the crates.io page before adopting the crate. The five "unmaintained" advisories from the same chain are listed alongside it.
+
+---
+
 ## [4.1.0] - 2026-10-14
 
 ### Added
