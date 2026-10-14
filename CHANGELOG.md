@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- Restructured `README.md`: 712 lines down to 459 (~35% shorter) with no reference information lost. The file had accumulated three audiences in one scroll — evaluator, user and contributor — and opened with 64 lines of positioning before saying what the tool does.
+  - Added a **Quick Start** section at the top (install, three invocations, what you get), so the first screen of the crates.io page answers "what is it and how do I run it".
+  - Trimmed `## Why vex2pdf?` from 64 lines to 10 and moved it below Quick Start.
+  - Grouped the output documentation under a new `## What the Report Contains`, which absorbs the former `## Features` list (it duplicated the analysis section) and holds the vulnerability analysis and nested-component subsections. Analysis states and response actions became tables.
+  - Merged `## Overview` into the intro, folded `Prerequisites`, `Linux and Windows Users` and `Mac Users` into `## Installation`, and collapsed the `Log Levels` / `Controlling Log Output` split into a single `## Logging`.
+  - Condensed the six per-variable environment subsections into the variable table, which gained an Example column and the two previously undocumented variables (`VEX2PDF_WORKING_PATH`, `VEX2PDF_OUTPUT_DIR`). Only `VEX2PDF_NOVULNS_MSG` and `VEX2PDF_MAX_JOBS` keep prose, since their behaviour needs more than a table cell.
+  - Dropped stale "New since vX" annotations; the changelog is the source of truth for when something arrived.
+- Moved the `## Migrating to 2.0` section (59 lines) out to **`docs/MIGRATION.md`**, kept in full with its before/after `PdfGenerator` examples and the removed-environment-variable table, plus a pointer to the 3.0.0 and 4.0.0 changes. v2.0.0 is two majors back and this was the fifth-largest section of the README.
+- Removed the `## Testing` section (37 lines). It duplicated `docs/DEVELOPER_NOTES.md`, which covers the same ground more thoroughly (test structure, artifacts, checksum-based testing, feature-flag matrix and code coverage); the README now links there instead.
+- Replaced the `## Documentation`, `### Developer Notes` and `## Changelog` stubs with a single `## Documentation` list pointing at docs.rs, the developer notes, the migration guide and the changelog.
+- Added a pointer to `SECURITY.md` from `## Security Considerations`, which previously had no link to the vulnerability reporting policy.
+
+### Notes
+- The headings `## Configuration`, `### Environment Variables`, `### Command-Line Arguments`, `## Fonts Handling` and `## License` were kept verbatim on purpose: their anchors are referenced from `src/lib.rs`, `src/lib_utils/config.rs`, `.gitlab-ci.yml`'s release description, and `tests/integration_tests.rs`, which asserts the `--license` output URL. All internal README links were re-checked after the restructuring.
+- No code change; crates.io still renders the 4.1.1 README until the next release.
+
+---
+
 ## [4.1.1] - 2026-10-14
 
 Documentation-only patch release. No functional change over 4.1.0: no code, test or rendering

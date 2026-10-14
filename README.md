@@ -6,75 +6,72 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE-MIT)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache%20License%202.0-blue)](LICENSE-APACHE)
 
-A command-line tool to convert CycloneDX (VEX/VDR/(S)BoM) Documents in JSON or XML format to PDF reports.
+A command-line tool that converts CycloneDX (VEX/VDR/(S)BoM) documents in JSON or XML into
+human-readable PDF reports. Point it at a file or a directory and it renders vulnerabilities,
+analysis states, components and document metadata into one PDF per input document.
+
+CycloneDX **1.5** is fully supported. **1.6** documents are accepted in a compatibility mode as long as
+they only use 1.5 fields — see [Version 1.6 Compatibility Mode](#version-16-compatibility-mode).
+
+## Quick Start
+
+```bash
+cargo install vex2pdf          # or grab a binary from the releases page
+
+vex2pdf                        # convert every CycloneDX file in the current directory
+vex2pdf my-bom.json            # convert one file
+vex2pdf ./boms/ -d ./reports/  # convert a directory into another directory
+```
+
+Each input produces a PDF of the same name next to it, or in `--output-dir` if given. No configuration
+file, no fonts to install, no network access.
 
 ## Why vex2pdf?
 
-- **Blazing Fast**: Rust performance processes large BOMs in milliseconds with efficient concurrent processing
-- **Zero Dependencies**: Single static binary with embedded fonts—no runtime dependencies, no package managers, no system libraries
-- **Minimal Footprint**: ~10MB binary perfect for slim Docker images and resource-constrained environments
-- **True Parallelism**: Thread-safe concurrent batch processing with configurable job limits
-- **Memory Safe**: 100% safe Rust code (forbids unsafe)—no runtime crashes or memory issues
-- **Cross-Platform**: Same binary works on Linux, Windows, macOS—compile once, run anywhere
-- **Air-Gap Friendly**: Fully self-contained with embedded Liberation Sans fonts—works completely offline
+- **Self-contained**: single static binary with embedded Liberation Sans fonts — no runtime
+  dependencies, no system libraries, works fully offline and air-gapped
+- **Small and fast**: ~10 MB binary, large BOMs render in milliseconds
+- **Concurrent**: thread-safe batch processing with a configurable job limit
+- **Safe**: 100% safe Rust (`unsafe` is forbidden)
+- **Cross-platform**: the same code builds and runs on Linux, Windows and macOS
+- **Usable as a library** as well as a CLI, with the CLI and concurrency behind feature flags
 
-Perfect for automated security reporting in containerized workflows, CI/CD pipelines, and production environments where reliability, speed, and minimal dependencies are critical.
+Built for automated security reporting in CI/CD pipelines and containerised workflows.
 
 <!-- TOC -->
 * [CycloneDX (VEX/VDR/(S)BoM) to PDF Converter](#cyclonedx-vexvdrsbom-to-pdf-converter)
+  * [Quick Start](#quick-start)
   * [Why vex2pdf?](#why-vex2pdf)
-  * [Overview](#overview)
   * [Supported Document Types](#supported-document-types)
     * [VEX (Vulnerability Exploitability eXchange)](#vex-vulnerability-exploitability-exchange)
     * [VDR (Vulnerability Disclosure Report)](#vdr-vulnerability-disclosure-report)
     * [BOM/SBOM (Bill of Materials)](#bomsbom-bill-of-materials)
-  * [Vulnerability Analysis Display](#vulnerability-analysis-display)
-    * [Analysis States](#analysis-states)
-    * [Response Actions](#response-actions)
-    * [Analysis Information](#analysis-information)
+  * [What the Report Contains](#what-the-report-contains)
+    * [Vulnerability Analysis](#vulnerability-analysis)
+    * [Nested Components (Assemblies)](#nested-components-assemblies)
   * [Fonts Handling](#fonts-handling)
     * [Font Licensing](#font-licensing)
-  * [Features](#features)
   * [Installation](#installation)
-    * [Prerequisites](#prerequisites)
     * [As a Command-Line Tool](#as-a-command-line-tool)
     * [As a Library](#as-a-library)
     * [From Source](#from-source)
-    * [Linux and Windows Users](#linux-and-windows-users)
-    * [Mac Users](#mac-users)
   * [Usage](#usage)
     * [Command-Line Arguments](#command-line-arguments)
-  * [Example](#example)
-  * [Example Output](#example-output)
   * [Configuration](#configuration)
     * [Environment Variables](#environment-variables)
-      * [VEX2PDF_NOVULNS_MSG](#vex2pdf_novulns_msg)
-      * [VEX2PDF_REPORT_TITLE](#vex2pdf_report_title)
-      * [VEX2PDF_PDF_META_NAME](#vex2pdf_pdf_meta_name)
-      * [VEX2PDF_PURE_BOM_NOVULNS](#vex2pdf_pure_bom_novulns)
-      * [VEX2PDF_SHOW_COMPONENTS](#vex2pdf_show_components)
-      * [VEX2PDF_MAX_JOBS](#vex2pdf_max_jobs)
   * [Logging](#logging)
-    * [Log Levels](#log-levels)
-    * [Controlling Log Output](#controlling-log-output)
-  * [Documentation](#documentation)
-    * [Developer Notes](#developer-notes)
-  * [Testing](#testing)
-    * [Running Tests](#running-tests)
-    * [Code Coverage](#code-coverage)
+  * [Example Run](#example-run)
+  * [Example Output](#example-output)
   * [CycloneDX Document Format](#cyclonedx-document-format)
     * [Version 1.6 Compatibility Mode](#version-16-compatibility-mode)
   * [Security Considerations](#security-considerations)
-  * [Changelog](#changelog)
+    * [Known dependency advisory](#known-dependency-advisory)
+  * [Documentation](#documentation)
   * [License](#license)
     * [Contribution](#contribution)
     * [Third-Party Dependencies](#third-party-dependencies)
   * [Acknowledgments](#acknowledgments)
 <!-- TOC -->
-
-## Overview
-
-VEX2PDF is a Rust application that scans the current directory for CycloneDX (VEX/VDR/(S)BoM files (JSON and XML) and converts them to human-readable PDF reports. It fully supports the CycloneDX schema version 1.5 and provides compatibility for version 1.6 documents that only use 1.5 fields. Documents using 1.6-specific fields may not process correctly. The tool handles various elements of the CycloneDX document format including vulnerabilities, components, metadata, and more.
 
 ## Supported Document Types
 
@@ -91,7 +88,47 @@ VEX2PDF is a Rust application that scans the current directory for CycloneDX (VE
 - **Purpose**: Inventories software components and dependencies
 - **Focus**: Component listing and supply chain transparency
 
-## Nested Components (Assemblies)
+## What the Report Contains
+
+Whatever the source document provides is rendered; sections with no data are omitted:
+
+- Document metadata, timestamps, and the tools that generated the document
+- Vulnerability details with severity ratings and their sources
+- Component-vulnerability correlation through the `affected` property (VDR)
+- Exploitability assessments and risk context (VEX)
+- Component inventories and dependencies (BOM/SBOM), including nested assemblies
+
+### Vulnerability Analysis
+
+CycloneDX analysis data is colour-coded for quick risk assessment.
+
+**Analysis states:**
+
+| State | Colour | Meaning |
+|---|---|---|
+| Exploitable | Red | Directly or indirectly exploitable in the current environment |
+| In Triage | Orange | Under active investigation |
+| Resolved | Green | Successfully remediated |
+| Resolved With Pedigree | Dark green | Remediated with verifiable commit history and audit trail |
+| Not Affected | Forest green | Confirmed not vulnerable to this issue |
+| False Positive | Steel blue | Incorrectly identified as vulnerable |
+
+**Response actions:**
+
+| Response | Colour | Meaning |
+|---|---|---|
+| Update | Blue | A software update fixes the vulnerability |
+| Rollback | Blue | Reverting to an earlier version is recommended |
+| Workaround Available | Orange | Temporary mitigation or configuration change exists |
+| Can Not Fix | Red | Technical limitations prevent a fix |
+| Will Not Fix | Red | Will not be addressed (risk accepted or deprioritised) |
+
+When present, the analysis block follows each vulnerability's description and carries its **state**,
+**response** actions (as a bracketed list), the **justification** for "Not Affected" determinations
+(e.g. "Code Not Reachable", "Protected By Compiler"), the free-text **details** of the assessment, and
+the `firstIssued` / `lastUpdated` **timestamps**.
+
+### Nested Components (Assemblies)
 
 CycloneDX lets a component contain components (`component.components`), a hierarchical representation of
 a component assembly. Since bom-refs are document-wide, a vulnerability may target a component at any
@@ -114,96 +151,43 @@ Version: 3.6.3
 An ancestor without a version is shown as its name alone (`libgamma: 1.0 (via platform-z)`). Documents
 without nesting are unaffected.
 
-## Vulnerability Analysis Display
-
-VEX2PDF renders CycloneDX vulnerability analysis information with visual enhancements to improve readability and quick risk assessment:
-
-### Analysis States
-
-The tool displays vulnerability analysis states with color-coded formatting for immediate visual recognition:
-
-- **Exploitable** (Red) - Vulnerability is directly or indirectly exploitable in the current environment
-- **In Triage** (Orange) - Vulnerability is under active investigation by the security team
-- **Resolved** (Green) - Vulnerability has been successfully remediated
-- **Resolved With Pedigree** (Dark Green) - Remediated with verifiable commit history and audit trail
-- **Not Affected** (Forest Green) - Component is confirmed not vulnerable to this issue
-- **False Positive** (Steel Blue) - Incorrectly identified as vulnerable; not a real security issue
-
-### Response Actions
-
-Response actions indicate what remediation steps are available or planned:
-
-- **Update** (Blue) - Software update available to fix the vulnerability
-- **Rollback** (Blue) - Rollback to a previous non-vulnerable version is the recommended action
-- **Workaround Available** (Orange) - Temporary mitigation or configuration change exists
-- **Can Not Fix** (Red) - Technical limitations prevent fixing this vulnerability
-- **Will Not Fix** (Red) - Vulnerability will not be addressed (risk accepted or deprioritized)
-
-### Analysis Information
-
-When present in the CycloneDX document, the analysis section appears after each vulnerability's description and includes:
-
-1. **State** - Current vulnerability assessment status (color-coded)
-2. **Response** - Available or planned remediation actions (displayed as a bracketed list)
-3. **Justification** - Explanation for "Not Affected" determinations (e.g., "Code Not Reachable", "Protected By Compiler")
-4. **Details** - Comprehensive analysis text explaining the security team's assessment
-5. **Timestamps** - First issued and last updated dates for tracking analysis history
-
-Analysis sections only appear when the CycloneDX document includes analysis data. If no analysis information exists for a vulnerability, the section is omitted entirely.
-
 ## Fonts Handling
 
-This tool uses Liberation Sans fonts to render PDFs. The fonts are embedded directly in the binary, so **no extra font configuration is required** and the binary works standalone and is fully portable.
+This tool uses Liberation Sans fonts to render PDFs. The fonts are embedded directly in the binary, so
+**no extra font configuration is required** and the binary works standalone and is fully portable.
+(Since v0.6.1 — earlier versions needed external fonts.)
 
 ### Font Licensing
 
-The embedded Liberation Sans fonts are licensed under the SIL Open Font License (OFL).
-Use the `--license` flag to display full license details:
+The embedded Liberation Sans fonts are licensed under the SIL Open Font License (OFL). Use the
+`--license` flag to display full license details:
 
 ```bash
 vex2pdf --license
 ```
 
-The font license file is also available at [Liberation fonts License file](external/fonts/liberation-fonts/LICENSE) in the current repository.
-
-## Features
-- Automatically scans directories for JSON and XML files with VEX/VDR/(S)BoM data
-- Converts (VEX/VDR/(S)BoM) documents to structured PDF reports
-- Supports both JSON and XML CycloneDX formats
-- Preserves all key (VEX/VDR/(S)BoM) information including:
-  - Document metadata and timestamps
-  - Vulnerability details with severity ratings and sources
-  - _**New since v0.8.0**_  : Component-vulnerability correlation via "affected" property (VDR)
-  - Exploitability assessments and risk context (VEX)
-  - **New**: Vulnerability analysis with color-coded states and responses
-    - Analysis states: Exploitable (red), Resolved (green), In Triage (orange), False Positive (blue), Not Affected (green), Resolved With Pedigree (dark green)
-    - Response actions: Update/Rollback (blue), Workaround Available (orange), Can Not Fix/Will Not Fix (red)
-    - Justification explanations for not-affected vulnerabilities
-    - Detailed analysis text and timestamps (firstIssued, lastUpdated)
-  - Component inventories and dependencies (BOM/SBOM)
-  - Tools used to generate the CycloneDX (VEX/VDR/(S)BoM)) document
-- Cross-platform support
+The font license file is also available at
+[Liberation fonts License file](external/fonts/liberation-fonts/LICENSE) in this repository.
 
 ## Installation
-### Prerequisites
-- Rust and Cargo (latest stable version)
+
+Requires Rust and Cargo (latest stable) to build or install from source.
 
 ### As a Command-Line Tool
-
-Install VEX2PDF directly from crates.io:
 
 ```bash
 cargo install vex2pdf
 ```
 
-After installation, the `vex2pdf` binary will be available in your Cargo bin directory.
+The `vex2pdf` binary lands in your Cargo bin directory. Pre-built Linux and Windows binaries are also
+attached to each [release](https://gitlab.com/jurassicLizard/vex2pdf/-/releases). macOS has no
+pre-built binary — build it from source, or
+[open an issue](https://gitlab.com/jurassicLizard/vex2pdf/-/issues) if you need one.
 
 ### As a Library
 
-To use VEX2PDF as a library in your Rust project:
-
 ```bash
-# Default: CLI + concurrent processing (recommended for most use cases)
+# Default: CLI + concurrent processing
 cargo add vex2pdf
 
 # Library with concurrent processing (no CLI dependencies)
@@ -216,14 +200,10 @@ cargo add vex2pdf --no-default-features
 cargo add vex2pdf --no-default-features --features cli
 ```
 
-**Feature Flags:**
-
 | Feature | Description | Default |
 |---------|-------------|---------|
 | `cli` | Command-line interface and argument parsing (requires `clap`, `env_logger`) | ✓ Yes |
-| `concurrency` | Concurrent file processing using threadpool (requires `jlizard-simple-threadpool`) | ✓ Yes |
-
-**Library Usage Example:**
+| `concurrency` | Concurrent file processing using a threadpool (requires `jlizard-simple-threadpool`) | ✓ Yes |
 
 ```rust
 use vex2pdf::lib_utils::config::Config;
@@ -233,120 +213,41 @@ fn main() {
   let config = Config::default()
           .working_path("./input")
           .output_dir("./output")
-          .max_jobs(Some(4));  // Only available with 'concurrency' feature
+          .max_jobs(Some(4));  // Only available with the 'concurrency' feature
 
   run(config).expect("Failed to process files");
 }
 ```
 
-For complete API documentation, visit [docs.rs/vex2pdf](https://docs.rs/vex2pdf).
-
-> Notice: As of v0.6.1 no extra font configuration is needed. Fonts have been embedded in the software binary. Check [Fonts handling and license](#fonts-handling) for further information
-
+Full API documentation lives at [docs.rs/vex2pdf](https://docs.rs/vex2pdf).
 
 ### From Source
-Clone the repository, then build the application with `cargo build --release`. The binary will be available at target/release/vex2pdf.
 
-### Linux and Windows Users
-Users can either:
-1. Install via Cargo as described above
-2. Build from the source using for the respective platform and operating-system. Please check the [From Source Section](#from-source)
-3. Use a pre-built binary under the [Release Binaries section](https://gitlab.com/jurassicLizard/vex2pdf/-/releases) 
-
-### Mac Users
-Currently, No Mac Binaries are provided however Mac Users can build and install with cargo. Please check the [From Source Section](#from-source)
-
->  If Mac release binaries are needed please [create an issue](https://gitlab.com/jurassicLizard/vex2pdf/-/issues)
-
-## Migrating to 2.0
-
-Version 2.0.0 introduces breaking changes to improve the library architecture and provide more flexibility. Most users won't need to make any changes.
-
-### For CLI Users
-
-**No changes required!** The CLI interface remains unchanged. All default features (CLI + concurrency) are enabled by default.
-
-### For Library Users
-
-#### If you're using default features
-**No changes required!** Your code will continue to work as-is.
-
-#### If you're using `--no-default-features`
-Version 2.0 introduces a new `concurrency` feature that's enabled by default. If you're using `--no-default-features`, you now have two options:
-
-**Option 1: Add concurrency back** (recommended for most use cases)
-```bash
-# Update your Cargo.toml or installation command
-cargo add vex2pdf --no-default-features --features concurrency
-```
-
-**Option 2: Use sequential processing** (simpler, no threading)
-```bash
-# No changes needed - files will now process sequentially
-cargo add vex2pdf --no-default-features
-```
-
-#### If you're using the `PdfGenerator` API directly
-The `PdfGenerator` struct no longer has a lifetime parameter:
-
-**Before (v1.x):**
-```rust
-let generator: PdfGenerator<'_> = PdfGenerator::new(config);
-```
-
-**After (v2.0):**
-```rust
-let generator: PdfGenerator = PdfGenerator::new(config);
-// Or simply let type inference handle it:
-let generator = PdfGenerator::new(config);
-```
-
-#### Environment Variable Changes
-If you were using these deprecated environment variables, switch to CLI flags:
-
-| Removed Variable | Replacement |
-|------------------|-------------|
-| `VEX2PDF_SHOW_OSS_LICENSES=true` | `vex2pdf --license` |
-| `VEX2PDF_VERSION_INFO=true` | `vex2pdf --version` |
-
-### What Changed Internally
-
-- **Concurrency is now optional**: The `concurrency` feature flag allows you to choose between concurrent (faster) or sequential (simpler) processing
-- **External threadpool**: Replaced internal implementation with `jlizard-simple-threadpool` for better maintainability
-- **Cleaner API**: Removed deprecated fields from `PdfGenerator` struct (deprecated since v0.9.0)
-
-For a complete list of changes, see the [CHANGELOG.md](CHANGELOG.md#200---2025-12-29).
+Clone the repository and run `cargo build --release`. The binary is at `target/release/vex2pdf`.
 
 ## Usage
 
-VEX2PDF is designed for batch processing and can be run without arguments to automatically process all CycloneDX files in the current directory. As of **v0.9.0**, the tool also supports command-line arguments for more precise control over input files, output directories, and report customization.
-
-Run the application in a directory containing CycloneDX (VEX/VDR/(S)BoM files (JSON or XML):
+vex2pdf is built for batch processing. Run without arguments to convert every CycloneDX document in the
+current directory:
 
 ```shell
 ./vex2pdf
 ```
-The tool will:
-1. Scan the current directory for JSON and XML files
-2. Attempt to parse each file as a CycloneDX (VEX/VDR/(S)BoM) document
-3. Generate a PDF report with the same name as the original file (with .pdf extension)
-4. Display progress and results in the console
+
+It then:
+1. Scans the current directory for JSON and XML files
+2. Attempts to parse each one as a CycloneDX (VEX/VDR/(S)BoM) document
+3. Writes a PDF report named after the input file
+4. Reports progress and results on the console
+
+Directory scanning is **non-recursive** — only the first level is read.
 
 ### Command-Line Arguments
 
-VEX2PDF supports command-line arguments for convenient configuration. All arguments can also be set via environment variables as shown in the [Configuration](#configuration) section.
-
-To see all available options, run:
-
-```bash
-vex2pdf --help
-```
-
-**Available options:**
+Every argument can also be set through an environment variable, listed under
+[Configuration](#configuration). Run `vex2pdf --help` for the authoritative list.
 
 ```
-A tool to convert CycloneDX(VEX) JSON or XML documents to PDF reports
-
 Usage: vex2pdf [OPTIONS] [FILE_OR_FOLDER_TO_PROCESS]
 
 Arguments:
@@ -386,279 +287,120 @@ Options:
 **Examples:**
 
 ```bash
-# Process a specific file
-vex2pdf my-bom.json
-
-# Process a specific directory
-vex2pdf /path/to/bom/files/
-
-# Specify output directory
-vex2pdf my-bom.json -d /path/to/output/
-
-# Hide components list
-vex2pdf -c false
-
-# Custom report title
-vex2pdf -t "Security Vulnerability Assessment"
-
-# Process with single-threaded mode (no concurrency)
-vex2pdf --max-jobs 1 my-bom.json
-
-# Process with 4 concurrent jobs
-vex2pdf --max-jobs 4 /path/to/bom/files/
-
-# Combine multiple options
+vex2pdf my-bom.json                              # one file
+vex2pdf /path/to/bom/files/                      # a directory
+vex2pdf my-bom.json -d /path/to/output/          # choose the output directory
+vex2pdf -c false                                 # hide the components list
+vex2pdf -t "Security Vulnerability Assessment"   # custom report title
+vex2pdf --max-jobs 1 my-bom.json                 # single-threaded
 vex2pdf my-bom.json -d ./reports/ -t "Q4 Security Report"
 ```
 
-
-## Example
-```
-$ ./vex2pdf
-[2025-10-24T18:00:00Z INFO] vex2pdf 0.9.0 - CycloneDX (VEX) to PDF Converter
-[2025-10-24T18:00:00Z INFO] Copyright (c) 2025 Salem B. - MIT Or Apache 2.0 License
-[2025-10-24T18:00:00Z INFO]
-[2025-10-24T18:00:00Z INFO] Active font path: <embedded liberationSans fonts> -- use --license to show Font license details
-[2025-10-24T18:00:00Z INFO]
-[2025-10-24T18:00:00Z INFO] Using default report title
-[2025-10-24T18:00:00Z INFO] Using default pdf metadata title
-[2025-10-24T18:00:00Z INFO]
-[2025-10-24T18:00:00Z INFO] Scanning for BoM/Vex Files in ./documents
-[2025-10-24T18:00:00Z INFO] Found 2 JSON files
-[2025-10-24T18:00:00Z INFO] Found 5 XML files
-[2025-10-24T18:00:00Z INFO] Processing ./documents/example1.json
-[2025-10-24T18:00:00Z INFO] Generating PDF:  ./documents/example1.json
-[2025-10-24T18:00:00Z INFO] Successfully generated PDF: ./documents/example1.pdf
-[2025-10-24T18:00:00Z INFO] Processing ./documents/example2.json
-[2025-10-24T18:00:00Z INFO] Generating PDF:  ./documents/example2.json
-[2025-10-24T18:00:00Z INFO] Successfully generated PDF: ./documents/example2.pdf
-[2025-10-24T18:00:00Z INFO] Processing ./documents/example3.xml
-[2025-10-24T18:00:01Z WARN]
-[2025-10-24T18:00:01Z WARN] NOTE: Downgrading CycloneDX BOM from spec version 1.6 to 1.5
-[2025-10-24T18:00:01Z WARN] Reason: Current implementation does not yet fully support spec version 1.6
-[2025-10-24T18:00:01Z WARN] Warning: This compatibility mode only works for BOMs that don't utilize 1.6-specific fields
-[2025-10-24T18:00:01Z WARN]          Processing will fail if 1.6-specific fields are encountered
-[2025-10-24T18:00:01Z WARN]
-[2025-10-24T18:00:01Z INFO] Generating PDF:  ./documents/example3.xml
-[2025-10-24T18:00:01Z INFO] Successfully generated PDF: ./documents/example3.pdf
-[2025-10-24T18:00:01Z INFO] Processed 7 files
-```
-
-## Example Output
-
-See sample generated PDFs from various CycloneDX documents in the repository:
-
-- **[VDR with Vulnerability Analysis](tests/test_artifacts/expected_pdfs/bom_vdr_with_analysis.pdf)** - Demonstrates color-coded analysis states (Exploitable, In Triage, Resolved) and response actions
-- **[VDR with Multiple Vulnerabilities](tests/test_artifacts/expected_pdfs/bom_vdr_with_many_vulns.pdf)** - Complex report showing multiple CVEs and affected components
-- **[Simple VEX Report](tests/test_artifacts/expected_pdfs/bom_vex_simple_one_vuln.pdf)** - Basic VEX document with single vulnerability
-- **[XML-based VDR](tests/test_artifacts/expected_pdfs/bom_xml_vdr_simple.pdf)** - Shows XML input processing
-- **[VDR with GHSA Entries](tests/test_artifacts/expected_pdfs/bom_vdr_with_ghsa_entries.pdf)** - GitHub Security Advisory integration example
-- **[VDR with Nested Components](tests/test_artifacts/expected_pdfs/bom_vdr_with_nested_components.pdf)** - Component assembly rendered with the `(via ...)` ancestry marker
-
-All PDFs include embedded Liberation Sans fonts and require no additional dependencies to view.
-
 ## Configuration
 
-No configuration files are required. However the application has some customization options available via Environment variables.
-
+No configuration files are required. Everything is set through CLI arguments or the equivalent
+environment variables.
 
 ### Environment Variables
 
+| Variable | Purpose | Default | Example |
+|---|---|---|---|
+| `VEX2PDF_WORKING_PATH` | File or directory to process | Current directory | `VEX2PDF_WORKING_PATH=./boms` |
+| `VEX2PDF_OUTPUT_DIR` | Where PDFs are written | Alongside the input | `VEX2PDF_OUTPUT_DIR=./reports` |
+| `VEX2PDF_NOVULNS_MSG` | Show the "No Vulnerabilities reported" message | `true` | `VEX2PDF_NOVULNS_MSG=false` |
+| `VEX2PDF_REPORT_TITLE` | Override the report title | Default title | `VEX2PDF_REPORT_TITLE="My Custom VEX Report"` |
+| `VEX2PDF_PDF_META_NAME` | Override the PDF metadata title | Default metadata title | `VEX2PDF_PDF_META_NAME="VEX Report - Company XYZ"` |
+| `VEX2PDF_PURE_BOM_NOVULNS` | Treat the file as a component list only, ignoring vulnerabilities | `false` | `VEX2PDF_PURE_BOM_NOVULNS=true` |
+| `VEX2PDF_SHOW_COMPONENTS` | Show the component list after the vulnerability list | `true` | `VEX2PDF_SHOW_COMPONENTS=false` |
+| `VEX2PDF_MAX_JOBS` | Maximum concurrent processing jobs | Unset (max parallelism) | `VEX2PDF_MAX_JOBS=4` |
 
-> **Windows Users**: To set environment variables on Windows, use:
-> - **Command Prompt**: `set VEX2PDF_ENV_VARIABLE=false && vex2pdf`
-> - **PowerShell**: `$env:VEX2PDF_ENV_VARIABLE="false"; vex2pdf`
+Two of these need a little more explanation:
 
-The following environment variables can be used to customize behavior:
+**`VEX2PDF_NOVULNS_MSG`** — when `true` or unset, a "Vulnerabilities" section is rendered carrying a
+"No Vulnerabilities reported" message. When `false`, the section is omitted from the PDF entirely.
 
+**`VEX2PDF_MAX_JOBS`** — `0` or unset uses all available CPU cores; `1` processes sequentially in the
+main thread, which is useful for debugging, constrained systems and a reproducible processing order;
+`2`–`255` uses that many concurrent jobs.
 
-| Variable                  | Purpose                                                                       | Default                               |
-|---------------------------|-------------------------------------------------------------------------------|---------------------------------------|
-| VEX2PDF_NOVULNS_MSG       | Controls the "No Vulnerabilities reported" message display                    | true                                  |
-| VEX2PDF_REPORT_TITLE      | Overrides the default report title                                            | Not set (uses default title)          |
-| VEX2PDF_PDF_META_NAME     | Overrides the PDF metadata title                                              | Not set (uses default metadata title) |
-| VEX2PDF_PURE_BOM_NOVULNS  | Whether to treat the file as a component list instead of a vulnerability list | false                                 |
-| VEX2PDF_SHOW_COMPONENTS   | Whether to additionally show the component list after the vulnerability list  | true                                  |
-| VEX2PDF_MAX_JOBS          | Controls the maximum number of concurrent processing jobs                     | Not set (uses max parallelism)        |                             
-
-#### VEX2PDF_NOVULNS_MSG
-
-This variable controls how the Vulnerabilities section appears when no vulnerabilities exist:
-- When set to "true" or not set (default): A "Vulnerabilities" section will be shown with a "No Vulnerabilities reported" message
-- When set to "false": The Vulnerabilities section will be completely omitted from the PDF
-
-Example : `VEX2PDF_NOVULNS_MSG=false vex2pdf`
-
-#### VEX2PDF_REPORT_TITLE
-
-Overrides the default report title with custom text
-
-Example : `VEX2PDF_REPORT_TITLE="My Custom VEX Report" vex2pdf`
-
-#### VEX2PDF_PDF_META_NAME
-
-Overrides the PDF metadata title with custom text
-
-Example 1 : `VEX2PDF_PDF_META_NAME="VEX Report - Company XYZ" vex2pdf`
-Example 2 : `VEX2PDF_PDF_META_NAME="VEX Report - Company XYZ" VEX2PDF_REPORT_TITLE="My Custom VEX Report" vex2pdf`
-
-#### VEX2PDF_PURE_BOM_NOVULNS
-
-Whether to treat the file as a pure CycloneDX Bill of Materials only listing the components and ignoring the vulnerability list 
-
-Example : `VEX2PDF_PURE_BOM_NOVULNS=true vex2pdf`
-
-#### VEX2PDF_SHOW_COMPONENTS
-
-Whether to show the complete list of components after the vulnerabilities section. The default behaviour is `true` but this can be overridden
-
-Example: `VEX2PDF_SHOW_COMPONENTS=false vex2pdf`
-
-#### VEX2PDF_MAX_JOBS
-
-Controls the maximum number of concurrent jobs for processing multiple BOM files:
-- When not set or set to `0` (default): Uses all available CPU cores for maximum parallelism
-- When set to `1`: Runs in single-threaded mode (sequential processing in main thread)
-- When set to `2-255`: Uses the specified number of concurrent jobs
-
-**Single-threaded mode** is useful for:
-- Debugging and troubleshooting
-- Systems with limited resources
-- Reproducible processing order
-
-**Multi-threaded mode** (default) provides:
-- Faster processing of multiple files
-- Better resource utilization on multi-core systems
-
-Example (single-threaded): `VEX2PDF_MAX_JOBS=1 vex2pdf`
-
-Example (4 concurrent jobs): `VEX2PDF_MAX_JOBS=4 vex2pdf`
-
-Example (default parallelism): `VEX2PDF_MAX_JOBS=0 vex2pdf` or simply `vex2pdf`
+> **Windows users**: set environment variables with
+> `set VEX2PDF_ENV_VARIABLE=false && vex2pdf` (Command Prompt) or
+> `$env:VEX2PDF_ENV_VARIABLE="false"; vex2pdf` (PowerShell).
 
 ## Logging
 
-VEX2PDF uses structured logging to provide clear visibility into its operation. Logs include timestamps, severity levels, and module paths for easy troubleshooting.
-
-### Log Levels
-
-The tool supports four log levels:
-
-- **ERROR** - Critical errors that prevent operation (output to stderr)
-- **WARN** - Warnings about potential issues or compatibility concerns (output to stderr)
-- **INFO** - Normal operational messages showing progress and results (output to stdout) - **Default level**
-- **DEBUG** - Detailed internal information including worker thread activity (output to stdout)
-
-### Controlling Log Output
-
-By default, the tool shows **INFO** level logs without any configuration. You can control the log level using the `RUST_LOG` environment variable:
+Logs carry timestamps, severity levels and module paths. Four levels are available: **ERROR** and
+**WARN** go to stderr, **INFO** (the default) and **DEBUG** go to stdout. That split makes normal
+Unix redirection work:
 
 ```bash
-# Default behavior (info level) - no configuration needed
-vex2pdf
-
-# Show all logs including debug information (verbose mode)
-RUST_LOG=debug vex2pdf
-
-# Show only warnings and errors (quiet mode)
-RUST_LOG=warn vex2pdf
-
-# Show only errors (minimal output)
-RUST_LOG=error vex2pdf
-
-# Disable all logging
-RUST_LOG=off vex2pdf
+vex2pdf 2> errors.log                  # capture only problems
+vex2pdf > output.log 2> errors.log     # separate the two streams
 ```
 
-**Note:** Debug logs are completely removed from release builds at compile time for optimal performance and smaller binary size.
-
-**Output Routing:**
-- Informational logs (INFO, DEBUG) → stdout - normal operational output
-- Problem logs (WARN, ERROR) → stderr - errors and warnings for script handling
-
-This separation allows for proper Unix-style piping and redirection:
-```bash
-# Capture only errors to a file
-vex2pdf 2> errors.log
-
-# Separate normal output and errors
-vex2pdf > output.log 2> errors.log
-```
-
-## Documentation
-
-For full API documentation, please visit:
-- [vex2pdf on docs.rs](https://docs.rs/vex2pdf)
-
-To generate documentation locally:
-```bash
-cargo doc --open
-```
-
-### Developer Notes
-
-For information about testing, code coverage, architecture, and the traits system, see [Developer Notes](docs/DEVELOPER_NOTES.md).
-
-## Testing
-
-The test suite includes comprehensive integration tests that validate PDF generation accuracy using BLAKE3 checksums of normalized content (with timestamps and dynamic IDs stripped).
-
-### Running Tests
+The level is controlled with `RUST_LOG`:
 
 ```bash
-# Run all tests (with CLI feature, default)
-cargo test
-
-# Run only library unit tests
-cargo test --lib
-
-# Run library tests without CLI dependencies
-cargo test --lib --no-default-features
-
-# Build library-only (no CLI dependencies)
-cargo build --no-default-features
+vex2pdf                 # info (default, no configuration needed)
+RUST_LOG=debug vex2pdf  # verbose, including worker thread activity
+RUST_LOG=warn vex2pdf   # warnings and errors only
+RUST_LOG=error vex2pdf  # errors only
+RUST_LOG=off vex2pdf    # silent
 ```
 
-**Note:** Integration tests require the `cli` feature and will be skipped when testing with `--no-default-features`.
+**Note:** debug logs are compiled out of release builds entirely, for performance and binary size.
 
-**Warning:** PDF checksums used in integration tests are generated from debug builds. While checksums should be consistent across builds, differences in compiler optimizations between debug and release modes may occasionally cause checksum mismatches. If you encounter checksum failures in release builds, this is expected behavior and does not indicate a test failure.
+## Example Run
 
-### Code Coverage
-
-```bash
-# Install coverage tool
-cargo install cargo-llvm-cov
-
-# Generate HTML coverage report
-cargo llvm-cov --html
-# Opens coverage report in browser at target/llvm-cov/html/index.html
+```
+$ ./vex2pdf
+[INFO] vex2pdf 4.1.1 - CycloneDX (VEX) to PDF Converter
+[INFO] Copyright (c) 2025 Salem B. - MIT Or Apache 2.0 License
+[INFO] Active font path: <embedded liberationSans fonts> -- use --license to show Font license details
+[INFO] Scanning for BoM/Vex Files in ./documents
+[INFO] Found 2 JSON files
+[INFO] Found 5 XML files
+[INFO] Processing ./documents/example1.json
+[INFO] Successfully generated PDF: ./documents/example1.pdf
+[INFO] Processing ./documents/example3.xml
+[WARN] NOTE: Downgrading CycloneDX BOM from spec version 1.6 to 1.5
+[WARN] Reason: Current implementation does not yet fully support spec version 1.6
+[WARN] Warning: This compatibility mode only works for BOMs that don't utilize 1.6-specific fields
+[INFO] Successfully generated PDF: ./documents/example3.pdf
+[INFO] Processed 7 files
 ```
 
-Tests work seamlessly from both the git repository and crates.io packages.
+If any input fails to process, the run exits with a non-zero status (since v4.0.0), so CI pipelines
+surface the failure instead of treating it as success.
+
+## Example Output
+
+Sample generated PDFs in this repository:
+
+- **[VDR with Vulnerability Analysis](tests/test_artifacts/expected_pdfs/bom_vdr_with_analysis.pdf)** - Colour-coded analysis states and response actions
+- **[VDR with Multiple Vulnerabilities](tests/test_artifacts/expected_pdfs/bom_vdr_with_many_vulns.pdf)** - Multiple CVEs and affected components
+- **[Simple VEX Report](tests/test_artifacts/expected_pdfs/bom_vex_simple_one_vuln.pdf)** - Basic VEX document with a single vulnerability
+- **[XML-based VDR](tests/test_artifacts/expected_pdfs/bom_xml_vdr_simple.pdf)** - XML input processing
+- **[VDR with GHSA Entries](tests/test_artifacts/expected_pdfs/bom_vdr_with_ghsa_entries.pdf)** - GitHub Security Advisory identifiers
+- **[VDR with Nested Components](tests/test_artifacts/expected_pdfs/bom_vdr_with_nested_components.pdf)** - Component assembly with the `(via ...)` ancestry marker
+
+All PDFs embed their fonts and need nothing extra to view.
 
 ## CycloneDX Document Format
-This tool fully supports CycloneDX schema version 1.5 and provides compatibility for version 1.6 documents that only use 1.5 fields. Documents using 1.6-specific fields may not process correctly. For more information about the CycloneDX format, see:
+
+CycloneDX 1.5 is fully supported. See:
 - [CycloneDX VEX Specification](https://cyclonedx.org/capabilities/vex/)
 - [CycloneDX VDR Specification](https://cyclonedx.org/capabilities/vdr/)
 - [CycloneDX Schema](https://cyclonedx.org/docs/1.5/json/)
 
 ### Version 1.6 Compatibility Mode
 
-This tool implements a special compatibility mode for CycloneDX 1.6 documents:
+When the tool meets a document with `specVersion: "1.6"` it notifies you about the downgrade, rewrites
+the spec version to `"1.5"` in memory, and parses it with the 1.5 parser.
 
-- When the tool encounters a document with `specVersion: "1.6"`, it will:
-  1. Display a notification about downgrading to 1.5
-  2. Automatically modify the document's spec version to "1.5"
-  3. Attempt to process it using the 1.5 schema parser
-
-This compatibility approach works well for documents that don't use 1.6-specific fields but allows the tool to process newer documents without requiring users to manually modify them.
-
-**Limitations:**
-- Documents that use 1.6-specific fields or structures may fail during processing
-- No validation is performed for 1.6-specific features
-- This is a temporary solution until full 1.6 support is implemented in the underlying cyclonedx-bom library
-
-When processing 1.6 documents, you'll see console messages indicating the compatibility mode is active.
+This works for documents that do not use 1.6-specific fields. Documents that do may fail during
+processing, no validation of 1.6-specific features is performed, and this remains a stopgap until the
+underlying `cyclonedx-bom` library supports 1.6 fully.
 
 ## Security Considerations
 - The application reads and processes files from the current directory
@@ -680,9 +422,14 @@ in the audit output of any project that depends on vex2pdf.
 Five further "unmaintained" advisories (`encoding`, `lzw`, `rusttype`, `stb_truetype`, `stdweb`) come from
 the same chain. See the [Changelog](CHANGELOG.md) for the per-release security notes.
 
-## Changelog
+To report a vulnerability in vex2pdf itself, follow [SECURITY.md](SECURITY.md).
 
-Changes to the software between version increments are documented under [Changelog.md](CHANGELOG.md).
+## Documentation
+
+- **API reference**: [docs.rs/vex2pdf](https://docs.rs/vex2pdf), or `cargo doc --open` locally
+- **Testing, architecture, traits system, CI**: [Developer Notes](docs/DEVELOPER_NOTES.md)
+- **Upgrading from 1.x to 2.0**: [Migration Guide](docs/MIGRATION.md)
+- **Release history**: [CHANGELOG.md](CHANGELOG.md)
 
 ## License
 
