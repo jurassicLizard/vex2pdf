@@ -1,0 +1,223 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:7d1a2b3c-4d5e-4f60-8a71-92b3c4d5e6f7",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2099-01-15T10:00:00Z",
+    "tools": [
+      {
+        "vendor": "Example",
+        "name": "fixture-generator",
+        "version": "1.0.0"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "bom-ref": "product",
+      "name": "Example Product",
+      "version": "1.0.0"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "libalpha",
+      "bom-ref": "comp-libalpha",
+      "version": "1.0.0",
+      "cpe": "cpe:2.3:a:example:libalpha:1.0.0:*:*:*:*:*:*:*"
+    },
+    {
+      "type": "application",
+      "name": "platform-x",
+      "bom-ref": "comp-platform-x",
+      "version": "0.55.2",
+      "cpe": "cpe:2.3:a:example:platform-x:0.55.2:*:*:*:*:*:*:*",
+      "components": [
+        {
+          "type": "library",
+          "name": "openssl",
+          "bom-ref": "comp-px-openssl",
+          "version": "3.6.3",
+          "cpe": "cpe:2.3:a:openssl:openssl:3.6.3:*:*:*:*:*:*:*"
+        },
+        {
+          "type": "library",
+          "name": "node.js",
+          "bom-ref": "comp-px-nodejs",
+          "version": "24.17.0",
+          "cpe": "cpe:2.3:a:nodejs:node.js:24.17.0:*:*:*:*:*:*:*"
+        },
+        {
+          "type": "library",
+          "name": "sdk-y",
+          "bom-ref": "comp-px-sdk-y",
+          "version": "8.0",
+          "cpe": "cpe:2.3:a:example:sdk-y:8.0:*:*:*:*:*:*:*",
+          "components": [
+            {
+              "type": "library",
+              "name": "zlib",
+              "bom-ref": "comp-px-sdk-y-zlib",
+              "version": "1.3.1",
+              "cpe": "cpe:2.3:a:zlib:zlib:1.3.1:*:*:*:*:*:*:*"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "libbeta",
+      "bom-ref": "comp-libbeta",
+      "version": "2.1",
+      "cpe": "cpe:2.3:a:example:libbeta:2.1:*:*:*:*:*:*:*"
+    }
+  ],
+  "vulnerabilities": [
+    {
+      "bom-ref": "vuln-cve-2099-0001",
+      "id": "CVE-2099-0001",
+      "source": {
+        "name": "NVD",
+        "url": "https://nvd.nist.gov/"
+      },
+      "ratings": [
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+        }
+      ],
+      "description": "Fictional flaw in a top-level library.",
+      "recommendation": "Upgrade to 1.0.1",
+      "published": "2099-01-15T10:00:00Z",
+      "affects": [
+        {
+          "ref": "comp-libalpha"
+        }
+      ]
+    },
+    {
+      "bom-ref": "vuln-cve-2099-0002",
+      "id": "CVE-2099-0002",
+      "source": {
+        "name": "NVD",
+        "url": "https://nvd.nist.gov/"
+      },
+      "ratings": [
+        {
+          "score": 9.8,
+          "severity": "critical",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "description": "Fictional flaw in a component nested one level deep.",
+      "published": "2099-01-15T10:00:00Z",
+      "affects": [
+        {
+          "ref": "comp-px-openssl"
+        }
+      ]
+    },
+    {
+      "bom-ref": "vuln-cve-2099-0003",
+      "id": "CVE-2099-0003",
+      "source": {
+        "name": "NVD",
+        "url": "https://nvd.nist.gov/"
+      },
+      "ratings": [
+        {
+          "score": 5.4,
+          "severity": "medium",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:N"
+        }
+      ],
+      "description": "Fictional flaw in a second nested component.",
+      "published": "2099-01-15T10:00:00Z",
+      "affects": [
+        {
+          "ref": "comp-px-nodejs"
+        }
+      ]
+    },
+    {
+      "bom-ref": "vuln-cve-2099-0004",
+      "id": "CVE-2099-0004",
+      "source": {
+        "name": "NVD",
+        "url": "https://nvd.nist.gov/"
+      },
+      "ratings": [
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+        }
+      ],
+      "description": "Fictional flaw in a component nested two levels deep.",
+      "published": "2099-01-15T10:00:00Z",
+      "affects": [
+        {
+          "ref": "comp-px-sdk-y-zlib"
+        }
+      ]
+    },
+    {
+      "bom-ref": "vuln-cve-2099-0005",
+      "id": "CVE-2099-0005",
+      "source": {
+        "name": "NVD",
+        "url": "https://nvd.nist.gov/"
+      },
+      "ratings": [
+        {
+          "score": 5.4,
+          "severity": "medium",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:N"
+        }
+      ],
+      "description": "Fictional flaw in the assembly itself (the parent).",
+      "published": "2099-01-15T10:00:00Z",
+      "affects": [
+        {
+          "ref": "comp-platform-x"
+        }
+      ]
+    },
+    {
+      "bom-ref": "vuln-cve-2099-0006",
+      "id": "CVE-2099-0006",
+      "source": {
+        "name": "NVD",
+        "url": "https://nvd.nist.gov/"
+      },
+      "ratings": [
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+        }
+      ],
+      "description": "Fictional flaw on a nested component that carries an analysis.",
+      "published": "2099-01-15T10:00:00Z",
+      "analysis": {
+        "state": "not_affected",
+        "justification": "code_not_reachable",
+        "detail": "The vulnerable function is not called by the assembly."
+      },
+      "affects": [
+        {
+          "ref": "comp-px-openssl"
+        }
+      ]
+    }
+  ]
+}

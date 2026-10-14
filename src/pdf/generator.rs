@@ -9,6 +9,7 @@
 
 use crate::lib_utils::config::Config;
 use crate::pdf::font_config::FontsDir;
+use cyclonedx_bom::models::component::{Component, Components};
 use cyclonedx_bom::models::tool::Tools;
 use cyclonedx_bom::models::vulnerability_analysis::{ImpactAnalysisResponse, ImpactAnalysisState};
 use cyclonedx_bom::prelude::Bom;
@@ -195,10 +196,154 @@ impl Utils {
 
         styled_vector_par
     }
+
+    /// Walks a component tree depth-first and returns every component in document
+    /// order, parent before its children, together with the chain of assemblies it
+    /// is nested inside (outermost first, empty for a top-level component).
+    ///
+    /// CycloneDX allows a component to contain components
+    /// (`component.components`), which is a hierarchical assembly rather than a
+    /// dependency tree. Since bom-refs are document-wide, a vulnerability may
+    /// target a component at any depth, so the whole tree has to be walked.
+    fn flatten_components<'b>(
+        components: &'b Components,
+    ) -> Vec<(&'b Component, Vec<Ancestor<'b>>)> {
+        let mut flattened = Vec::with_capacity(components.0.len());
+        Self::flatten_components_into(components, &mut Vec::new(), &mut flattened);
+        flattened
+    }
+
+    /// Recursion step of [`Utils::flatten_components`], carrying the current
+    /// ancestor path down the tree.
+    fn flatten_components_into<'b>(
+        components: &'b Components,
+        ancestors: &mut Vec<Ancestor<'b>>,
+        flattened: &mut Vec<(&'b Component, Vec<Ancestor<'b>>)>,
+    ) {
+        for component in &components.0 {
+            flattened.push((component, ancestors.clone()));
+
+            if let Some(nested) = &component.components {
+                ancestors.push(Ancestor {
+                    name: &component.name,
+                    version: component.version.as_deref(),
+                });
+                Self::flatten_components_into(nested, ancestors, flattened);
+                ancestors.pop();
+            }
+        }
+    }
+
+    /// Indexes every component of the tree by its bom-ref so that affected
+    /// references can be resolved at any nesting depth.
+    ///
+    /// Components without a bom-ref cannot be referenced and are therefore not
+    /// indexed, but they still appear as ancestors of their children. On a
+    /// duplicate bom-ref the later component wins.
+    fn index_components<'b>(components: &'b Components) -> HashMap<&'b str, IndexedComponent<'b>> {
+        let flattened = Self::flatten_components(components);
+        let mut index = HashMap::with_capacity(flattened.len());
+
+        for (component, ancestors) in flattened {
+            if let Some(ref_id) = &component.bom_ref {
+                index.insert(
+                    ref_id.as_str(),
+                    IndexedComponent {
+                        name: &component.name,
+                        version: component.version.as_deref().unwrap_or("undefined"),
+                        ancestors,
+                    },
+                );
+            }
+        }
+
+        index
+    }
+
+    /// Builds the `(via ...)` marker naming the assemblies a nested component sits
+    /// in, outermost first. Returns no fragments at all for a top-level component,
+    /// which is what keeps documents without nesting rendering unchanged.
+    ///
+    /// An ancestor without a version is rendered as its name alone.
+    fn via_suffix_parts(
+        ancestors: &[Ancestor],
+        name_style: Style,
+        version_style: Style,
+        glue_style: Style,
+    ) -> Vec<StyledString> {
+        if ancestors.is_empty() {
+            return Vec::new();
+        }
+
+        let mut parts = Vec::with_capacity(ancestors.len() * 3 + 2);
+        parts.push(StyledString::new(" (via ", glue_style));
+
+        for (i, ancestor) in ancestors.iter().enumerate() {
+            if i > 0 {
+                parts.push(StyledString::new(" > ", glue_style));
+            }
+
+            parts.push(StyledString::new(ancestor.name, name_style));
+
+            if let Some(version) = ancestor.version {
+                parts.push(StyledString::new(format!(": {version}"), version_style));
+            }
+        }
+
+        parts.push(StyledString::new(")", glue_style));
+
+        parts
+    }
+
+    /// Builds the label of a component: its name, optionally followed by
+    /// `: version`, then the `(via ...)` ancestry marker.
+    ///
+    /// This is the single place the wording is defined, so the affected-components
+    /// line and the components section cannot drift apart.
+    fn component_label_parts(
+        name: &str,
+        version: Option<&str>,
+        ancestors: &[Ancestor],
+        name_style: Style,
+        version_style: Style,
+        glue_style: Style,
+    ) -> Vec<StyledString> {
+        let mut parts = vec![StyledString::new(name, name_style)];
+
+        if let Some(version) = version {
+            parts.push(StyledString::new(format!(": {version}"), version_style));
+        }
+
+        parts.extend(Self::via_suffix_parts(
+            ancestors,
+            name_style,
+            version_style,
+            glue_style,
+        ));
+
+        parts
+    }
 }
 
-/// ComponentTuple is a type that should hold a reference to component_name and component_version respectively
-type ComponentTuple<'b> = (&'b str, &'b str);
+/// One assembly a nested component is contained in.
+///
+/// `version` is `None` when the assembly carries no version, in which case the
+/// `(via ...)` marker shows its name alone.
+#[derive(Debug, Clone, PartialEq)]
+struct Ancestor<'b> {
+    name: &'b str,
+    version: Option<&'b str>,
+}
+
+/// A component of the document, resolvable by its bom-ref, together with the
+/// assemblies it is nested inside (outermost first, empty for a top-level
+/// component).
+#[derive(Debug, Clone, PartialEq)]
+struct IndexedComponent<'b> {
+    name: &'b str,
+    version: &'b str,
+    ancestors: Vec<Ancestor<'b>>,
+}
 pub struct PdfGenerator {
     title_style: Style,
     header_style: Style,
@@ -359,28 +504,14 @@ impl<'b> PdfGenerator {
         vex: &'b Bom,
         output_path: P,
     ) -> Result<(), io::Error> {
-        // Extract component list if available this will later be used to extract affected components
-
-        let mut comp_ref_map = HashMap::<&'b str, ComponentTuple>::new();
-
-        if let Some(components) = &vex.components {
-            // preallocate our primary container
-            comp_ref_map = HashMap::with_capacity(components.0.len());
-
-            for component in &components.0 {
-                // extract component name and version
-                let component_version = if let Some(version) = &component.version {
-                    version
-                } else {
-                    "undefined"
-                };
-                let component_detail: ComponentTuple = (&component.name, component_version);
-
-                if let Some(ref_id) = &component.bom_ref {
-                    comp_ref_map.insert(ref_id, component_detail);
-                }
-            }
-        }
+        // Index the component list if available, this is later used to resolve the
+        // affected components of a vulnerability. Nested components are indexed as
+        // well, as a vulnerability may target a component at any depth of a
+        // component assembly.
+        let comp_ref_map = match &vex.components {
+            Some(components) => Utils::index_components(components),
+            None => HashMap::<&'b str, IndexedComponent>::new(),
+        };
         let mut doc = Document::new(FontsDir::build().font_family);
         // Set up the document with default fonts
 
@@ -570,7 +701,7 @@ impl<'b> PdfGenerator {
         &self,
         mut doc: Document,
         vex: &Bom,
-        comp_ref_map: &HashMap<&'b str, ComponentTuple>,
+        comp_ref_map: &HashMap<&'b str, IndexedComponent>,
     ) -> Document {
         // First determine if vulnerabilities exist
         let mut vulns_available = false;
@@ -775,7 +906,7 @@ impl<'b> PdfGenerator {
                 if !comp_ref_map.is_empty() {
                     // get list of affected references
                     if let Some(affected_comps) = &vuln.vulnerability_targets {
-                        let mut affected_comps_detailed: Vec<&ComponentTuple> =
+                        let mut affected_comps_detailed: Vec<&IndexedComponent> =
                             Vec::with_capacity(affected_comps.0.len());
 
                         for comp in &affected_comps.0 {
@@ -795,9 +926,16 @@ impl<'b> PdfGenerator {
                                 affected_comp_para.push(", ");
                             }
 
-                            affected_comp_para.push_styled(affected_comp.0, self.comp_name_style);
-                            affected_comp_para
-                                .push_styled(format!(": {}", affected_comp.1), self.version_style);
+                            for part in Utils::component_label_parts(
+                                affected_comp.name,
+                                Some(affected_comp.version),
+                                &affected_comp.ancestors,
+                                self.comp_name_style,
+                                self.version_style,
+                                self.indent_style,
+                            ) {
+                                affected_comp_para.push(part);
+                            }
                         }
                         affected_comp_para.push_styled(" ]", self.indent_style.bold());
 
@@ -842,12 +980,23 @@ impl<'b> PdfGenerator {
             doc.push(Paragraph::default().styled_string("Components", self.header_style));
             doc.push(genpdf::elements::Break::new(0.5));
 
-            for component in &components.0 {
-                doc.push(
-                    Paragraph::default()
-                        .styled_string("Name: ", self.indent_style)
-                        .styled_string(format!("{}", component.name), self.comp_name_style),
-                );
+            // nested components are listed right after their parent, carrying the
+            // same `(via ...)` marker as the affected-components line
+            for (component, ancestors) in Utils::flatten_components(components) {
+                let mut name_para = Paragraph::default().styled_string("Name: ", self.indent_style);
+
+                for part in Utils::component_label_parts(
+                    &component.name,
+                    None,
+                    &ancestors,
+                    self.comp_name_style,
+                    self.version_style,
+                    self.indent_style,
+                ) {
+                    name_para.push(part);
+                }
+
+                doc.push(name_para);
 
                 if let Some(version) = &component.version {
                     doc.push(
@@ -868,9 +1017,12 @@ impl<'b> PdfGenerator {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::lib_utils::run_utils::{parse_vex_json, parse_vex_xml};
+    use cyclonedx_bom::models::component::{Classification, Component, Components};
     use cyclonedx_bom::models::vulnerability_analysis::{
         ImpactAnalysisResponse, ImpactAnalysisState,
     };
+    use cyclonedx_bom::prelude::NormalizedString;
     use genpdf::style::{Color, Style, StyledString};
 
     #[test]
@@ -962,5 +1114,526 @@ mod tests {
         // Should handle empty vector gracefully
         let debug_str = format!("{:?}", para);
         assert!(debug_str.contains("Empty"));
+    }
+
+    // --- nested components (see Utils::flatten_components) -------------------
+
+    const NESTED_COMPONENTS_JSON: &str = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/test_artifacts/bom_src/run_test/bom_vdr_with_nested_components.json"
+    );
+    const NESTED_COMPONENTS_XML: &str = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/test_artifacts/bom_src/run_test_xml/bom_xml_vdr_with_nested_components.xml"
+    );
+    const NESTED_EDGE_CASES_JSON: &str = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/test_artifacts/bom_src/run_test/bom_vdr_with_nested_edge_cases.json"
+    );
+    const NESTED_EDGE_CASES_XML: &str = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/test_artifacts/bom_src/run_test_xml/bom_xml_vdr_with_nested_edge_cases.xml"
+    );
+
+    /// Builds a component with an optional version, an optional bom-ref and an
+    /// optional list of nested components.
+    fn make_component(
+        name: &str,
+        version: Option<&str>,
+        bom_ref: Option<&str>,
+        children: Vec<Component>,
+    ) -> Component {
+        let mut component = Component::new(
+            Classification::Library,
+            name,
+            version.unwrap_or_default(),
+            bom_ref.map(str::to_string),
+        );
+        // Component::new always sets a version, so reset it for the version-less case
+        component.version = version.map(NormalizedString::new);
+
+        if !children.is_empty() {
+            component.components = Some(Components(children));
+        }
+
+        component
+    }
+
+    /// Concatenates the text of styled fragments, dropping the styling. Used to
+    /// assert the rendered wording without reaching into the PDF.
+    fn parts_text(parts: &[StyledString]) -> String {
+        parts.iter().map(|part| part.s.as_str()).collect()
+    }
+
+    fn via_text(ancestors: &[Ancestor]) -> String {
+        let style = Style::new();
+        parts_text(&Utils::via_suffix_parts(ancestors, style, style, style))
+    }
+
+    /// The affected-components wording per vulnerability, as rendered by
+    /// `render_vulns`: `(vulnerability id, comma separated component labels)`.
+    fn affected_labels(vex: &Bom) -> Vec<(String, String)> {
+        let style = Style::new();
+        let index = Utils::index_components(
+            vex.components
+                .as_ref()
+                .expect("fixture must carry components"),
+        );
+
+        vex.vulnerabilities
+            .as_ref()
+            .expect("fixture must carry vulnerabilities")
+            .0
+            .iter()
+            .map(|vuln| {
+                let id = vuln
+                    .id
+                    .as_ref()
+                    .map(ToString::to_string)
+                    .unwrap_or_default();
+                let label = vuln
+                    .vulnerability_targets
+                    .as_ref()
+                    .map(|targets| {
+                        targets
+                            .0
+                            .iter()
+                            .filter_map(|target| index.get(target.bom_ref.as_str()))
+                            .map(|indexed| {
+                                parts_text(&Utils::component_label_parts(
+                                    indexed.name,
+                                    Some(indexed.version),
+                                    &indexed.ancestors,
+                                    style,
+                                    style,
+                                    style,
+                                ))
+                            })
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    })
+                    .unwrap_or_default();
+
+                (id, label)
+            })
+            .collect()
+    }
+
+    /// The `Name:` wording of the components section, in rendering order.
+    fn component_labels(vex: &Bom) -> Vec<String> {
+        let style = Style::new();
+
+        Utils::flatten_components(
+            vex.components
+                .as_ref()
+                .expect("fixture must carry components"),
+        )
+        .iter()
+        .map(|(component, ancestors)| {
+            parts_text(&Utils::component_label_parts(
+                &component.name,
+                None,
+                ancestors,
+                style,
+                style,
+                style,
+            ))
+        })
+        .collect()
+    }
+
+    #[test]
+    fn test_index_components_flat_list_has_no_ancestors() {
+        let components = Components(vec![
+            make_component("libalpha", Some("1.0.0"), Some("ref-a"), vec![]),
+            make_component("libbeta", Some("2.1"), Some("ref-b"), vec![]),
+        ]);
+
+        let index = Utils::index_components(&components);
+
+        assert_eq!(index.len(), 2);
+        assert_eq!(index["ref-a"].name, "libalpha");
+        assert_eq!(index["ref-a"].version, "1.0.0");
+        assert!(index["ref-a"].ancestors.is_empty());
+        assert_eq!(index["ref-b"].name, "libbeta");
+        assert_eq!(index["ref-b"].version, "2.1");
+        assert!(index["ref-b"].ancestors.is_empty());
+    }
+
+    #[test]
+    fn test_index_components_keeps_undefined_version_fallback() {
+        let components = Components(vec![make_component(
+            "libalpha",
+            None,
+            Some("ref-a"),
+            vec![],
+        )]);
+
+        let index = Utils::index_components(&components);
+
+        assert_eq!(index["ref-a"].version, "undefined");
+    }
+
+    #[test]
+    fn test_index_components_one_nested_level() {
+        let components = Components(vec![make_component(
+            "platform-x",
+            Some("0.55.2"),
+            Some("ref-px"),
+            vec![make_component(
+                "openssl",
+                Some("3.6.3"),
+                Some("ref-openssl"),
+                vec![],
+            )],
+        )]);
+
+        let index = Utils::index_components(&components);
+
+        assert_eq!(index.len(), 2);
+        assert!(index["ref-px"].ancestors.is_empty());
+
+        let nested = &index["ref-openssl"];
+        assert_eq!(nested.name, "openssl");
+        assert_eq!(nested.version, "3.6.3");
+        assert_eq!(
+            nested.ancestors,
+            vec![Ancestor {
+                name: "platform-x",
+                version: Some("0.55.2"),
+            }]
+        );
+    }
+
+    #[test]
+    fn test_index_components_two_levels_are_outermost_first() {
+        let components = Components(vec![make_component(
+            "platform-x",
+            Some("0.55.2"),
+            Some("ref-px"),
+            vec![make_component(
+                "sdk-y",
+                Some("8.0"),
+                Some("ref-sdk"),
+                vec![make_component(
+                    "zlib",
+                    Some("1.3.1"),
+                    Some("ref-zlib"),
+                    vec![],
+                )],
+            )],
+        )]);
+
+        let index = Utils::index_components(&components);
+
+        assert_eq!(index.len(), 3);
+        assert_eq!(
+            index["ref-zlib"].ancestors,
+            vec![
+                Ancestor {
+                    name: "platform-x",
+                    version: Some("0.55.2"),
+                },
+                Ancestor {
+                    name: "sdk-y",
+                    version: Some("8.0"),
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn test_index_components_ancestor_without_version() {
+        let components = Components(vec![make_component(
+            "platform-z",
+            None,
+            Some("ref-pz"),
+            vec![make_component(
+                "libgamma",
+                Some("1.0"),
+                Some("ref-gamma"),
+                vec![],
+            )],
+        )]);
+
+        let index = Utils::index_components(&components);
+
+        assert_eq!(
+            index["ref-gamma"].ancestors,
+            vec![Ancestor {
+                name: "platform-z",
+                version: None,
+            }]
+        );
+    }
+
+    #[test]
+    fn test_index_components_duplicate_bom_ref_last_one_wins() {
+        let components = Components(vec![
+            make_component("first", Some("1.0"), Some("ref-dup"), vec![]),
+            make_component("second", Some("2.0"), Some("ref-dup"), vec![]),
+        ]);
+
+        let index = Utils::index_components(&components);
+
+        assert_eq!(index.len(), 1);
+        assert_eq!(index["ref-dup"].name, "second");
+    }
+
+    #[test]
+    fn test_index_components_parent_without_bom_ref_still_names_children() {
+        let components = Components(vec![make_component(
+            "bundle-w",
+            Some("3.0"),
+            None,
+            vec![make_component(
+                "libdelta",
+                Some("4.2"),
+                Some("ref-delta"),
+                vec![],
+            )],
+        )]);
+
+        let index = Utils::index_components(&components);
+
+        // the parent itself cannot be referenced, but it is still an ancestor
+        assert_eq!(index.len(), 1);
+        assert_eq!(
+            index["ref-delta"].ancestors,
+            vec![Ancestor {
+                name: "bundle-w",
+                version: Some("3.0"),
+            }]
+        );
+    }
+
+    #[test]
+    fn test_flatten_components_is_depth_first_in_document_order() {
+        let components = Components(vec![
+            make_component("libalpha", Some("1.0.0"), Some("ref-a"), vec![]),
+            make_component(
+                "platform-x",
+                Some("0.55.2"),
+                Some("ref-px"),
+                vec![make_component(
+                    "sdk-y",
+                    Some("8.0"),
+                    Some("ref-sdk"),
+                    vec![make_component(
+                        "zlib",
+                        Some("1.3.1"),
+                        Some("ref-zlib"),
+                        vec![],
+                    )],
+                )],
+            ),
+            make_component("libbeta", Some("2.1"), Some("ref-b"), vec![]),
+        ]);
+
+        let flattened: Vec<&str> = Utils::flatten_components(&components)
+            .iter()
+            .map(|(component, _)| &*component.name)
+            .collect();
+
+        assert_eq!(
+            flattened,
+            vec!["libalpha", "platform-x", "sdk-y", "zlib", "libbeta"]
+        );
+    }
+
+    #[test]
+    fn test_via_suffix_parts_wording() {
+        assert_eq!(via_text(&[]), "");
+        assert_eq!(
+            via_text(&[Ancestor {
+                name: "a",
+                version: Some("1"),
+            }]),
+            " (via a: 1)"
+        );
+        assert_eq!(
+            via_text(&[
+                Ancestor {
+                    name: "a",
+                    version: Some("1"),
+                },
+                Ancestor {
+                    name: "b",
+                    version: None,
+                },
+            ]),
+            " (via a: 1 > b)"
+        );
+    }
+
+    #[test]
+    fn test_via_suffix_parts_reuse_component_and_version_styles() {
+        let name_style = Style::new().with_color(Color::Rgb(1, 2, 3));
+        let version_style = Style::new().with_color(Color::Rgb(4, 5, 6));
+        let glue_style = Style::new().with_color(Color::Rgb(7, 8, 9));
+
+        let parts = Utils::via_suffix_parts(
+            &[Ancestor {
+                name: "platform-x",
+                version: Some("0.55.2"),
+            }],
+            name_style,
+            version_style,
+            glue_style,
+        );
+
+        let styled: Vec<(&str, Style)> = parts
+            .iter()
+            .map(|part| (part.s.as_str(), part.style))
+            .collect();
+
+        assert_eq!(styled[0].0, " (via ");
+        assert_eq!(styled[0].1.color(), glue_style.color());
+        assert_eq!(styled[1].0, "platform-x");
+        assert_eq!(styled[1].1.color(), name_style.color());
+        assert_eq!(styled[2].0, ": 0.55.2");
+        assert_eq!(styled[2].1.color(), version_style.color());
+        assert_eq!(styled[3].0, ")");
+        assert_eq!(styled[3].1.color(), glue_style.color());
+    }
+
+    #[test]
+    fn test_component_label_parts_without_version_omits_colon() {
+        let style = Style::new();
+
+        assert_eq!(
+            parts_text(&Utils::component_label_parts(
+                "openssl",
+                None,
+                &[Ancestor {
+                    name: "platform-x",
+                    version: Some("0.55.2"),
+                }],
+                style,
+                style,
+                style,
+            )),
+            "openssl (via platform-x: 0.55.2)"
+        );
+    }
+
+    #[test]
+    fn test_xml_reader_keeps_nested_components() {
+        let vex = parse_vex_xml(NESTED_COMPONENTS_XML).expect("fixture must parse");
+        let components = vex.components.expect("fixture must carry components");
+
+        let platform_x = components
+            .0
+            .iter()
+            .find(|component| &*component.name == "platform-x")
+            .expect("platform-x must be present");
+        let nested = platform_x
+            .components
+            .as_ref()
+            .expect("nested components must survive the XML reader");
+
+        assert_eq!(nested.0.len(), 3);
+        let sdk_y = nested
+            .0
+            .iter()
+            .find(|component| &*component.name == "sdk-y")
+            .expect("sdk-y must be present");
+        assert_eq!(
+            sdk_y
+                .components
+                .as_ref()
+                .expect("second nesting level must survive")
+                .0
+                .len(),
+            1
+        );
+    }
+
+    /// The expected affected-components wording of the nested fixtures, shared by
+    /// the JSON and XML cases since both formats carry the same document.
+    fn expected_nested_affected_labels() -> Vec<(String, String)> {
+        [
+            ("CVE-2099-0001", "libalpha: 1.0.0"),
+            ("CVE-2099-0002", "openssl: 3.6.3 (via platform-x: 0.55.2)"),
+            ("CVE-2099-0003", "node.js: 24.17.0 (via platform-x: 0.55.2)"),
+            (
+                "CVE-2099-0004",
+                "zlib: 1.3.1 (via platform-x: 0.55.2 > sdk-y: 8.0)",
+            ),
+            ("CVE-2099-0005", "platform-x: 0.55.2"),
+            ("CVE-2099-0006", "openssl: 3.6.3 (via platform-x: 0.55.2)"),
+        ]
+        .iter()
+        .map(|(id, label)| (id.to_string(), label.to_string()))
+        .collect()
+    }
+
+    fn expected_edge_case_affected_labels() -> Vec<(String, String)> {
+        [
+            ("CVE-2099-0101", "libgamma: 1.0 (via platform-z)"),
+            ("CVE-2099-0102", "libdelta: 4.2 (via bundle-w: 3.0)"),
+            // unresolved ref: unchanged, nothing is listed
+            ("CVE-2099-0103", ""),
+        ]
+        .iter()
+        .map(|(id, label)| (id.to_string(), label.to_string()))
+        .collect()
+    }
+
+    #[test]
+    fn test_nested_fixture_affected_labels_json() {
+        let vex = parse_vex_json(NESTED_COMPONENTS_JSON).expect("fixture must parse");
+        assert_eq!(affected_labels(&vex), expected_nested_affected_labels());
+    }
+
+    #[test]
+    fn test_nested_fixture_affected_labels_xml() {
+        let vex = parse_vex_xml(NESTED_COMPONENTS_XML).expect("fixture must parse");
+        assert_eq!(affected_labels(&vex), expected_nested_affected_labels());
+    }
+
+    #[test]
+    fn test_nested_edge_cases_affected_labels_json() {
+        let vex = parse_vex_json(NESTED_EDGE_CASES_JSON).expect("fixture must parse");
+        assert_eq!(affected_labels(&vex), expected_edge_case_affected_labels());
+    }
+
+    #[test]
+    fn test_nested_edge_cases_affected_labels_xml() {
+        let vex = parse_vex_xml(NESTED_EDGE_CASES_XML).expect("fixture must parse");
+        assert_eq!(affected_labels(&vex), expected_edge_case_affected_labels());
+    }
+
+    #[test]
+    fn test_nested_fixture_component_section_order_json() {
+        let vex = parse_vex_json(NESTED_COMPONENTS_JSON).expect("fixture must parse");
+
+        assert_eq!(
+            component_labels(&vex),
+            vec![
+                "libalpha",
+                "platform-x",
+                "openssl (via platform-x: 0.55.2)",
+                "node.js (via platform-x: 0.55.2)",
+                "sdk-y (via platform-x: 0.55.2)",
+                "zlib (via platform-x: 0.55.2 > sdk-y: 8.0)",
+                "libbeta",
+            ]
+        );
+    }
+
+    #[test]
+    fn test_nested_edge_cases_component_section_order_xml() {
+        let vex = parse_vex_xml(NESTED_EDGE_CASES_XML).expect("fixture must parse");
+
+        assert_eq!(
+            component_labels(&vex),
+            vec![
+                "platform-z",
+                "libgamma (via platform-z)",
+                "bundle-w",
+                "libdelta (via bundle-w: 3.0)",
+            ]
+        );
     }
 }

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bom xmlns="http://cyclonedx.org/schema/bom/1.5" serialNumber="urn:uuid:7d1a2b3c-4d5e-4f60-8a71-92b3c4d5e6f7" version="1">
+  <metadata>
+    <timestamp>2099-01-15T10:00:00Z</timestamp>
+    <tools>
+      <tool>
+        <vendor>Example</vendor>
+        <name>fixture-generator</name>
+        <version>1.0.0</version>
+      </tool>
+    </tools>
+    <component type="application" bom-ref="product">
+      <name>Example Product</name>
+      <version>1.0.0</version>
+    </component>
+  </metadata>
+  <components>
+    <component type="library" bom-ref="comp-libalpha">
+      <name>libalpha</name>
+      <version>1.0.0</version>
+      <cpe>cpe:2.3:a:example:libalpha:1.0.0:*:*:*:*:*:*:*</cpe>
+    </component>
+    <component type="application" bom-ref="comp-platform-x">
+      <name>platform-x</name>
+      <version>0.55.2</version>
+      <cpe>cpe:2.3:a:example:platform-x:0.55.2:*:*:*:*:*:*:*</cpe>
+      <components>
+        <component type="library" bom-ref="comp-px-openssl">
+          <name>openssl</name>
+          <version>3.6.3</version>
+          <cpe>cpe:2.3:a:openssl:openssl:3.6.3:*:*:*:*:*:*:*</cpe>
+        </component>
+        <component type="library" bom-ref="comp-px-nodejs">
+          <name>node.js</name>
+          <version>24.17.0</version>
+          <cpe>cpe:2.3:a:nodejs:node.js:24.17.0:*:*:*:*:*:*:*</cpe>
+        </component>
+        <component type="library" bom-ref="comp-px-sdk-y">
+          <name>sdk-y</name>
+          <version>8.0</version>
+          <cpe>cpe:2.3:a:example:sdk-y:8.0:*:*:*:*:*:*:*</cpe>
+          <components>
+            <component type="library" bom-ref="comp-px-sdk-y-zlib">
+              <name>zlib</name>
+              <version>1.3.1</version>
+              <cpe>cpe:2.3:a:zlib:zlib:1.3.1:*:*:*:*:*:*:*</cpe>
+            </component>
+          </components>
+        </component>
+      </components>
+    </component>
+    <component type="library" bom-ref="comp-libbeta">
+      <name>libbeta</name>
+      <version>2.1</version>
+      <cpe>cpe:2.3:a:example:libbeta:2.1:*:*:*:*:*:*:*</cpe>
+    </component>
+  </components>
+  <vulnerabilities>
+    <vulnerability bom-ref="vuln-cve-2099-0001">
+      <id>CVE-2099-0001</id>
+      <source>
+        <name>NVD</name>
+        <url>https://nvd.nist.gov/</url>
+      </source>
+      <ratings>
+        <rating>
+          <score>7.5</score>
+          <severity>high</severity>
+          <method>CVSSv31</method>
+          <vector>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N</vector>
+        </rating>
+      </ratings>
+      <description>Fictional flaw in a top-level library.</description>
+      <recommendation>Upgrade to 1.0.1</recommendation>
+      <published>2099-01-15T10:00:00Z</published>
+      <affects>
+        <target>
+          <ref>comp-libalpha</ref>
+        </target>
+      </affects>
+    </vulnerability>
+    <vulnerability bom-ref="vuln-cve-2099-0002">
+      <id>CVE-2099-0002</id>
+      <source>
+        <name>NVD</name>
+        <url>https://nvd.nist.gov/</url>
+      </source>
+      <ratings>
+        <rating>
+          <score>9.8</score>
+          <severity>critical</severity>
+          <method>CVSSv31</method>
+          <vector>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H</vector>
+        </rating>
+      </ratings>
+      <description>Fictional flaw in a component nested one level deep.</description>
+      <published>2099-01-15T10:00:00Z</published>
+      <affects>
+        <target>
+          <ref>comp-px-openssl</ref>
+        </target>
+      </affects>
+    </vulnerability>
+    <vulnerability bom-ref="vuln-cve-2099-0003">
+      <id>CVE-2099-0003</id>
+      <source>
+        <name>NVD</name>
+        <url>https://nvd.nist.gov/</url>
+      </source>
+      <ratings>
+        <rating>
+          <score>5.4</score>
+          <severity>medium</severity>
+          <method>CVSSv31</method>
+          <vector>CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:N</vector>
+        </rating>
+      </ratings>
+      <description>Fictional flaw in a second nested component.</description>
+      <published>2099-01-15T10:00:00Z</published>
+      <affects>
+        <target>
+          <ref>comp-px-nodejs</ref>
+        </target>
+      </affects>
+    </vulnerability>
+    <vulnerability bom-ref="vuln-cve-2099-0004">
+      <id>CVE-2099-0004</id>
+      <source>
+        <name>NVD</name>
+        <url>https://nvd.nist.gov/</url>
+      </source>
+      <ratings>
+        <rating>
+          <score>7.5</score>
+          <severity>high</severity>
+          <method>CVSSv31</method>
+          <vector>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N</vector>
+        </rating>
+      </ratings>
+      <description>Fictional flaw in a component nested two levels deep.</description>
+      <published>2099-01-15T10:00:00Z</published>
+      <affects>
+        <target>
+          <ref>comp-px-sdk-y-zlib</ref>
+        </target>
+      </affects>
+    </vulnerability>
+    <vulnerability bom-ref="vuln-cve-2099-0005">
+      <id>CVE-2099-0005</id>
+      <source>
+        <name>NVD</name>
+        <url>https://nvd.nist.gov/</url>
+      </source>
+      <ratings>
+        <rating>
+          <score>5.4</score>
+          <severity>medium</severity>
+          <method>CVSSv31</method>
+          <vector>CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:N</vector>
+        </rating>
+      </ratings>
+      <description>Fictional flaw in the assembly itself (the parent).</description>
+      <published>2099-01-15T10:00:00Z</published>
+      <affects>
+        <target>
+          <ref>comp-platform-x</ref>
+        </target>
+      </affects>
+    </vulnerability>
+    <vulnerability bom-ref="vuln-cve-2099-0006">
+      <id>CVE-2099-0006</id>
+      <source>
+        <name>NVD</name>
+        <url>https://nvd.nist.gov/</url>
+      </source>
+      <ratings>
+        <rating>
+          <score>7.5</score>
+          <severity>high</severity>
+          <method>CVSSv31</method>
+          <vector>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N</vector>
+        </rating>
+      </ratings>
+      <description>Fictional flaw on a nested component that carries an analysis.</description>
+      <published>2099-01-15T10:00:00Z</published>
+      <analysis>
+        <state>not_affected</state>
+        <justification>code_not_reachable</justification>
+        <detail>The vulnerable function is not called by the assembly.</detail>
+      </analysis>
+      <affects>
+        <target>
+          <ref>comp-px-openssl</ref>
+        </target>
+      </affects>
+    </vulnerability>
+  </vulnerabilities>
+</bom>

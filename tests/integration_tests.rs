@@ -1,3 +1,4 @@
+use std::fs;
 use std::path::Path;
 use std::process::Command;
 use tempfile::TempDir;
@@ -193,6 +194,40 @@ fn test_sample_vex_xml() {
 
     let pdf_name = get_expected_pdf_name(paths::SAMPLE_VEX_XML);
     let generated_pdf = temp_dir.path().join(&pdf_name);
+
+    utils::assert_pdf_created(&generated_pdf);
+    utils::assert_pdf_checksum_matches(&generated_pdf);
+}
+
+// ============================================================================
+// Components Section Tests
+// ============================================================================
+
+/// The components section is shown by default, so every batch fixture already
+/// gates the nested `(via ...)` rendering. What is not covered anywhere is the
+/// opposite direction: `--show-components false` has to suppress the section.
+#[test]
+fn test_components_section_suppressed_when_show_components_is_off() {
+    let temp_input_dir = TempDir::new().expect("Failed to create temp input dir");
+    let temp_output_dir = TempDir::new().expect("Failed to create temp output dir");
+
+    // the batch tests render this fixture with default settings, so this run needs
+    // its own input name to get a checksum of its own
+    let input_path = temp_input_dir
+        .path()
+        .join("bom_vdr_with_nested_components_nocomp.json");
+    fs::copy(paths::BOM_VDR_WITH_NESTED_COMPONENTS, &input_path)
+        .expect("Failed to copy nested components fixture");
+
+    let _ = run_vex2pdf(
+        input_path.to_str().expect("Invalid input path"),
+        temp_output_dir.path(),
+        Some(vec!["-c", "false"]),
+    );
+
+    let generated_pdf = temp_output_dir
+        .path()
+        .join("bom_vdr_with_nested_components_nocomp.pdf");
 
     utils::assert_pdf_created(&generated_pdf);
     utils::assert_pdf_checksum_matches(&generated_pdf);

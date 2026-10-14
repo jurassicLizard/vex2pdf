@@ -1,0 +1,123 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:8e2b3c4d-5e6f-4a71-9b82-a3c4d5e6f708",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2099-01-15T10:00:00Z",
+    "tools": [
+      {
+        "vendor": "Example",
+        "name": "fixture-generator",
+        "version": "1.0.0"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "bom-ref": "product",
+      "name": "Example Edge Product",
+      "version": "1.0.0"
+    }
+  },
+  "components": [
+    {
+      "type": "application",
+      "name": "platform-z",
+      "bom-ref": "comp-platform-z",
+      "components": [
+        {
+          "type": "library",
+          "name": "libgamma",
+          "bom-ref": "comp-pz-gamma",
+          "version": "1.0",
+          "cpe": "cpe:2.3:a:example:libgamma:1.0:*:*:*:*:*:*:*"
+        }
+      ]
+    },
+    {
+      "type": "application",
+      "name": "bundle-w",
+      "version": "3.0",
+      "components": [
+        {
+          "type": "library",
+          "name": "libdelta",
+          "bom-ref": "comp-bw-delta",
+          "version": "4.2",
+          "cpe": "cpe:2.3:a:example:libdelta:4.2:*:*:*:*:*:*:*"
+        }
+      ]
+    }
+  ],
+  "vulnerabilities": [
+    {
+      "bom-ref": "vuln-cve-2099-0101",
+      "id": "CVE-2099-0101",
+      "source": {
+        "name": "NVD",
+        "url": "https://nvd.nist.gov/"
+      },
+      "ratings": [
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+        }
+      ],
+      "description": "Parent has no version: the via segment is its name alone.",
+      "published": "2099-01-15T10:00:00Z",
+      "affects": [
+        {
+          "ref": "comp-pz-gamma"
+        }
+      ]
+    },
+    {
+      "bom-ref": "vuln-cve-2099-0102",
+      "id": "CVE-2099-0102",
+      "source": {
+        "name": "NVD",
+        "url": "https://nvd.nist.gov/"
+      },
+      "ratings": [
+        {
+          "score": 5.4,
+          "severity": "medium",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:N"
+        }
+      ],
+      "description": "Parent has no bom-ref: its child must still be found.",
+      "published": "2099-01-15T10:00:00Z",
+      "affects": [
+        {
+          "ref": "comp-bw-delta"
+        }
+      ]
+    },
+    {
+      "bom-ref": "vuln-cve-2099-0103",
+      "id": "CVE-2099-0103",
+      "source": {
+        "name": "NVD",
+        "url": "https://nvd.nist.gov/"
+      },
+      "ratings": [
+        {
+          "score": 5.4,
+          "severity": "medium",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:N"
+        }
+      ],
+      "description": "Unresolved ref: behaviour unchanged (empty list).",
+      "published": "2099-01-15T10:00:00Z",
+      "affects": [
+        {
+          "ref": "comp-does-not-exist"
+        }
+      ]
+    }
+  ]
+}

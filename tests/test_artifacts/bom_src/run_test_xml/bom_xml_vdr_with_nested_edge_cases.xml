@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bom xmlns="http://cyclonedx.org/schema/bom/1.5" serialNumber="urn:uuid:8e2b3c4d-5e6f-4a71-9b82-a3c4d5e6f708" version="1">
+  <metadata>
+    <timestamp>2099-01-15T10:00:00Z</timestamp>
+    <tools>
+      <tool>
+        <vendor>Example</vendor>
+        <name>fixture-generator</name>
+        <version>1.0.0</version>
+      </tool>
+    </tools>
+    <component type="application" bom-ref="product">
+      <name>Example Edge Product</name>
+      <version>1.0.0</version>
+    </component>
+  </metadata>
+  <components>
+    <component type="application" bom-ref="comp-platform-z">
+      <name>platform-z</name>
+      <components>
+        <component type="library" bom-ref="comp-pz-gamma">
+          <name>libgamma</name>
+          <version>1.0</version>
+          <cpe>cpe:2.3:a:example:libgamma:1.0:*:*:*:*:*:*:*</cpe>
+        </component>
+      </components>
+    </component>
+    <component type="application">
+      <name>bundle-w</name>
+      <version>3.0</version>
+      <components>
+        <component type="library" bom-ref="comp-bw-delta">
+          <name>libdelta</name>
+          <version>4.2</version>
+          <cpe>cpe:2.3:a:example:libdelta:4.2:*:*:*:*:*:*:*</cpe>
+        </component>
+      </components>
+    </component>
+  </components>
+  <vulnerabilities>
+    <vulnerability bom-ref="vuln-cve-2099-0101">
+      <id>CVE-2099-0101</id>
+      <source>
+        <name>NVD</name>
+        <url>https://nvd.nist.gov/</url>
+      </source>
+      <ratings>
+        <rating>
+          <score>7.5</score>
+          <severity>high</severity>
+          <method>CVSSv31</method>
+          <vector>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N</vector>
+        </rating>
+      </ratings>
+      <description>Parent has no version: the via segment is its name alone.</description>
+      <published>2099-01-15T10:00:00Z</published>
+      <affects>
+        <target>
+          <ref>comp-pz-gamma</ref>
+        </target>
+      </affects>
+    </vulnerability>
+    <vulnerability bom-ref="vuln-cve-2099-0102">
+      <id>CVE-2099-0102</id>
+      <source>
+        <name>NVD</name>
+        <url>https://nvd.nist.gov/</url>
+      </source>
+      <ratings>
+        <rating>
+          <score>5.4</score>
+          <severity>medium</severity>
+          <method>CVSSv31</method>
+          <vector>CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:N</vector>
+        </rating>
+      </ratings>
+      <description>Parent has no bom-ref: its child must still be found.</description>
+      <published>2099-01-15T10:00:00Z</published>
+      <affects>
+        <target>
+          <ref>comp-bw-delta</ref>
+        </target>
+      </affects>
+    </vulnerability>
+    <vulnerability bom-ref="vuln-cve-2099-0103">
+      <id>CVE-2099-0103</id>
+      <source>
+        <name>NVD</name>
+        <url>https://nvd.nist.gov/</url>
+      </source>
+      <ratings>
+        <rating>
+          <score>5.4</score>
+          <severity>medium</severity>
+          <method>CVSSv31</method>
+          <vector>CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:N</vector>
+        </rating>
+      </ratings>
+      <description>Unresolved ref: behaviour unchanged (empty list).</description>
+      <published>2099-01-15T10:00:00Z</published>
+      <affects>
+        <target>
+          <ref>comp-does-not-exist</ref>
+        </target>
+      </affects>
+    </vulnerability>
+  </vulnerabilities>
+</bom>

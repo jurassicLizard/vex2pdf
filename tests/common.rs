@@ -81,6 +81,12 @@ pub mod paths {
         "/tests/test_artifacts/bom_src/run_test/bom_vdr_with_no_vulns.json"
     );
 
+    // Nested component assemblies
+    pub const BOM_VDR_WITH_NESTED_COMPONENTS: &str = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/test_artifacts/bom_src/run_test/bom_vdr_with_nested_components.json"
+    );
+
     // XML test files
     pub const BOM_VDR_SIMPLE_XML: &str = concat!(
         env!("CARGO_MANIFEST_DIR"),
