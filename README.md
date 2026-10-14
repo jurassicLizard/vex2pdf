@@ -665,6 +665,21 @@ When processing 1.6 documents, you'll see console messages indicating the compat
 - No network connections are established
 - Input validation is performed on all JSON files
 
+### Known dependency advisory
+
+`cargo audit` reports **[RUSTSEC-2026-0187](https://rustsec.org/advisories/RUSTSEC-2026-0187)** against
+`lopdf 0.26.0` (stack overflow via deeply nested PDF objects, severity 7.5). `lopdf` is reached only
+through the `genpdf → printpdf` chain, which pins it, so it cannot be upgraded without replacing the PDF
+rendering stack.
+
+**The vulnerable code path is PDF _parsing_, and vex2pdf never parses a PDF** — it only writes them, and
+neither `genpdf` nor `printpdf` invokes lopdf's document parser. The advisory is therefore not believed
+to be reachable from any vex2pdf functionality. It is nonetheless disclosed here because it will appear
+in the audit output of any project that depends on vex2pdf.
+
+Five further "unmaintained" advisories (`encoding`, `lzw`, `rusttype`, `stb_truetype`, `stdweb`) come from
+the same chain. See the [Changelog](CHANGELOG.md) for the per-release security notes.
+
 ## Changelog
 
 Changes to the software between version increments are documented under [Changelog.md](CHANGELOG.md).
