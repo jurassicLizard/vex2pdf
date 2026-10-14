@@ -45,7 +45,7 @@ impl Utils {
             .split('_')
             .map(|e| {
                 if !e.is_empty() {
-                    format!("{}{}", &e[0..1].to_uppercase(), &e[1..])
+                    format!("{}{}", e[0..1].to_uppercase(), &e[1..])
                 } else {
                     String::new()
                 }

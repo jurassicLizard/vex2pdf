@@ -69,7 +69,7 @@ impl FileSearchProvider for DefaultFilesProcessor {
             // is a folder
             info!(
                 "Scanning for BoM/Vex Files in {}",
-                &self.config.working_path.display()
+                self.config.working_path.display()
             );
 
             for entry in fs::read_dir(&self.config.working_path)? {

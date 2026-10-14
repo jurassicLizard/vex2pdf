@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Components are indexed recursively by bom-ref instead of only at the top level. A component without a bom-ref still cannot be referenced, but it is now named as an ancestor of its children. On a duplicate bom-ref the later component continues to win.
 - Documents without nesting render exactly as in 4.0.0: all pre-existing entries in `tests/test_artifacts/expected_pdfs_chksums.txt` are unchanged by this release.
 - Corrected the stale test counts and the non-existent `run_test_novulns/` fixture directory in `docs/DEVELOPER_NOTES.md`.
+- Cleared two `clippy::useless_borrows_in_formatting` findings (`src/files_proc/processor.rs`, `src/pdf/generator.rs`) that newer clippy releases report. CI runs `cargo clippy -- -D warnings`, so these had started failing the pipeline on every branch push; neither change affects behaviour or rendered output.
 
 ### Security
 - `cargo audit` reports **RUSTSEC-2026-0187** (`lopdf 0.26.0`, stack overflow via deeply nested PDF objects, severity 7.5 high, published 2026-06-21, five days after the 4.0.0 release). The fix requires `lopdf >= 0.42.0`, but `lopdf` is pinned through the `genpdf 0.2.0 → printpdf 0.3.4` chain and cannot be upgraded without replacing the PDF stack, which remains out of scope. The vulnerable code path is PDF *parsing*: vex2pdf only ever writes PDFs and neither `genpdf` nor `printpdf` invokes lopdf's document parser, so the advisory is not believed to be reachable from any vex2pdf functionality.
